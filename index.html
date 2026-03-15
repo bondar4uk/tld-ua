@@ -143,12 +143,17 @@
 
     /* ─── TOOLTIP ─── */
     #tooltip {
-      position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+      position:fixed; top:0; left:0;
       background:#0f1620; border:1px solid #254060; border-radius:6px;
-      padding:6px 12px; font-size:12px; color:#cdd8e8;
+      padding:5px 10px; font-size:11.5px; color:#cdd8e8;
       pointer-events:none; z-index:8000;
-      opacity:0; transition:opacity .15s ease;
-      white-space:nowrap; max-width:90vw; text-align:center;
+      opacity:0; transition:opacity .12s ease;
+      white-space:nowrap; max-width:300px;
+      box-shadow:0 4px 16px rgba(0,0,0,.5);
+    }
+    #tooltip::after {
+      content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+      border:5px solid transparent; border-top-color:#254060;
     }
     #tooltip.show { opacity:1; }
 
@@ -235,19 +240,18 @@
 </div>
 
 <!-- HEADER -->
-<header class="relative text-center px-6 pt-14 pb-10 border-b border-border overflow-hidden" style="position:relative;z-index:1">
-  <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-64 pointer-events-none"
-       style="background:radial-gradient(ellipse,rgba(126,207,238,.05) 0%,transparent 68%)"></div>
+<header class="sticky top-0 z-[60] border-b border-border overflow-hidden"
+        style="background:rgba(9,11,14,.97);backdrop-filter:blur(16px)">
   <div class="absolute inset-0 pointer-events-none overflow-hidden" id="snowflakes"></div>
-  <p class="relative font-mono text-[9px] tracking-[5px] text-iced uppercase opacity-60 mb-2">❄ The Long Dark — Українські переклади модів</p>
-  <h1 class="relative font-display text-white leading-none"
-      style="font-size:clamp(48px,8vw,90px);letter-spacing:5px;text-shadow:0 0 60px rgba(126,207,238,.12)">
-    TLD <span class="text-gold" style="text-shadow:0 0 36px rgba(240,192,64,.35)">MODS</span> UA
-  </h1>
-  <p class="relative text-sm text-tdim font-light mt-2 mb-4">Вибери потрібні моди і завантаж одним архівом</p>
-  <div class="relative inline-flex rounded overflow-hidden border border-border">
-    <span class="block w-12 h-1.5" style="background:#005BBB"></span>
-    <span class="block w-12 h-1.5" style="background:#FFD500"></span>
+  <div class="relative flex items-center justify-center py-2.5 px-4">
+    <h1 class="font-display text-white leading-none select-none"
+        style="font-size:28px;letter-spacing:5px;text-shadow:0 0 30px rgba(126,207,238,.1)">
+      TLD <span class="text-gold" style="text-shadow:0 0 20px rgba(240,192,64,.35)">MODS</span> UA
+    </h1>
+    <div class="absolute right-4 inline-flex rounded overflow-hidden border border-border opacity-60">
+      <span class="block w-8 h-1" style="background:#005BBB"></span>
+      <span class="block w-8 h-1" style="background:#FFD500"></span>
+    </div>
   </div>
 </header>
 
@@ -298,7 +302,7 @@
 <div class="flex relative z-10" style="min-height:calc(100vh - 200px)">
 
   <!-- ═══ SIDEBAR ═══ -->
-  <aside class="sidebar sticky top-[49px] self-start h-[calc(100vh-49px)] overflow-y-auto px-3 py-3 border-r border-border" id="sidebar">
+  <aside class="sidebar sticky top-[45px] self-start h-[calc(100vh-45px)] overflow-y-auto px-3 py-3 border-r border-border" id="sidebar">
 
     <!-- stats -->
     <div class="sb-section" id="statsBar" style="display:none">
@@ -314,29 +318,17 @@
     <div class="sb-section">
       <p class="sb-title">Сортування</p>
       <div class="flex flex-col gap-1" id="sortBtns">
-        <button class="sort-btn" data-sort="updated-desc">
+        <button class="sort-btn" data-field="updated" data-dir="desc">
           <span>Оновлення мода</span><span class="sort-arrow ml-auto">↓</span>
         </button>
-        <button class="sort-btn" data-sort="updated-asc">
-          <span>Оновлення мода</span><span class="sort-arrow ml-auto">↑</span>
-        </button>
-        <button class="sort-btn" data-sort="trans-desc">
+        <button class="sort-btn" data-field="trans" data-dir="desc">
           <span>Переклад</span><span class="sort-arrow ml-auto">↓</span>
         </button>
-        <button class="sort-btn" data-sort="trans-asc">
-          <span>Переклад</span><span class="sort-arrow ml-auto">↑</span>
-        </button>
-        <button class="sort-btn" data-sort="name-asc">
+        <button class="sort-btn" data-field="name" data-dir="asc">
           <span>Назва</span><span class="sort-arrow ml-auto">А→Я</span>
         </button>
-        <button class="sort-btn" data-sort="name-desc">
-          <span>Назва</span><span class="sort-arrow ml-auto">Я→А</span>
-        </button>
-        <button class="sort-btn" data-sort="author-asc">
+        <button class="sort-btn" data-field="author" data-dir="asc">
           <span>Автор</span><span class="sort-arrow ml-auto">А→Я</span>
-        </button>
-        <button class="sort-btn" data-sort="author-desc">
-          <span>Автор</span><span class="sort-arrow ml-auto">Я→А</span>
         </button>
       </div>
     </div>
@@ -470,26 +462,41 @@ function dismissPreloader() {
 }
 
 // ══ TOOLTIP ══
-let _ttTimer;
-function showTip(text) {
-  const el = document.getElementById('tooltip');
+let _ttTimer, _ttTarget = null;
+const _ttEl = document.getElementById('tooltip');
+
+function showTip(target) {
   clearTimeout(_ttTimer);
-  el.textContent = text;
-  el.classList.add('show');
+  _ttTarget = target;
+  _ttEl.textContent = target.dataset.tip;
+  positionTip(target);
+  _ttEl.classList.add('show');
 }
 function hideTip() {
-  const el = document.getElementById('tooltip');
   clearTimeout(_ttTimer);
-  _ttTimer = setTimeout(() => el.classList.remove('show'), 100);
+  _ttTarget = null;
+  _ttTimer = setTimeout(() => _ttEl.classList.remove('show'), 80);
 }
-// Wire tooltip to all [data-tip] elements (delegated)
+function positionTip(target) {
+  const r = target.getBoundingClientRect();
+  // place above element, centered
+  const tipW = _ttEl.offsetWidth || 120;
+  let left = r.left + r.width / 2 - tipW / 2;
+  let top  = r.top - _ttEl.offsetHeight - 10 + window.scrollY;
+  // clamp to viewport
+  left = Math.max(8, Math.min(left, window.innerWidth - tipW - 8));
+  _ttEl.style.left = left + 'px';
+  _ttEl.style.top  = top + 'px';
+}
 document.addEventListener('mouseover', e => {
   const t = e.target.closest('[data-tip]');
-  if (t) showTip(t.dataset.tip);
+  if (t) showTip(t);
 });
 document.addEventListener('mouseout', e => {
   if (e.target.closest('[data-tip]')) hideTip();
 });
+// reposition on scroll/resize
+window.addEventListener('scroll', () => { if (_ttTarget) positionTip(_ttTarget); }, {passive:true});
 
 // ══ BACK TO TOP ══
 const _btt = document.getElementById('backTop');
@@ -667,8 +674,25 @@ function syncBadge() {
 }
 
 // ══ SORT ══
+const SORT_ARROWS = {
+  updated: { asc:'↑', desc:'↓' },
+  trans:   { asc:'↑', desc:'↓' },
+  name:    { asc:'А→Я', desc:'Я→А' },
+  author:  { asc:'А→Я', desc:'Я→А' },
+};
+
 function setActiveSortBtn(val) {
-  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === val));
+  const [field, dir] = val.split('-');
+  document.querySelectorAll('.sort-btn').forEach(b => {
+    const isActive = b.dataset.field === field;
+    b.classList.toggle('active', isActive);
+    if (isActive) {
+      // update stored direction on button and update arrow
+      b.dataset.dir = dir;
+      const arrow = b.querySelector('.sort-arrow');
+      if (arrow) arrow.textContent = SORT_ARROWS[field]?.[dir] || (dir==='asc'?'↑':'↓');
+    }
+  });
 }
 
 // ══ GET LIST ══
@@ -1073,8 +1097,13 @@ document.getElementById('filterWrap').addEventListener('click', e => {
   b.classList.add('active'); activeFilter=b.dataset.filter; render();
 });
 document.getElementById('sortBtns').addEventListener('click', e => {
-  const b=e.target.closest('.sort-btn'); if(!b)return;
-  sortBy=b.dataset.sort; setActiveSortBtn(sortBy); render();
+  const b = e.target.closest('.sort-btn'); if (!b) return;
+  const field   = b.dataset.field;
+  const [curField, curDir] = sortBy.split('-');
+  // same field -> toggle direction; different field -> use default
+  const newDir = (field === curField) ? (curDir === 'asc' ? 'desc' : 'asc') : b.dataset.dir;
+  sortBy = field + '-' + newDir;
+  setActiveSortBtn(sortBy); render();
 });
 document.querySelectorAll('.fmtbtn').forEach(b => {
   b.addEventListener('click',()=>{
