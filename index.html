@@ -270,6 +270,8 @@
 const CACHE_URL = './mods-cache.json';
 const TRANS_URL = './translations.json';
 const LS_KEY    = 'tld-ua-selected-v1';
+// Файли лежать в mods-files/ у репо (завантажуються GitHub Actions)
+// При невдачі - fallback через проксі
 const DL_PROXIES = [
   u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
   u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
@@ -280,6 +282,7 @@ let allMods       = [];
 let translations  = {};
 let catMap        = {};
 let currentGameVer = '2.51';
+let imgManifest    = {};
 let selected      = new Set(lsLoad());
 let activeFilter  = 'all';
 let activeCats    = new Set();
@@ -367,12 +370,13 @@ function resolveDeps(modNames, visited = new Set()) {
 async function init() {
   spawnSnow();
   try {
-    const [modsRaw, transRaw] = await Promise.all([localFetch(CACHE_URL), localFetch(TRANS_URL)]);
+    const [modsRaw, transRaw, manifestRaw] = await Promise.all([localFetch(CACHE_URL), localFetch(TRANS_URL), localFetch('./images-cache/manifest.json')]);
     if (!Array.isArray(modsRaw)) throw new Error('no-cache');
     const td = transRaw || {};
     translations   = td.mods        || {};
     catMap         = td.categoryMap  || {};
     currentGameVer = td.gameVersion  || '2.51';
+    imgManifest    = manifestRaw || {};
     allMods      = modsRaw.filter(m => m.Type !== undefined);
 
     for (const n of [...selected]) if (!allMods.find(m => m.Name === n)) selected.delete(n);
@@ -561,10 +565,10 @@ function render() {
     c.style.animationDelay = Math.min(i*20, 280)+'ms';
     grid.appendChild(c);
   });
-const old = document.getElementById('content');
-old.querySelectorAll('img').forEach(i => { i.src = ''; });
-old.innerHTML = '';
-  document.getElementById('content').appendChild(grid);
+  const _c = document.getElementById('content');
+  _c.querySelectorAll('img').forEach(i => { i.onerror = null; i.src = ''; });
+  _c.innerHTML = '';
+  _c.appendChild(grid);
   updateBar();
 }
 
@@ -572,7 +576,8 @@ old.innerHTML = '';
 function makeCard(mod) {
   const isSel  = selected.has(mod.Name);
   const trans  = translations[mod.Name];
-  const hasImg = mod.Images && mod.Images.length > 0;
+  const imgUrl = imgSrc(mod);
+  const hasImg = !!imgUrl;
   const status = getStatus(mod);
   const sm     = STATUS_META[status] || STATUS_META.noinfo;
   const dlUrl  = getDownloadUrl(mod);
@@ -598,9 +603,9 @@ function makeCard(mod) {
   let imgSection;
   if (hasImg) {
     imgSection = `
-      <img src="${mod.Images[0]}" alt="${esc(tName(mod))}" loading="lazy"
+      <img src="${imgUrl}" alt="${esc(tName(mod))}" loading="lazy" decoding="async"
            class="w-full h-40 object-cover flex-shrink-0 bg-bg3 block"
-           onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'"
+           onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="w-full h-40 flex-shrink-0 mod-name-bg" style="display:none">
         <span class="relative font-display text-ttext/60 text-lg leading-tight text-center px-2" style="letter-spacing:1px">${esc(tName(mod))}</span>
       </div>`;
@@ -715,6 +720,11 @@ function makeCard(mod) {
 
   wrap.addEventListener('click', () => toggle(mod.Name));
   return wrap;
+}
+
+// повертає локальний шлях якщо є в маніфесті, інакше оригінальний URL
+function imgSrc(mod) {
+  return imgManifest[mod.Name] || (mod.Images && mod.Images[0]) || null;
 }
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -896,14 +906,23 @@ async function pack7z(entries) {
 }
 
 async function blobFetch(url) {
+  // 1. спробувати локальний файл з mods-files/ (без CORS)
+  const localName = url.split('/').pop().split('?')[0];
+  const localPath = './mods-files/' + localName;
+  try {
+    const r = await fetch(localPath, {signal: AbortSignal.timeout(10000)});
+    if (r.ok) return await r.blob();
+  } catch {}
+
+  // 2. fallback через CORS-проксі (якщо файл ще не закешований)
   for (const makeUrl of DL_PROXIES) {
     try {
       const r = await fetch(makeUrl(url), {signal: AbortSignal.timeout(30000)});
       if (!r.ok) continue;
       return await r.blob();
-    } catch { /* наступний проксі */ }
+    } catch {}
   }
-  throw new Error('Всі проксі недоступні для: '+url);
+  throw new Error('Файл недоступний: ' + localName);
 }
 
 // ══ EVENTS ══
