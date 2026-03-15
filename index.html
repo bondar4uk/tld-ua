@@ -240,8 +240,11 @@
 </div>
 
 <!-- HEADER -->
-<header class="sticky top-0 z-[60] border-b border-border overflow-hidden"
-        style="background:rgba(9,11,14,.97);backdrop-filter:blur(16px)">
+<!-- STICKY HEADER + TOPBAR (single sticky block) -->
+<div class="sticky top-0 z-[60]" id="stickyTop"
+     style="background:rgba(9,11,14,.97);backdrop-filter:blur(16px)">
+
+<header class="relative border-b border-border overflow-hidden">
   <div class="absolute inset-0 pointer-events-none overflow-hidden" id="snowflakes"></div>
   <div class="relative flex items-center justify-center py-2.5 px-4">
     <h1 class="font-display text-white leading-none select-none"
@@ -255,9 +258,8 @@
   </div>
 </header>
 
-<!-- STICKY TOP BAR -->
-<div class="sticky top-0 z-50 border-b border-border px-4 py-2 flex items-center gap-2 flex-wrap"
-     style="background:rgba(9,11,14,.97);backdrop-filter:blur(16px)">
+<!-- TOP BAR -->
+<div class="border-b border-border px-4 py-2 flex items-center gap-2 flex-wrap">
 
   <!-- search -->
   <div class="relative flex-1 min-w-[160px]">
@@ -297,13 +299,15 @@
     Скинути вибір
   </button>
 </div>
+</div><!-- /stickyTop -->
 
 <!-- LAYOUT: sidebar + content -->
 <div class="flex relative z-10" style="min-height:calc(100vh - 200px)">
 
   <!-- ═══ SIDEBAR ═══ -->
-  <aside class="sidebar sticky top-[45px] self-start h-[calc(100vh-45px)] overflow-y-auto px-3 py-3 border-r border-border" id="sidebar">
+  <aside class="sidebar sticky self-start border-r border-border flex flex-col" id="sidebar" style="top:var(--sticky-h,90px);height:calc(100vh - var(--sticky-h,90px))">
 
+<div class="flex-1 overflow-y-auto px-3 py-3 sidebar-inner">
     <!-- stats -->
     <div class="sb-section" id="statsBar" style="display:none">
       <div class="flex flex-col gap-1">
@@ -369,7 +373,7 @@
                class="w-full bg-bg3 border border-border rounded py-1 pl-6 pr-2 text-[11px] text-ttext placeholder-tmuted focus:border-iced transition-colors"
                style="outline:none">
       </div>
-      <div id="authorChips" class="flex flex-col gap-0.5 max-h-40 overflow-y-auto"></div>
+      <div id="authorChips" class="flex flex-col gap-0.5 max-h-36 overflow-y-auto" style="scrollbar-width:none;-ms-overflow-style:none"></div>
     </div>
 
     <!-- reset -->
@@ -377,7 +381,7 @@
             class="w-full py-1.5 text-[11px] text-tmuted hover:text-tred transition-colors cursor-pointer border-0 bg-transparent">
       Скинути всі фільтри
     </button>
-
+</div><!-- /sidebar-inner -->
   </aside>
 
   <!-- ═══ MAIN ═══ -->
@@ -495,13 +499,13 @@ document.addEventListener('mouseover', e => {
 document.addEventListener('mouseout', e => {
   if (e.target.closest('[data-tip]')) hideTip();
 });
-// reposition on scroll/resize
-window.addEventListener('scroll', () => { if (_ttTarget) positionTip(_ttTarget); }, {passive:true});
+// hide tooltip when scrolling
+window.addEventListener('scroll', () => { _ttEl.classList.remove('show'); _ttTarget=null; }, {passive:true});
 
 // ══ BACK TO TOP ══
 const _btt = document.getElementById('backTop');
 window.addEventListener('scroll', () => {
-  _btt.classList.toggle('show', window.scrollY > 400);
+  _btt.classList.toggle('show', window.scrollY > 800);
 }, {passive:true});
 _btt.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
 
@@ -1140,6 +1144,16 @@ function spawnSnow(){
     }
   });
 }
+
+// ── measure sticky header height and update sidebar ──
+function updateStickyHeight() {
+  const h = document.getElementById('stickyTop')?.offsetHeight || 90;
+  document.documentElement.style.setProperty('--sticky-h', h + 'px');
+}
+window.addEventListener('resize', updateStickyHeight, {passive:true});
+// call after fonts load
+document.fonts.ready.then(updateStickyHeight);
+setTimeout(updateStickyHeight, 100);
 
 init();
 </script>
