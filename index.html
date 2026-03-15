@@ -618,7 +618,7 @@ function makeCard(mod) {
     notworking: 'background:rgba(20,8,12,.8);border-color:rgba(224,64,96,.5);color:#e04060',
     noinfo:     'background:rgba(10,14,18,.8);border-color:rgba(58,82,106,.4);color:#6a84a0',
   };
-  const statusBadge = `<div class="absolute bottom-2 left-2 z-10 font-mono text-[9px] font-medium rounded px-1.5 py-0.5 select-none flex items-center gap-1 border" style="${statusBadgeColors[status]};backdrop-filter:blur(6px)">${sm.icon} ${sm.label}</div>`;
+  const statusBadge = `<div class="absolute bottom-2 left-2 z-10 font-mono text-[9px] font-medium rounded px-1.5 py-0.5 select-none flex items-center gap-1 border" style="${statusBadgeColors[status]};backdrop-filter:blur(6px)">${sm.label}</div>`;
 
   // image with overlays
   let imgHtml = url
@@ -689,10 +689,10 @@ function makeCard(mod) {
         ${depsHtml}
       </div>
       <div class="flex items-end justify-between gap-1.5 border-t border-border pt-2 mt-auto">
-        <div class="flex flex-col gap-1 min-w-0">
-          <div class="hscroll">${modVerBadge}<div class="w-1.5 h-1.5 rounded-full shrink-0 ${sm.dot}"></div>${updDate}</div>
-          <div class="hscroll">${testedBadge}</div>
-        </div>
+<div class="flex items-center justify-between gap-2 min-w-0">
+  <div class="hscroll">${modVerBadge}${testedBadge}</div>
+  ${updDate ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${mod.Updated}</span>` : ''}
+</div>
         <div class="flex gap-1 shrink-0">${ghLink}${dlBtnHtml}</div>
       </div>
     </div>`;
