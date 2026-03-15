@@ -68,6 +68,25 @@
     select option { background:#131a22; color:#cdd8e8; }
     ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:#090b0e} ::-webkit-scrollbar-thumb{background:#1c2a3a;border-radius:3px} ::-webkit-scrollbar-thumb:hover{background:#254060}
     input:focus,select:focus{outline:none}
+
+    /* ── Splash screen ── */
+    #splash {
+      position:fixed; inset:0; z-index:9999;
+      background:#090b0e;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+      transition:opacity .6s ease, visibility .6s ease;
+    }
+    #splash.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+    .splash-logo { font-family:'Bebas Neue',sans-serif; letter-spacing:6px; color:#fff; line-height:1; }
+    .splash-logo em { color:#f0c040; font-style:normal; text-shadow:0 0 40px rgba(240,192,64,.5); }
+    .splash-bar-wrap { width:180px; height:2px; background:#1c2a3a; border-radius:1px; overflow:hidden; }
+    .splash-bar { height:100%; background:linear-gradient(90deg,#4899c0,#f0c040); border-radius:1px;
+      animation:splashLoad 1.4s cubic-bezier(.4,0,.2,1) forwards; }
+    @keyframes splashLoad { from{width:0} to{width:100%} }
+    .splash-sub { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:3px;
+      color:#3a526a; text-transform:uppercase; animation:splashFade 1s ease .3s both; }
+    @keyframes splashFade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
     .fbtn { font-family:'Inter',sans-serif; transition:all .15s; }
     .fbtn:hover { border-color:#4899c0; color:#cdd8e8; }
     .fbtn.active { background:#4899c0; border-color:#7ecfee; color:#fff; }
@@ -97,6 +116,14 @@
   </style>
 </head>
 <body class="bg-bg text-ttext min-h-screen overflow-x-hidden">
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <p class="font-mono text-[10px] tracking-[5px] text-iced/50 uppercase mb-2">❄ The Long Dark</p>
+  <div class="splash-logo" style="font-size:clamp(42px,8vw,80px)">TLD <em>MODS</em> UA</div>
+  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+  <p class="splash-sub">Завантаження…</p>
+</div>
 
 <!-- PROGRESS OVERLAY -->
 <div id="overlay" class="fixed inset-0 bg-bg/92 backdrop-blur-md z-[999] hidden flex-col items-center justify-center gap-5">
@@ -385,7 +412,9 @@ async function init() {
     document.getElementById('statsBar').style.display = 'flex';
     if (selected.size > 0) document.getElementById('savedHint').classList.remove('hidden');
     render();
+    dismissSplash();
   } catch (e) {
+    dismissSplash();
     document.getElementById('content').innerHTML = e.message === 'no-cache'
       ? `<div class="max-w-lg mx-auto text-center py-16 px-4">
            <p class="text-3xl mb-4">⚙️</p>
@@ -569,6 +598,7 @@ function render() {
   _c.querySelectorAll('img').forEach(i => { i.onerror = null; i.src = ''; });
   _c.innerHTML = '';
   _c.appendChild(grid);
+  observeLazy();
   updateBar();
 }
 
@@ -603,8 +633,8 @@ function makeCard(mod) {
   let imgSection;
   if (hasImg) {
     imgSection = `
-      <img src="${imgUrl}" alt="${esc(tName(mod))}" loading="lazy" decoding="async"
-           class="w-full h-40 object-cover flex-shrink-0 bg-bg3 block"
+      <img data-src="${imgUrl}" alt="${esc(tName(mod))}" decoding="async"
+           class="w-full h-40 object-cover flex-shrink-0 bg-bg3 block lazyimg"
            onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="w-full h-40 flex-shrink-0 mod-name-bg" style="display:none">
         <span class="relative font-display text-ttext/60 text-lg leading-tight text-center px-2" style="letter-spacing:1px">${esc(tName(mod))}</span>
@@ -971,6 +1001,35 @@ function spawnSnow() {
         + `animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*8}s;opacity:${0.1+Math.random()*0.22}`;
       c.appendChild(el);
     }
+  });
+}
+
+// ══ SPLASH ══
+function dismissSplash() {
+  // wait for bar animation to finish (~1.4s), then fade out
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hidden');
+  }, 200);
+}
+
+// ══ LAZY IMG OBSERVER ══
+const _lazyObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const img = entry.target;
+    const src = img.dataset.src;
+    if (src) { img.src = src; delete img.dataset.src; }
+    _lazyObserver.unobserve(img);
+  });
+}, { rootMargin: '200px' });
+
+// observe all .lazyimg after each render
+const _origAppend = Element.prototype.appendChild;
+// instead, patch render() to observe after grid is inserted
+function observeLazy() {
+  document.querySelectorAll('img.lazyimg[data-src]').forEach(img => {
+    _lazyObserver.unobserve(img); // avoid double-observe
+    _lazyObserver.observe(img);
   });
 }
 
