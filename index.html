@@ -256,13 +256,23 @@
       </div>
       <div class="sb-section">
         <p class="sb-title">Статус</p>
-        <div class="flex gap-1.5 flex-wrap">
-          <button class="status-btn" data-status="working"    data-tip="Працює">✅</button>
-          <button class="status-btn" data-status="issues"     data-tip="З проблемами">⚠️</button>
-          <button class="status-btn" data-status="notupdated" data-tip="Не оновлено">🕐</button>
-          <button class="status-btn" data-status="notworking" data-tip="Не працює">❌</button>
-          <button class="status-btn" data-status="noinfo"     data-tip="Без інфо">❓</button>
-        </div>
+            <div class="flex gap-1.5 flex-wrap">
+            <button class="status-btn" data-status="working" data-tip="Працює">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button class="status-btn" data-status="issues" data-tip="З проблемами">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </button>
+            <button class="status-btn" data-status="notupdated" data-tip="Не оновлено">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </button>
+            <button class="status-btn" data-status="notworking" data-tip="Не працює">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <button class="status-btn" data-status="noinfo" data-tip="Без інфо">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </button>
+            </div>
       </div>
       <div class="sb-section">
         <p class="sb-title">Тип</p>
