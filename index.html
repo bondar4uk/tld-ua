@@ -4,19 +4,17 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>TLD Mods UA — Українські переклади модів для The Long Dark</title>
-  <meta name="description" content="Завантаж українські переклади модів для The Long Dark одним архівом">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             bg:'#090b0e', bg2:'#0d1117', bg3:'#131a22',
-            card:'#0f1620', cardh:'#141e2a',
+            card:'#0f1620',
             border:'#1c2a3a', borderg:'#254060',
             gold:'#f0c040', goldd:'#c09020',
             ice:'#7ecfee', iced:'#4899c0',
@@ -34,287 +32,176 @@
   </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #090b0e;
-      color: #cdd8e8;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+    html, body { margin:0; padding:0; height:100%; overflow:hidden; }
+    body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; display:flex; flex-direction:column; height:100vh; }
+    body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.018;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-    /* grain overlay */
-    body::after {
-      content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.018;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
-
-    /* ─── PRELOADER ─── */
     #preloader { position:fixed; inset:0; background:#090b0e; z-index:9999; transition:opacity .7s ease; }
 
-    /* ─── MAIN SCROLL AREA ─── */
-    #mainScroll {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      scrollbar-gutter: stable;
-      min-width: 0;
-    }
-    #mainScroll::-webkit-scrollbar { width: 8px; }
-    #mainScroll::-webkit-scrollbar-track { background: #0d1117; }
-    #mainScroll::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg,#254060,#4899c0);
-      border-radius: 4px;
-      border: 2px solid #0d1117;
-    }
-    #mainScroll::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#4899c0,#7ecfee); }
+    #mainScroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-gutter:stable; min-width:0; }
+    #mainScroll::-webkit-scrollbar { width:8px; }
+    #mainScroll::-webkit-scrollbar-track { background:#0d1117; }
+    #mainScroll::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#254060,#4899c0); border-radius:4px; border:2px solid #0d1117; }
+    #mainScroll::-webkit-scrollbar-thumb:hover { background:linear-gradient(180deg,#4899c0,#7ecfee); }
 
-    /* ─── SNOWFLAKES ─── */
     .snowflake { position:absolute; top:-12px; color:rgba(126,207,238,.2); animation:fall linear infinite; user-select:none; }
     @keyframes fall { to { transform:translateY(230px); opacity:0; } }
-
-    /* ─── ANIMATIONS ─── */
-    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
     .fade-up { animation:fadeUp .35s ease both; }
     @keyframes spin { to{transform:rotate(360deg)} }
     .spin { animation:spin .75s linear infinite; }
-    .prog-fill { transition:width .3s ease; }
 
-    /* ─── DOWNLOAD BAR ─── */
+    /* ── MODALS ── */
+    .modal-backdrop {
+      position:fixed; inset:0; z-index:9000;
+      background:rgba(9,11,14,0); backdrop-filter:blur(0px);
+      display:flex; align-items:center; justify-content:center;
+      pointer-events:none;
+      transition:background .25s ease, backdrop-filter .25s ease;
+    }
+    .modal-backdrop.open { background:rgba(9,11,14,.88); backdrop-filter:blur(10px); pointer-events:auto; }
+    .modal-box {
+      background:#0f1620; border:1px solid #254060; border-radius:14px;
+      width:100%; margin:16px; box-shadow:0 24px 64px rgba(0,0,0,.8);
+      transform:translateY(20px) scale(.97); opacity:0;
+      transition:transform .28s cubic-bezier(.16,1,.3,1), opacity .22s ease;
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    .modal-backdrop.open .modal-box { transform:translateY(0) scale(1); opacity:1; }
+
     .dl-bar { transform:translateY(100%); transition:transform .3s cubic-bezier(.16,1,.3,1); }
     .dl-bar.visible { transform:translateY(0); }
 
-    /* ─── CARD ─── */
+    /* ── CARD ── */
     .card-sel { box-shadow:0 0 0 1px #f0c040, inset 0 0 40px rgba(240,192,64,.04); }
     .clamp2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-
     .card-img { opacity:0; transition:opacity .4s ease; }
     .card-img.loaded { opacity:1; }
-
     .aspect-16-9 { position:relative; width:100%; padding-top:56.25%; overflow:hidden; }
     .aspect-16-9 img, .aspect-16-9 .ph { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-    .ph {
-      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
-      background:linear-gradient(135deg,#0c1720 0%,#0f2030 50%,#1a2f44 100%);
-    }
-    .ph::before {
-      content:''; position:absolute; inset:0;
-      background:radial-gradient(ellipse at 50% 60%,rgba(126,207,238,.05) 0%,transparent 65%);
-    }
-    .ph-name {
-      font-family:'Bebas Neue',sans-serif; letter-spacing:2px;
-      color:rgba(205,216,232,.55); text-align:center; padding:0 12px;
-      font-size:clamp(13px,2.5vw,20px); line-height:1.2; position:relative; z-index:1;
-    }
-    .ph-cats { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px;
-      color:rgba(78,153,192,.4); text-transform:uppercase; position:relative; z-index:1; }
+    .ph { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+      background:linear-gradient(135deg,#0c1720 0%,#0f2030 50%,#1a2f44 100%); }
+    .ph::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 60%,rgba(126,207,238,.05) 0%,transparent 65%); }
+    .ph-name { font-family:'Bebas Neue',sans-serif; letter-spacing:2px; color:rgba(205,216,232,.55); text-align:center; padding:0 12px; font-size:clamp(13px,2.5vw,20px); line-height:1.2; position:relative; z-index:1; }
+    .ph-cats { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; color:rgba(78,153,192,.4); text-transform:uppercase; position:relative; z-index:1; }
 
-    /* ─── SIDEBAR ─── */
-    #sidebar {
-      width: 200px;
-      flex-shrink: 0;
-      border-right: 1px solid #1c2a3a;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    @media(max-width:900px) {
-      #sidebar { display: none; }
-      #mobileFilterToggle { display: flex !important; }
-    }
-    #mobileFilterToggle { display: none; }
-
+    /* ── SIDEBAR ── */
+    #sidebar { width:200px; flex-shrink:0; border-right:1px solid #1c2a3a; display:flex; flex-direction:column; overflow:hidden; }
+    @media(max-width:900px){ #sidebar{display:none} #mobileFilterToggle{display:flex!important} }
+    #mobileFilterToggle { display:none; }
     .sb-section { border-bottom:1px solid #1c2a3a; padding:10px 12px; }
-    .sb-title {
-      font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:3px;
-      color:#3a526a; text-transform:uppercase; margin-bottom:7px;
-    }
+    .sb-title { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:3px; color:#3a526a; text-transform:uppercase; margin-bottom:7px; }
 
-    /* ─── FILTER TAGS ─── */
-    .ftag {
-      display:inline-flex; align-items:center; gap:4px;
-      padding:3px 8px; border-radius:4px; border:1px solid #1c2a3a;
-      background:#131a22; color:#6a84a0; font-size:11px; cursor:pointer;
-      transition:all .12s; user-select:none; line-height:1.4;
-    }
+    .ftag { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:4px; border:1px solid #1c2a3a; background:#131a22; color:#6a84a0; font-size:11px; cursor:pointer; transition:all .12s; user-select:none; line-height:1.4; }
     .ftag:hover { border-color:#254060; color:#cdd8e8; }
     .ftag.on-cat    { background:#254060; border-color:#4899c0; color:#7ecfee; }
     .ftag.on-author { background:#1a2b3e; border-color:#4899c0; color:#7ecfee; }
     .ftag.on-type   { background:#1e2f40; border-color:#4899c0; color:#7ecfee; }
 
-    /* ─── COMPACT STATUS BUTTONS ─── */
-    .status-btn {
-      width: 30px; height: 30px;
-      border-radius: 5px; border: 1px solid #1c2a3a;
-      background: #131a22;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all .12s;
-      font-size: 14px; line-height: 1;
-    }
-    .status-btn:hover { border-color:#254060; transform: scale(1.1); }
-    .status-btn.on-working    { background:rgba(80,200,128,.15);  border-color:#50c880; box-shadow: 0 0 6px rgba(80,200,128,.3); }
-    .status-btn.on-issues     { background:rgba(232,192,96,.12);  border-color:#e8c060; box-shadow: 0 0 6px rgba(232,192,96,.3); }
-    .status-btn.on-notupdated { background:rgba(74,153,192,.12);  border-color:#4899c0; box-shadow: 0 0 6px rgba(74,153,192,.3); }
-    .status-btn.on-notworking { background:rgba(224,64,96,.12);   border-color:#e04060; box-shadow: 0 0 6px rgba(224,64,96,.3); }
+    .status-btn { width:30px; height:30px; border-radius:5px; border:1px solid #1c2a3a; background:#131a22; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .12s; font-size:14px; line-height:1; }
+    .status-btn:hover { border-color:#254060; transform:scale(1.1); }
+    .status-btn.on-working    { background:rgba(80,200,128,.15);  border-color:#50c880; box-shadow:0 0 6px rgba(80,200,128,.3); }
+    .status-btn.on-issues     { background:rgba(232,192,96,.12);  border-color:#e8c060; box-shadow:0 0 6px rgba(232,192,96,.3); }
+    .status-btn.on-notupdated { background:rgba(74,153,192,.12);  border-color:#4899c0; box-shadow:0 0 6px rgba(74,153,192,.3); }
+    .status-btn.on-notworking { background:rgba(224,64,96,.12);   border-color:#e04060; box-shadow:0 0 6px rgba(224,64,96,.3); }
     .status-btn.on-noinfo     { background:rgba(58,82,106,.2);    border-color:#6a84a0; }
 
-    /* ─── SORT BUTTONS (topbar) ─── */
-    .sort-btn {
-      padding: 4px 9px; border-radius: 4px; border: 1px solid #1c2a3a;
-      background: transparent; color: #6a84a0;
-      font-family: 'JetBrains Mono', monospace; font-size: 10px;
-      cursor: pointer; transition: all .12s; white-space: nowrap;
-      display: flex; align-items: center; gap: 3px;
-    }
+    .sort-btn { padding:4px 9px; border-radius:4px; border:1px solid #1c2a3a; background:transparent; color:#6a84a0; font-family:'JetBrains Mono',monospace; font-size:10px; cursor:pointer; transition:all .12s; white-space:nowrap; display:flex; align-items:center; gap:3px; }
     .sort-btn:hover { border-color:#254060; color:#cdd8e8; }
     .sort-btn.active { background:#131a22; border-color:#4899c0; color:#7ecfee; }
     .sort-btn.active .sort-arrow { color:#f0c040; }
 
-    /* ─── TOOLTIP ─── */
-    #tooltip {
-      position: fixed;
-      background: #0f1620; border: 1px solid #254060; border-radius: 6px;
-      padding: 5px 10px; font-size: 11.5px; color: #cdd8e8;
-      pointer-events: none; z-index: 8000;
-      opacity: 0; transition: opacity .12s ease;
-      white-space: nowrap; max-width: 280px;
-      box-shadow: 0 4px 16px rgba(0,0,0,.5);
-      transform: translateX(-50%);
-    }
-    #tooltip.show { opacity: 1; }
-    #tooltip.tip-below::after {
-      content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%);
-      border:5px solid transparent; border-bottom-color:#254060;
-    }
-    #tooltip.tip-above::after {
-      content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
-      border:5px solid transparent; border-top-color:#254060;
-    }
+    #tooltip { position:fixed; background:#0f1620; border:1px solid #254060; border-radius:6px; padding:5px 10px; font-size:11.5px; color:#cdd8e8; pointer-events:none; z-index:10000; opacity:0; transition:opacity .12s ease; white-space:nowrap; max-width:280px; box-shadow:0 4px 16px rgba(0,0,0,.5); transform:translateX(-50%); }
+    #tooltip.show { opacity:1; }
+    #tooltip.tip-above::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#254060; }
+    #tooltip.tip-below::after { content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%); border:5px solid transparent; border-bottom-color:#254060; }
 
-    /* ─── BACK TO TOP ─── */
-    #backTop {
-      position: fixed; bottom: 76px; right: 20px; z-index: 500;
-      width: 34px; height: 34px; border-radius: 8px;
-      background: #131a22; border: 1px solid #254060; color: #4899c0;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all .2s;
-      opacity: 0; pointer-events: none;
-    }
-    #backTop.show { opacity: 1; pointer-events: auto; }
+    #backTop { position:fixed; bottom:76px; right:20px; z-index:500; width:34px; height:34px; border-radius:8px; background:#131a22; border:1px solid #254060; color:#4899c0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; opacity:0; pointer-events:none; }
+    #backTop.show { opacity:1; pointer-events:auto; }
     #backTop:hover { background:#1a2f44; border-color:#4899c0; color:#7ecfee; transform:translateY(-2px); }
 
-    /* ─── FORMAT BTNS ─── */
-    .fmtbtn { font-family:'JetBrains Mono',monospace; font-size:11px; transition:all .12s; cursor:pointer; }
-    .fmtbtn.active { background:#f0c040; border-color:#f0c040; color:#090b0e; font-weight:600; }
-    .fmtbtn:not(.active):hover { border-color:#c09020; color:#f0c040; }
-
-    /* ─── MAIN FILTER BTNS ─── */
-    .mfbtn {
-      padding:4px 10px; border-radius:4px; border:1px solid #1c2a3a;
-      background:#131a22; color:#6a84a0; font-size:12px; cursor:pointer; transition:all .12s;
-    }
+    .mfbtn { padding:4px 10px; border-radius:4px; border:1px solid #1c2a3a; background:#131a22; color:#6a84a0; font-size:12px; cursor:pointer; transition:all .12s; }
     .mfbtn:hover { border-color:#254060; color:#cdd8e8; }
     .mfbtn.active { background:#4899c0; border-color:#7ecfee; color:#fff; }
     .mfbtn[data-filter="translated"].active { background:#005BBB; border-color:#FFD500; color:#FFD500; }
 
-    /* ─── STATUS DOTS (card) ─── */
     .sdot-working    { background:#50c880; box-shadow:0 0 4px #50c880; }
     .sdot-issues     { background:#e8c060; box-shadow:0 0 4px #e8c060; }
     .sdot-notupdated { background:#4899c0; box-shadow:0 0 4px #4899c0; }
     .sdot-notworking { background:#e04060; box-shadow:0 0 4px #e04060; }
     .sdot-noinfo     { background:#3a526a; }
 
-    /* ─── CHECKBOX ─── */
-    .card-cb {
-      position:absolute; top:8px; right:8px; z-index:10;
-      width:20px; height:20px; border-radius:4px;
-      border:1.5px solid #254060; background:#0d1117;
-      display:flex; align-items:center; justify-content:center;
-      transition:background .15s, border-color .15s;
-    }
+    .card-cb { position:absolute; top:8px; right:8px; z-index:10; width:20px; height:20px; border-radius:4px; border:1.5px solid #254060; background:#0d1117; display:flex; align-items:center; justify-content:center; transition:background .15s, border-color .15s; }
     .card-cb.checked { background:#f0c040; border-color:#f0c040; }
 
+    .stat-item { font-family:'JetBrains Mono',monospace; font-size:10px; color:#3a526a; display:flex; align-items:center; gap:3px; white-space:nowrap; }
+
+    /* ── DOWNLOAD FILE ROW ── */
+    .dl-file-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; border:1px solid #1c2a3a; background:#131a22; transition:all .15s; cursor:pointer; text-decoration:none; }
+    .dl-file-row:hover { border-color:#4899c0; background:#0d1820; }
+    .dl-file-row.done { border-color:rgba(80,200,128,.35); background:rgba(80,200,128,.05); }
+    .dl-check { width:18px; height:18px; border-radius:4px; border:1.5px solid #254060; background:#090b0e; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+    .dl-file-row.done .dl-check { background:#50c880; border-color:#50c880; }
+
+    .mod-group { border-bottom:1px solid rgba(28,42,58,.7); padding-bottom:14px; margin-bottom:14px; }
+    .mod-group:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+
     input:focus, select:focus { outline:none; }
-
-    /* ─── STATS ROW ─── */
-    .stat-item {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px; color: #3a526a;
-      display: flex; align-items: center; gap: 3px;
-      white-space: nowrap;
-    }
-    .stat-item strong { font-weight: 500; }
-
-    /* ─── MODAL ─── */
-    #dlModal {
-      position: fixed; inset: 0; z-index: 9000;
-      display: none; align-items: center; justify-content: center;
-      background: rgba(9,11,14,.88);
-      backdrop-filter: blur(8px);
-    }
-    #dlModal.open { display: flex; }
-    .modal-box {
-      background: #0f1620; border: 1px solid #254060;
-      border-radius: 12px; padding: 24px;
-      max-width: 420px; width: 100%; margin: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.7);
-    }
-
-    /* Author list internal scroll */
-    #authorChips { scrollbar-width: none; -ms-overflow-style: none; }
-    #authorChips::-webkit-scrollbar { display: none; }
+    #authorChips { scrollbar-width:none; -ms-overflow-style:none; }
+    #authorChips::-webkit-scrollbar { display:none; }
   </style>
 </head>
 <body>
 
-<!-- PRELOADER -->
 <div id="preloader"></div>
-
-<!-- TOOLTIP -->
 <div id="tooltip"></div>
-
-<!-- BACK TO TOP -->
 <button id="backTop" aria-label="На початок">
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-    <polyline points="18 15 12 9 6 15"/>
-  </svg>
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
-<!-- PROGRESS OVERLAY -->
-<div id="overlay" class="fixed inset-0 z-[999] hidden flex-col items-center justify-center gap-5"
-     style="background:rgba(9,11,14,.94);backdrop-filter:blur(10px)">
-  <div class="w-11 h-11 rounded-full border-2 border-border border-t-gold spin"></div>
-  <p class="font-display text-3xl tracking-widest text-gold">ЗБИРАЄМО АРХІВ</p>
-  <p id="ovMsg" class="font-mono text-xs text-tdim max-w-sm text-center px-4">Підготовка…</p>
-  <div class="w-72 h-0.5 bg-bg3 rounded-full overflow-hidden">
-    <div id="progFill" class="prog-fill h-full bg-gold rounded-full w-0"></div>
+<!-- SINGLE MOD MODAL -->
+<div id="singleModal" class="modal-backdrop">
+  <div class="modal-box" style="max-width:400px">
+    <div class="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-shrink-0">
+      <div>
+        <p id="singleModalTitle" class="font-display text-xl text-white tracking-widest leading-none"></p>
+        <p class="font-mono text-[10px] text-tmuted mt-0.5">Оберіть файли для завантаження</p>
+      </div>
+      <button onclick="closeModal('singleModal')" class="w-7 h-7 flex items-center justify-center rounded border border-border text-tmuted hover:text-tred hover:border-tred transition-all cursor-pointer bg-transparent flex-shrink-0">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="singleModalFiles" class="px-5 py-4 flex flex-col gap-2 overflow-y-auto" style="max-height:60vh"></div>
   </div>
 </div>
 
-<!-- DOWNLOAD MODAL -->
-<div id="dlModal">
-  <div class="modal-box">
-    <h3 id="dlModalTitle" class="font-display text-xl text-white tracking-widest mb-1"></h3>
-    <p class="text-xs text-tdim mb-4 font-mono">Оберіть файли для завантаження</p>
-    <div id="dlModalFiles" class="flex flex-col gap-2 mb-4"></div>
-    <button onclick="document.getElementById('dlModal').classList.remove('open')"
-            class="w-full py-2 text-xs text-tmuted border border-border rounded transition-all hover:border-tred hover:text-tred cursor-pointer bg-transparent font-mono">
-      ЗАКРИТИ
-    </button>
+<!-- BATCH DOWNLOAD MODAL -->
+<div id="batchModal" class="modal-backdrop">
+  <div class="modal-box" style="max-width:520px; max-height:90vh">
+    <div class="px-5 py-4 border-b border-border flex-shrink-0 flex items-start justify-between gap-3">
+      <div>
+        <p class="font-display text-2xl text-gold tracking-widest leading-none">СПИСОК ЗАВАНТАЖЕНЬ</p>
+        <p id="batchSubtitle" class="font-mono text-[10px] text-tdim mt-1"></p>
+      </div>
+      <button onclick="closeModal('batchModal')" class="w-7 h-7 flex items-center justify-center rounded border border-border text-tmuted hover:text-tred hover:border-tred transition-all cursor-pointer bg-transparent flex-shrink-0 mt-0.5">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="batchModalBody" class="px-5 py-4 overflow-y-auto flex-1"></div>
+    <div class="px-5 py-3 border-t border-border flex-shrink-0 flex items-center justify-between gap-3">
+      <p id="batchProgress" class="font-mono text-[11px] text-tdim"></p>
+      <button onclick="closeModal('batchModal')" class="px-4 py-1.5 text-xs text-tmuted border border-border rounded transition-all hover:border-tred hover:text-tred cursor-pointer bg-transparent font-mono">ЗАКРИТИ</button>
+    </div>
   </div>
 </div>
 
-<!-- ═══ HEADER BLOCK ═══ -->
-<div id="headerBlock" class="relative z-[60] flex-shrink-0"
-     style="background:rgba(9,11,14,.97);backdrop-filter:blur(16px);border-bottom:1px solid #1c2a3a">
-
-  <!-- Title row -->
+<!-- HEADER -->
+<div id="headerBlock" class="relative z-[60] flex-shrink-0" style="background:rgba(9,11,14,.97);backdrop-filter:blur(16px);border-bottom:1px solid #1c2a3a">
   <header class="relative border-b border-border overflow-hidden">
     <div class="absolute inset-0 pointer-events-none overflow-hidden" id="snowflakes"></div>
     <div class="relative flex items-center justify-center py-2 px-4">
-      <h1 class="font-display text-white leading-none select-none"
-          style="font-size:26px;letter-spacing:5px;text-shadow:0 0 30px rgba(126,207,238,.1)">
+      <h1 class="font-display text-white leading-none select-none" style="font-size:26px;letter-spacing:5px;text-shadow:0 0 30px rgba(126,207,238,.1)">
         TLD <span class="text-gold" style="text-shadow:0 0 20px rgba(240,192,64,.35)">MODS</span> UA
       </h1>
       <div class="absolute right-4 inline-flex rounded overflow-hidden border border-border opacity-60">
@@ -324,72 +211,33 @@
     </div>
   </header>
 
-  <!-- Row 1: Search + filters + format + deselect -->
-  <div class="px-3 py-2 flex items-center gap-2 flex-wrap border-b border-border"
-       style="border-color:rgba(28,42,58,.6)">
-    <!-- search -->
+  <div class="px-3 py-2 flex items-center gap-2 flex-wrap border-b border-border" style="border-color:rgba(28,42,58,.6)">
     <div class="relative flex-1 min-w-[160px]">
-      <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="11" height="11"
-           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input id="search" type="text" autocomplete="off" placeholder="Пошук за назвою, автором…"
-             class="w-full bg-bg3 border border-border rounded py-1.5 pl-8 pr-3 text-sm text-ttext placeholder-tmuted transition-colors focus:border-iced"
-             style="outline:none">
+      <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="search" type="text" autocomplete="off" placeholder="Пошук за назвою, автором…" class="w-full bg-bg3 border border-border rounded py-1.5 pl-8 pr-3 text-sm text-ttext placeholder-tmuted transition-colors focus:border-iced" style="outline:none">
     </div>
-
-    <!-- translated filter -->
     <div class="flex gap-1" id="filterWrap">
       <button class="mfbtn active" data-filter="all">Усі</button>
       <button class="mfbtn" data-filter="translated">🇺🇦 Перекладені</button>
     </div>
-
-    <!-- archive format -->
-    <div class="flex rounded overflow-hidden border border-border">
-      <button class="fmtbtn active px-3 py-1.5 border-0 bg-bg3" data-fmt="zip">ZIP</button>
-      <button class="fmtbtn px-3 py-1.5 border-0 border-l border-border bg-bg3" data-fmt="7z">7Z</button>
-    </div>
-
-    <!-- mobile filter toggle -->
-    <button class="mobile-filter-btn mfbtn items-center gap-1.5" id="mobileFilterToggle" style="display:none">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
-      </svg>
+    <button class="mfbtn items-center gap-1.5" id="mobileFilterToggle" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
       Фільтри
       <span id="mobileFilterCount" class="hidden font-mono text-[9px] bg-gold text-bg px-1 rounded-sm">0</span>
     </button>
-
-    <!-- deselect -->
-    <button id="deselectBtn"
-            class="px-3 py-1.5 rounded border border-border bg-transparent text-tdim text-xs cursor-pointer transition-all hover:border-goldd hover:text-gold font-mono">
-      Скинути вибір
-    </button>
+    <button id="deselectBtn" class="px-3 py-1.5 rounded border border-border bg-transparent text-tdim text-xs cursor-pointer transition-all hover:border-goldd hover:text-gold font-mono">Скинути вибір</button>
   </div>
 
-  <!-- Row 2: Sort + Stats -->
   <div class="px-3 py-1.5 flex items-center gap-2 flex-wrap">
-    <!-- sort -->
     <div class="flex items-center gap-1 flex-wrap" id="sortBtns">
       <span class="font-mono text-[9px] text-tmuted mr-1 tracking-widest">СОРТ:</span>
-      <button class="sort-btn" data-field="updated" data-dir="desc">
-        Оновлення<span class="sort-arrow">↓</span>
-      </button>
-      <button class="sort-btn" data-field="trans" data-dir="desc">
-        Переклад<span class="sort-arrow">↓</span>
-      </button>
-      <button class="sort-btn" data-field="name" data-dir="asc">
-        Назва<span class="sort-arrow">А→Я</span>
-      </button>
-      <button class="sort-btn" data-field="author" data-dir="asc">
-        Автор<span class="sort-arrow">А→Я</span>
-      </button>
+      <button class="sort-btn" data-field="updated" data-dir="desc">Оновлення<span class="sort-arrow">↓</span></button>
+      <button class="sort-btn" data-field="trans"   data-dir="desc">Переклад<span class="sort-arrow">↓</span></button>
+      <button class="sort-btn" data-field="name"    data-dir="asc">Назва<span class="sort-arrow">А→Я</span></button>
+      <button class="sort-btn" data-field="author"  data-dir="asc">Автор<span class="sort-arrow">А→Я</span></button>
     </div>
-
-    <!-- divider -->
     <div class="flex-1"></div>
-
-    <!-- stats -->
-    <div class="flex items-center gap-3" id="statsRow">
+    <div class="flex items-center gap-3">
       <div class="stat-item">Показано: <strong id="sVisible" class="text-ice">0</strong></div>
       <div class="stat-item">Перекладено: <strong id="sTranslated" class="text-gold">0</strong></div>
       <div class="stat-item">Вибрано: <strong id="sSelected" class="text-tgreen">0</strong></div>
@@ -397,20 +245,14 @@
   </div>
 </div>
 
-<!-- ═══ CONTENT ROW ═══ -->
+<!-- CONTENT ROW -->
 <div class="flex flex-1 overflow-hidden relative z-10">
-
-  <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="flex-1 flex flex-col overflow-hidden" style="padding:0">
-
-      <!-- categories -->
+    <div class="flex-1 flex flex-col overflow-hidden">
       <div class="sb-section">
         <p class="sb-title">Категорії</p>
         <div id="catChips" class="flex flex-wrap gap-1"></div>
       </div>
-
-      <!-- status (compact icons) -->
       <div class="sb-section">
         <p class="sb-title">Статус</p>
         <div class="flex gap-1.5 flex-wrap">
@@ -421,39 +263,24 @@
           <button class="status-btn" data-status="noinfo"     data-tip="Без інфо">❓</button>
         </div>
       </div>
-
-      <!-- type -->
       <div class="sb-section">
         <p class="sb-title">Тип</p>
         <div id="typeChips" class="flex flex-wrap gap-1"></div>
       </div>
-
-      <!-- author -->
       <div class="sb-section flex-1 overflow-hidden flex flex-col" style="min-height:0">
         <p class="sb-title">Автор</p>
         <div class="relative mb-2 flex-shrink-0">
-          <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="10" height="10"
-               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input id="authorQ" type="text" placeholder="Пошук…" autocomplete="off"
-                 class="w-full bg-bg3 border border-border rounded py-1 pl-6 pr-2 text-[11px] text-ttext placeholder-tmuted focus:border-iced transition-colors"
-                 style="outline:none">
+          <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="authorQ" type="text" placeholder="Пошук…" autocomplete="off" class="w-full bg-bg3 border border-border rounded py-1 pl-6 pr-2 text-[11px] text-ttext placeholder-tmuted focus:border-iced transition-colors" style="outline:none">
         </div>
         <div id="authorChips" class="flex flex-col gap-0.5 overflow-y-auto flex-1" style="min-height:0"></div>
       </div>
-
-      <!-- reset -->
       <div class="px-3 py-2 flex-shrink-0">
-        <button id="resetFiltersBtn"
-                class="w-full py-1.5 text-[11px] text-tmuted hover:text-tred transition-colors cursor-pointer border-0 bg-transparent font-mono">
-          Скинути всі фільтри
-        </button>
+        <button id="resetFiltersBtn" class="w-full py-1.5 text-[11px] text-tmuted hover:text-tred transition-colors cursor-pointer border-0 bg-transparent font-mono">Скинути всі фільтри</button>
       </div>
     </div>
   </aside>
 
-  <!-- MAIN SCROLL AREA -->
   <main id="mainScroll">
     <div id="content" class="px-4 pt-4 pb-24">
       <div class="flex flex-col items-center justify-center py-24 gap-4 text-tmuted">
@@ -462,178 +289,142 @@
       </div>
     </div>
   </main>
-
-</div><!-- /content row -->
+</div>
 
 <!-- DOWNLOAD BAR -->
-<div id="dlBar" class="dl-bar fixed bottom-0 left-0 right-0 z-[200] border-t border-border px-4 py-2.5 flex items-center gap-3"
-     style="background:rgba(9,11,14,.98);backdrop-filter:blur(20px)">
+<div id="dlBar" class="dl-bar fixed bottom-0 left-0 right-0 z-[200] border-t border-border px-4 py-2.5 flex items-center gap-3" style="background:rgba(9,11,14,.98);backdrop-filter:blur(20px)">
   <p class="flex-1 text-sm text-tdim whitespace-nowrap">
     Вибрано: <strong id="dlCount" class="font-mono text-gold">0</strong> модів
   </p>
   <div id="chips" class="flex gap-1.5 flex-wrap overflow-hidden max-h-7 max-w-[40%]"></div>
-  <button id="dlBtn"
-          class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gold text-bg font-display text-lg tracking-widest cursor-pointer border-0 whitespace-nowrap transition-all hover:bg-[#ffd060] hover:-translate-y-px active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed"
-          style="letter-spacing:2px">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-    <span id="dlBtnLabel">ЗАВАНТАЖИТИ ZIP</span>
+  <button id="dlBtn" class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gold text-bg font-display text-lg tracking-widest cursor-pointer border-0 whitespace-nowrap transition-all hover:bg-[#ffd060] hover:-translate-y-px active:translate-y-0" style="letter-spacing:2px">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    ЗАВАНТАЖИТИ
   </button>
 </div>
 
 <script>
-// ══ CONFIG ══
-const CACHE_URL  = './mods-cache.json';
-const TRANS_URL  = './translations.json';
-const LS_KEY     = 'tld-ua-selected-v1';
-const DL_PROXIES = [
-  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-];
+const CACHE_URL = './mods-cache.json';
+const TRANS_URL = './translations.json';
+const LS_KEY    = 'tld-ua-selected-v1';
 
-// ══ STATE ══
-let allMods        = [];
-let translations   = {};
-let catMap         = {};
-let currentGameVer = '2.51';
-let imgManifest    = {};
-let selected       = new Set(lsLoad());
-let activeFilter   = 'all';
-let activeCats     = new Set();
-let activeAuthors  = new Set();
-let activeStatuses = new Set();
-let activeTypes    = new Set();
-let sortBy         = 'updated-desc';
-let searchQ        = '';
-let authorQ        = '';
-let archiveFmt     = 'zip';
-let sz7zip         = null;
+let allMods = [], translations = {}, catMap = {}, currentGameVer = '2.51', imgManifest = {};
+let selected = new Set(lsLoad());
+let activeFilter = 'all', activeCats = new Set(), activeAuthors = new Set(), activeStatuses = new Set(), activeTypes = new Set();
+let sortBy = 'updated-desc', searchQ = '', authorQ = '';
+const dlDone = new Set(); // tracks clicked downloads: "modName|url"
 
-// ══ LOCALSTORAGE ══
-function lsLoad() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
-}
-function lsSave() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify([...selected])); } catch {}
-}
+function lsLoad() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; } }
+function lsSave()  { try { localStorage.setItem(LS_KEY, JSON.stringify([...selected])); } catch {} }
 
-// ══ PRELOADER ══
 function dismissPreloader() {
   const el = document.getElementById('preloader');
   if (!el) return;
   setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 750); }, 80);
 }
 
-// ══ TOOLTIP ══
+// TOOLTIP
 let _ttTimer;
 const _ttEl = document.getElementById('tooltip');
-
 function showTip(target) {
   clearTimeout(_ttTimer);
   _ttEl.textContent = target.dataset.tip;
-  _ttEl.className = ''; // reset classes
-  // measure after setting text
+  _ttEl.className = '';
   requestAnimationFrame(() => {
-    const r   = target.getBoundingClientRect();
-    const tw  = _ttEl.offsetWidth  || 120;
-    const th  = _ttEl.offsetHeight || 28;
-    const gap = 8;
-    // try above first
-    let top   = r.top - th - gap;
-    let below = false;
-    if (top < 4) { top = r.bottom + gap; below = true; }
-    let left = r.left + r.width / 2; // will be offset by transform: translateX(-50%)
-    // clamp left so arrow stays on box
-    left = Math.max(tw/2 + 8, Math.min(left, window.innerWidth - tw/2 - 8));
+    const r = target.getBoundingClientRect();
+    const tw = _ttEl.offsetWidth || 120, th = _ttEl.offsetHeight || 28;
+    let top = r.top - th - 8;
+    const below = top < 4;
+    if (below) top = r.bottom + 8;
+    let left = r.left + r.width / 2;
+    left = Math.max(tw/2+8, Math.min(left, window.innerWidth - tw/2 - 8));
     _ttEl.style.left = left + 'px';
     _ttEl.style.top  = top  + 'px';
     _ttEl.classList.add(below ? 'tip-below' : 'tip-above', 'show');
   });
 }
-function hideTip() {
-  clearTimeout(_ttTimer);
-  _ttTimer = setTimeout(() => { _ttEl.className = ''; }, 80);
-}
-document.addEventListener('mouseover', e => { const t=e.target.closest('[data-tip]'); if(t) showTip(t); });
-document.addEventListener('mouseout',  e => { if(e.target.closest('[data-tip]')) hideTip(); });
-// Hide on any scroll (in main or elsewhere)
+function hideTip() { clearTimeout(_ttTimer); _ttTimer = setTimeout(() => { _ttEl.className = ''; }, 80); }
+document.addEventListener('mouseover', e => { const t = e.target.closest('[data-tip]'); if (t) showTip(t); });
+document.addEventListener('mouseout',  e => { if (e.target.closest('[data-tip]')) hideTip(); });
 document.addEventListener('scroll', () => { _ttEl.className = ''; }, true);
 
-// ══ BACK TO TOP (listens to mainScroll) ══
+// BACK TO TOP
 const _btt = document.getElementById('backTop');
 const _ms  = document.getElementById('mainScroll');
 _ms.addEventListener('scroll', () => { _btt.classList.toggle('show', _ms.scrollTop > 600); }, {passive:true});
-_btt.addEventListener('click', () => _ms.scrollTo({top:0, behavior:'smooth'}));
+_btt.addEventListener('click', () => _ms.scrollTo({top:0,behavior:'smooth'}));
 
-// ══ STATUS ══
+// MODAL
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+['singleModal','batchModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(id); });
+});
+
+// STATUS
 function semverGte(v1, v2) {
-  const p1 = String(v1||'').split('.').map(Number);
-  const p2 = String(v2||'').split('.').map(Number);
-  for (let i=0; i<Math.max(p1.length,p2.length); i++) {
-    const a=p1[i]||0, b=p2[i]||0;
-    if (a>b) return true; if (a<b) return false;
-  }
+  const p1 = String(v1||'').split('.').map(Number), p2 = String(v2||'').split('.').map(Number);
+  for (let i = 0; i < Math.max(p1.length, p2.length); i++) { const a=p1[i]||0, b=p2[i]||0; if(a>b)return true; if(a<b)return false; }
   return true;
 }
 function isTestedOnCurrent(mod) {
-  const tld = mod.TestedOn && mod.TestedOn.tld;
-  if (!tld) return false;
+  const tld = mod.TestedOn?.tld; if (!tld) return false;
   return (Array.isArray(tld)?tld:[tld]).some(v => semverGte(v, currentGameVer));
 }
 function getStatus(mod) {
-  const s = mod.Status;
-  if (!s) return 'noinfo';
-  if (s.working === false) return 'notworking';
+  const s = mod.Status; if (!s) return 'noinfo';
+  if (s.working===false) return 'notworking';
   if (s.issues && String(s.issues).replace(/<[^>]*>/g,'').trim()) return 'issues';
   if (!isTestedOnCurrent(mod)) return 'notupdated';
-  if (s.working === true) return 'working';
+  if (s.working===true) return 'working';
   return 'noinfo';
 }
 const STATUS_META = {
-  working:    { label:'Працює',       dot:'sdot-working',    icon:'✅' },
-  issues:     { label:'З проблемами', dot:'sdot-issues',     icon:'⚠️' },
-  notupdated: { label:'Не оновлено',  dot:'sdot-notupdated', icon:'🕐' },
-  notworking: { label:'Не працює',    dot:'sdot-notworking', icon:'❌' },
-  noinfo:     { label:'Без інфо',     dot:'sdot-noinfo',     icon:'❓' },
+  working:   {label:'Працює',       dot:'sdot-working',    icon:'✅'},
+  issues:    {label:'З проблемами', dot:'sdot-issues',     icon:'⚠️'},
+  notupdated:{label:'Не оновлено',  dot:'sdot-notupdated', icon:'🕐'},
+  notworking:{label:'Не працює',    dot:'sdot-notworking', icon:'❌'},
+  noinfo:    {label:'Без інфо',     dot:'sdot-noinfo',     icon:'❓'},
 };
 
-// ══ TRANSLATIONS ══
-function tName(mod)  { return (translations[mod.Name]?.displayName) || mod.DisplayName; }
-function tDesc(mod)  { return (translations[mod.Name]?.description) || mod.Description || ''; }
-function tCats(mod)  { return (mod.Categories||[]).map(c => catMap[c]||c); }
-function imgSrc(mod) { return imgManifest[mod.Name] || (mod.Images?.[0]) || null; }
+// HELPERS
+function tName(mod) { return translations[mod.Name]?.displayName || mod.DisplayName || mod.Name; }
+function tDesc(mod) { return translations[mod.Name]?.description  || mod.Description || ''; }
+function tCats(mod) { return (mod.Categories||[]).map(c => catMap[c]||c); }
+function imgSrc(mod){ return imgManifest[mod.Name] || mod.Images?.[0] || null; }
+function esc(s)     { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function uniq(arr)  { return [...new Set(arr)]; }
+function getFileExt(fname) { const m = fname.match(/\.([^.]+)$/); return m ? m[1].toUpperCase() : ''; }
+function isFileUrl(url)    { return /\.(zip|7z|dll|modcomponent)(\?.*)?$/i.test(url); }
 
-// Returns { files: [...], isTranslation: bool, noTranslation: bool }
-function getModFiles(mod) {
+// Returns links for a mod: { links:[{url,isFile,label}], isTranslation, noTranslation }
+function getModLinks(mod) {
   const trans = translations[mod.Name];
-  if (trans?.noTranslation) return { files: [], isTranslation: false, noTranslation: true };
-  if (trans?.files?.length) return { files: trans.files, isTranslation: true, noTranslation: false };
-  const fileExts = /\.(zip|7z|dll|modcomponent)(\?.*)?$/i;
-  const files = (mod.Downloads || []).filter(u => fileExts.test(u));
-  return { files, isTranslation: false, noTranslation: false };
+  if (trans?.noTranslation) return { links:[], isTranslation:false, noTranslation:true };
+  if (trans?.files?.length) {
+    return { links: uniq(trans.files).map(url => ({ url, isFile:isFileUrl(url), label:url.split('/').pop().split('?')[0] })), isTranslation:true, noTranslation:false };
+  }
+  const raw   = uniq(mod.Downloads || (mod.Download ? [mod.Download] : []));
+  const links = raw.map(url => ({ url, isFile:isFileUrl(url), label:url.split('/').pop().split('?')[0] || url }));
+  return { links, isTranslation:false, noTranslation:false };
 }
 
-function resolveDeps(names, visited = new Set()) {
+function resolveDeps(names, visited=new Set()) {
   const result = [];
   for (const n of names) {
     if (visited.has(n)) continue; visited.add(n);
-    const d = allMods.find(m => m.Name === n);
+    const d = allMods.find(m => m.Name===n);
     if (d) { result.push(d); result.push(...resolveDeps(d.Dependencies||[], visited)); }
   }
   return result;
 }
 
-// ══ INIT ══
+// INIT
 async function init() {
   spawnSnow();
   setActiveSortBtn('updated-desc');
   try {
-    const [modsRaw, transRaw, manifestRaw] = await Promise.all([
-      localFetch(CACHE_URL), localFetch(TRANS_URL), localFetch('./images-cache/manifest.json')
-    ]);
+    const [modsRaw, transRaw, manifestRaw] = await Promise.all([localFetch(CACHE_URL), localFetch(TRANS_URL), localFetch('./images-cache/manifest.json')]);
     if (!Array.isArray(modsRaw)) throw new Error('no-cache');
     const td       = transRaw || {};
     translations   = td.mods        || {};
@@ -641,184 +432,112 @@ async function init() {
     currentGameVer = td.gameVersion  || '2.51';
     imgManifest    = manifestRaw     || {};
     allMods        = modsRaw.filter(m => m.Type !== undefined);
-    for (const n of [...selected]) if (!allMods.find(m => m.Name === n)) selected.delete(n);
+    for (const n of [...selected]) if (!allMods.find(m => m.Name===n)) selected.delete(n);
     buildSidebar();
     render();
     dismissPreloader();
-  } catch (e) {
+  } catch(e) {
     dismissPreloader();
-    document.getElementById('content').innerHTML = e.message === 'no-cache'
-      ? `<div class="max-w-md mx-auto text-center py-16 px-4">
-           <p class="text-2xl mb-3">⚙️</p>
-           <p class="text-ttext font-medium mb-2">Потрібне перше налаштування</p>
-           <p class="text-sm text-tdim mb-4">Файл <code class="text-gold bg-bg3 px-1.5 py-0.5 rounded text-xs">mods-cache.json</code> ще не створено.</p>
-           <ol class="text-sm text-tdim text-left space-y-1.5 list-decimal list-inside">
-             <li>Відкрий репозиторій на GitHub</li>
-             <li>Вкладка <strong class="text-ttext">Actions</strong></li>
-             <li><strong class="text-ttext">«Оновлення списку модів»</strong></li>
-             <li><strong class="text-gold">Run workflow</strong></li>
-             <li>Зачекай ~30 сек, онови сторінку</li>
-           </ol>
-         </div>`
+    document.getElementById('content').innerHTML = e.message==='no-cache'
+      ? `<div class="max-w-md mx-auto text-center py-16 px-4"><p class="text-2xl mb-3">⚙️</p><p class="text-ttext font-medium mb-2">Потрібне перше налаштування</p><p class="text-sm text-tdim mb-4">Файл <code class="text-gold bg-bg3 px-1.5 py-0.5 rounded text-xs">mods-cache.json</code> ще не створено.</p><ol class="text-sm text-tdim text-left space-y-1.5 list-decimal list-inside"><li>Відкрий репозиторій на GitHub</li><li>Вкладка <strong class="text-ttext">Actions</strong></li><li><strong class="text-ttext">«Оновлення списку модів»</strong></li><li><strong class="text-gold">Run workflow</strong></li><li>Зачекай ~30 сек, онови сторінку</li></ol></div>`
       : `<div class="text-center py-16 text-tred text-sm">⚠ ${esc(e.message)}</div>`;
   }
 }
+async function localFetch(url) { try { const r = await fetch(url+'?_='+Date.now()); return r.ok ? r.json() : null; } catch { return null; } }
 
-async function localFetch(url) {
-  try { const r = await fetch(url+'?_='+Date.now()); return r.ok ? r.json() : null; } catch { return null; }
-}
-
-// ══ BUILD SIDEBAR ══
+// SIDEBAR
 function buildSidebar() {
-  // categories
   const cats = [...new Set(allMods.flatMap(m => tCats(m)))].sort((a,b) => a.localeCompare(b,'uk'));
   const catWrap = document.getElementById('catChips');
   cats.forEach(cat => {
-    const b = document.createElement('button');
-    b.className = 'ftag'; b.textContent = cat; b.dataset.cat = cat;
-    b.addEventListener('click', () => {
-      activeCats.has(cat) ? activeCats.delete(cat) : activeCats.add(cat);
-      b.classList.toggle('on-cat', activeCats.has(cat));
-      syncBadge(); render();
-    });
+    const b = document.createElement('button'); b.className='ftag'; b.textContent=cat; b.dataset.cat=cat;
+    b.addEventListener('click', () => { activeCats.has(cat)?activeCats.delete(cat):activeCats.add(cat); b.classList.toggle('on-cat',activeCats.has(cat)); syncBadge();render(); });
     catWrap.appendChild(b);
   });
-
-  // types
-  const typeLabels = {mod:'Мод', plugin:'Плагін', lib:'Бібліотека'};
-  const types = [...new Set(allMods.map(m => m.Type).filter(Boolean))].sort();
+  const typeLabels = {mod:'Мод',plugin:'Плагін',lib:'Бібліотека'};
+  const types = [...new Set(allMods.map(m=>m.Type).filter(Boolean))].sort();
   const typeWrap = document.getElementById('typeChips');
   types.forEach(type => {
-    const b = document.createElement('button');
-    b.className = 'ftag'; b.textContent = typeLabels[type]||type; b.dataset.type = type;
-    b.addEventListener('click', () => {
-      activeTypes.has(type) ? activeTypes.delete(type) : activeTypes.add(type);
-      b.classList.toggle('on-type', activeTypes.has(type));
-      syncBadge(); render();
-    });
+    const b = document.createElement('button'); b.className='ftag'; b.textContent=typeLabels[type]||type; b.dataset.type=type;
+    b.addEventListener('click', () => { activeTypes.has(type)?activeTypes.delete(type):activeTypes.add(type); b.classList.toggle('on-type',activeTypes.has(type)); syncBadge();render(); });
     typeWrap.appendChild(b);
   });
-
-  // status buttons (compact)
   document.querySelectorAll('.status-btn').forEach(b => {
-    b.addEventListener('click', () => {
-      const s = b.dataset.status;
-      activeStatuses.has(s) ? activeStatuses.delete(s) : activeStatuses.add(s);
-      b.classList.toggle(`on-${s}`, activeStatuses.has(s));
-      syncBadge(); render();
-    });
+    b.addEventListener('click', () => { const s=b.dataset.status; activeStatuses.has(s)?activeStatuses.delete(s):activeStatuses.add(s); b.classList.toggle(`on-${s}`,activeStatuses.has(s)); syncBadge();render(); });
   });
-
   renderAuthorChips();
 }
 
 function renderAuthorChips() {
   const q = authorQ.toLowerCase();
-  const authors = [...new Set(allMods.map(m => m.Author).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-  const list = q ? authors.filter(a => a.toLowerCase().includes(q)) : authors;
-  const wrap = document.getElementById('authorChips');
-  wrap.innerHTML = '';
+  const authors = [...new Set(allMods.map(m=>m.Author).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const list = q ? authors.filter(a=>a.toLowerCase().includes(q)) : authors;
+  const wrap = document.getElementById('authorChips'); wrap.innerHTML='';
   list.forEach(a => {
-    const b = document.createElement('button');
-    b.className = 'ftag w-full text-left'; b.textContent = a;
+    const b = document.createElement('button'); b.className='ftag w-full text-left'; b.textContent=a;
     if (activeAuthors.has(a)) b.classList.add('on-author');
-    b.addEventListener('click', () => {
-      activeAuthors.has(a) ? activeAuthors.delete(a) : activeAuthors.add(a);
-      b.classList.toggle('on-author', activeAuthors.has(a));
-      syncBadge(); render();
-    });
+    b.addEventListener('click', () => { activeAuthors.has(a)?activeAuthors.delete(a):activeAuthors.add(a); b.classList.toggle('on-author',activeAuthors.has(a)); syncBadge();render(); });
     wrap.appendChild(b);
   });
 }
 
 function syncBadge() {
-  const n = activeCats.size + activeAuthors.size + activeStatuses.size + activeTypes.size;
+  const n = activeCats.size+activeAuthors.size+activeStatuses.size+activeTypes.size;
   const badge = document.getElementById('mobileFilterCount');
-  badge.textContent = n;
-  badge.classList.toggle('hidden', n === 0);
+  badge.textContent=n; badge.classList.toggle('hidden',n===0);
 }
 
-// ══ SORT ══
-const SORT_ARROWS = {
-  updated:{ asc:'↑', desc:'↓' }, trans:{ asc:'↑', desc:'↓' },
-  name:   { asc:'А→Я', desc:'Я→А' }, author:{ asc:'А→Я', desc:'Я→А' },
-};
+// SORT
+const SORT_ARROWS = {updated:{asc:'↑',desc:'↓'},trans:{asc:'↑',desc:'↓'},name:{asc:'А→Я',desc:'Я→А'},author:{asc:'А→Я',desc:'Я→А'}};
 function setActiveSortBtn(val) {
-  const [field, dir] = val.split('-');
+  const [field,dir] = val.split('-');
   document.querySelectorAll('.sort-btn').forEach(b => {
-    const isActive = b.dataset.field === field;
-    b.classList.toggle('active', isActive);
-    if (isActive) {
-      b.dataset.dir = dir;
-      const arrow = b.querySelector('.sort-arrow');
-      if (arrow) arrow.textContent = SORT_ARROWS[field]?.[dir] || (dir==='asc'?'↑':'↓');
-    }
+    const active = b.dataset.field===field; b.classList.toggle('active',active);
+    if (active) { b.dataset.dir=dir; const a=b.querySelector('.sort-arrow'); if(a) a.textContent=SORT_ARROWS[field]?.[dir]||(dir==='asc'?'↑':'↓'); }
   });
 }
 
-// ══ GET LIST ══
+// LIST
 function getList() {
   let mods = allMods;
-  if (activeFilter === 'translated') mods = mods.filter(m => translations[m.Name]);
-  if (activeCats.size)     mods = mods.filter(m => tCats(m).some(c => activeCats.has(c)));
-  if (activeAuthors.size)  mods = mods.filter(m => activeAuthors.has(m.Author));
-  if (activeStatuses.size) mods = mods.filter(m => activeStatuses.has(getStatus(m)));
-  if (activeTypes.size)    mods = mods.filter(m => activeTypes.has(m.Type));
-  if (searchQ) {
-    const q = searchQ.toLowerCase();
-    mods = mods.filter(m =>
-      tName(m).toLowerCase().includes(q) ||
-      tDesc(m).toLowerCase().includes(q) ||
-      (m.Author||'').toLowerCase().includes(q) ||
-      tCats(m).some(c => c.toLowerCase().includes(q))
-    );
-  }
-  mods = [...mods];
-  const [field, dir] = sortBy.split('-');
-  const asc = dir === 'asc';
+  if (activeFilter==='translated') mods=mods.filter(m=>translations[m.Name]);
+  if (activeCats.size)     mods=mods.filter(m=>tCats(m).some(c=>activeCats.has(c)));
+  if (activeAuthors.size)  mods=mods.filter(m=>activeAuthors.has(m.Author));
+  if (activeStatuses.size) mods=mods.filter(m=>activeStatuses.has(getStatus(m)));
+  if (activeTypes.size)    mods=mods.filter(m=>activeTypes.has(m.Type));
+  if (searchQ) { const q=searchQ.toLowerCase(); mods=mods.filter(m=>tName(m).toLowerCase().includes(q)||tDesc(m).toLowerCase().includes(q)||(m.Author||'').toLowerCase().includes(q)||tCats(m).some(c=>c.toLowerCase().includes(q))); }
+  mods=[...mods];
+  const [field,dir]=sortBy.split('-'); const asc=dir==='asc';
   mods.sort((a,b) => {
-    if (field==='name')   return asc ? tName(a).localeCompare(tName(b),'uk') : tName(b).localeCompare(tName(a),'uk');
-    let va, vb;
-    if (field==='author') { va=(a.Author||'').toLowerCase(); vb=(b.Author||'').toLowerCase(); }
-    if (field==='updated'){ va=a.Updated||'0'; vb=b.Updated||'0'; }
-    if (field==='trans')  { va=translations[a.Name]?(a.Updated||'0'):'0'; vb=translations[b.Name]?(b.Updated||'0'):'0'; }
-    return asc ? (va<vb?-1:va>vb?1:0) : (vb<va?-1:vb>va?1:0);
+    if (field==='name') return asc?tName(a).localeCompare(tName(b),'uk'):tName(b).localeCompare(tName(a),'uk');
+    let va,vb;
+    if (field==='author')  { va=(a.Author||'').toLowerCase(); vb=(b.Author||'').toLowerCase(); }
+    if (field==='updated') { va=a.Updated||'0'; vb=b.Updated||'0'; }
+    if (field==='trans')   { va=translations[a.Name]?(a.Updated||'0'):'0'; vb=translations[b.Name]?(b.Updated||'0'):'0'; }
+    return asc?(va<vb?-1:va>vb?1:0):(vb<va?-1:vb>va?1:0);
   });
   return mods;
 }
 
-// ══ RENDER ══
+// RENDER
 function render() {
   const list = getList();
-  const tc   = allMods.filter(m => translations[m.Name]).length;
   document.getElementById('sVisible').textContent    = list.length;
-  document.getElementById('sTranslated').textContent = tc;
+  document.getElementById('sTranslated').textContent = allMods.filter(m=>translations[m.Name]).length;
   document.getElementById('sSelected').textContent   = selected.size;
-
   const cnt = document.getElementById('content');
-  cnt.querySelectorAll('img.card-img').forEach(i => { i.onerror=null; i.src=''; });
-  cnt.innerHTML = '';
-
-  if (!list.length) {
-    cnt.innerHTML = `<div class="text-center py-16 text-tmuted text-sm">Нічого не знайдено</div>`;
-    updateBar(); return;
-  }
-
+  cnt.querySelectorAll('img.card-img').forEach(i=>{i.onerror=null;i.src='';});
+  cnt.innerHTML='';
+  if (!list.length) { cnt.innerHTML=`<div class="text-center py-16 text-tmuted text-sm">Нічого не знайдено</div>`; updateBar(); return; }
   const grid = document.createElement('div');
-  grid.className = 'grid gap-3';
-  grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(280px,1fr))';
-
-  list.forEach((mod, i) => {
-    const c = makeCard(mod);
-    c.style.animationDelay = Math.min(i*18,260)+'ms';
-    grid.appendChild(c);
-  });
+  grid.className='grid gap-3';
+  grid.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
+  list.forEach((mod,i) => { const c=makeCard(mod); c.style.animationDelay=Math.min(i*18,260)+'ms'; grid.appendChild(c); });
   cnt.appendChild(grid);
-  observeLazy();
-  updateBar();
+  observeLazy(); updateBar();
 }
 
-// ══ CARD ══
+// CARD
 function makeCard(mod) {
   const isSel  = selected.has(mod.Name);
   const trans  = translations[mod.Name];
@@ -828,182 +547,81 @@ function makeCard(mod) {
   const deps   = mod.Dependencies || [];
   const testedVer = mod.TestedOn?.tld || null;
   const testedOk  = isTestedOnCurrent(mod);
-  const { files: dlFiles, isTranslation: hasTrans, noTranslation } = getModFiles(mod);
+  const { links, isTranslation, noTranslation } = getModLinks(mod);
 
   const wrap = document.createElement('div');
   wrap.className = 'fade-up relative flex flex-col rounded-lg overflow-hidden cursor-pointer border transition-all duration-150'
-    + (isSel
-       ? ' border-gold card-sel'
-       : ' border-border hover:border-borderg hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(0,0,0,.5)]');
-  wrap.style.background = '#0f1620';
-  wrap.dataset.name = mod.Name;
+    +(isSel?' border-gold card-sel':' border-border hover:border-borderg hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(0,0,0,.5)]');
+  wrap.style.background='#0f1620'; wrap.dataset.name=mod.Name;
 
-  // checkbox
-  const cbClass = 'card-cb' + (isSel ? ' checked' : '');
-  const cbSvg   = isSel ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
+  const cbSvg = isSel ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
 
-  // UA badge
-  const uaBadge = hasTrans
-    ? `<div class="absolute top-2 left-2 z-10 font-mono text-[8px] font-semibold text-white rounded px-1.5 py-0.5 select-none"
-             style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);box-shadow:0 1px 6px rgba(0,0,0,.5)">🇺🇦 UA</div>`
-    : '';
+  let imgHtml = url
+    ? `<div class="aspect-16-9"><img data-src="${url}" alt="${esc(tName(mod))}" decoding="async" class="card-img w-full h-full object-cover" onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="ph" style="display:none"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`
+    : `<div class="aspect-16-9"><div class="ph"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`;
 
-  // image
-  let imgHtml;
-  if (url) {
-    imgHtml = `
-      <div class="aspect-16-9">
-        <img data-src="${url}" alt="${esc(tName(mod))}" decoding="async"
-             class="card-img w-full h-full object-cover"
-             onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="ph" style="display:none">
-          <p class="ph-name">${esc(tName(mod))}</p>
-          <p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p>
-        </div>
-      </div>`;
-  } else {
-    imgHtml = `
-      <div class="aspect-16-9">
-        <div class="ph">
-          <p class="ph-name">${esc(tName(mod))}</p>
-          <p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p>
-        </div>
-      </div>`;
-  }
+  const uaBadge = isTranslation ? `<div class="absolute top-2 left-2 z-10 font-mono text-[8px] font-semibold text-white rounded px-1.5 py-0.5 select-none" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);box-shadow:0 1px 6px rgba(0,0,0,.5)">🇺🇦 UA</div>` : '';
 
-  // categories
   const cats = tCats(mod).map(c => {
     const on = activeCats.has(c);
-    return `<span class="font-mono text-[9px] px-1.5 py-px rounded border cursor-pointer select-none transition-all"
-      style="${on?'background:#254060;border-color:#4899c0;color:#7ecfee':'background:rgba(74,153,192,.06);border-color:rgba(74,153,192,.15);color:#4899c0'}"
-      onclick="event.stopPropagation();quickCat('${esc(c)}')">${esc(c)}</span>`;
+    return `<span class="font-mono text-[9px] px-1.5 py-px rounded border cursor-pointer select-none transition-all" style="${on?'background:#254060;border-color:#4899c0;color:#7ecfee':'background:rgba(74,153,192,.06);border-color:rgba(74,153,192,.15);color:#4899c0'}" onclick="event.stopPropagation();quickCat('${esc(c)}')">${esc(c)}</span>`;
   }).join('');
 
-  // version badges
-  const modVerBadge = `<span class="font-mono text-[9px] px-1.5 py-px rounded"
-    style="background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.2);color:#50c880">v${esc(mod.Version||'?')}</span>`;
-
-  const testedBadge = testedVer
-    ? `<span class="font-mono text-[9px] px-1.5 py-px rounded"
-         data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}"
-         style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?' ⚠':''}</span>`
-    : '';
-
+  const modVerBadge = `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.2);color:#50c880">v${esc(mod.Version||'?')}</span>`;
+  const testedBadge = testedVer ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}" style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?' ⚠':''}</span>` : '';
   const updDate = mod.Updated ? `<span class="font-mono text-[9px] text-tmuted">${mod.Updated}</span>` : '';
 
-  // ── Translation row (always shown) ──
-  let transHtml;
-  if (noTranslation) {
-    transHtml = `<span class="font-mono text-[9px] px-1.5 py-px rounded"
-      style="background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880"
-      data-tip="Цей мод не потребує перекладу">✓ Переклад не потрібен</span>`;
-  } else if (hasTrans && trans?.translatedVersion) {
-    transHtml = `<span class="font-mono text-[9px] px-1.5 py-px rounded"
-      style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);color:#c09020"
-      data-tip="Версія українського перекладу">🇺🇦 v${esc(trans.translatedVersion)}</span>`;
-  } else {
-    transHtml = `<span class="font-mono text-[9px] text-tmuted italic">Перекладу немає</span>`;
-  }
+  let transHtml = noTranslation
+    ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880" data-tip="Цей мод не потребує перекладу">✓ Переклад не потрібен</span>`
+    : isTranslation && trans?.translatedVersion
+      ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);color:#c09020" data-tip="Версія українського перекладу">🇺🇦 v${esc(trans.translatedVersion)}</span>`
+      : `<span class="font-mono text-[9px] text-tmuted italic">Перекладу немає</span>`;
 
-  // ── Dependencies row (always shown) ──
-  let depsHtml;
-  if (deps.length) {
-    const depTags = deps.map(d => {
-      const dm = allMods.find(m => m.Name === d);
-      return `<span class="font-mono text-[9px] px-1.5 py-px rounded border"
-        style="background:rgba(74,153,192,.04);border-color:rgba(74,153,192,.12);color:#4899c0"
-        data-tip="${esc(d)}">${esc(dm?tName(dm):d)}</span>`;
-    }).join('');
-    depsHtml = `<div class="flex items-center gap-1 flex-wrap">
-      <span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span>${depTags}</div>`;
-  } else {
-    depsHtml = `<div class="flex items-center gap-1">
-      <span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span>
-      <span class="font-mono text-[9px] text-tmuted italic">Відсутні</span></div>`;
-  }
+  let depsHtml = deps.length
+    ? `<div class="flex items-center gap-1 flex-wrap"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span>${deps.map(d=>{const dm=allMods.find(m=>m.Name===d);return`<span class="font-mono text-[9px] px-1.5 py-px rounded border" style="background:rgba(74,153,192,.04);border-color:rgba(74,153,192,.12);color:#4899c0" data-tip="${esc(d)}">${esc(dm?tName(dm):d)}</span>`;}).join('')}</div>`
+    : `<div class="flex items-center gap-1"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span><span class="font-mono text-[9px] text-tmuted italic">Відсутні</span></div>`;
 
-  // ── Links ──
-  const ghLink = mod.ModUrl
-    ? `<a href="${mod.ModUrl}" target="_blank" onclick="event.stopPropagation()"
-          data-tip="GitHub мода"
-          class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice">
-         <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-         </svg>
-       </a>`
-    : '';
+  const ghLink = mod.ModUrl ? `<a href="${mod.ModUrl}" target="_blank" onclick="event.stopPropagation()" data-tip="GitHub мода" class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></a>` : '';
 
-  // Download button — smart behavior
+  // DL button for card
   let dlBtnHtml = '';
-  if (dlFiles.length > 0) {
-    const tip = hasTrans ? 'Завантажити переклад' : (dlFiles.length > 1 ? 'Список файлів' : 'Завантажити');
-    const style = hasTrans
-      ? 'border-color:rgba(240,192,64,.3);background:rgba(240,192,64,.08);color:#c09020'
-      : 'border-color:rgba(80,200,128,.25);background:rgba(80,200,128,.07);color:#50c880';
-    const hoverStyle = hasTrans
-      ? "this.style.cssText='border-color:#f0c040;background:rgba(240,192,64,.15);color:#f0c040;border-radius:5px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:all .12s'"
-      : "this.style.cssText='border-color:#50c880;background:rgba(80,200,128,.12);color:#50c880;border-radius:5px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:all .12s'";
-    const outStyle = hasTrans
-      ? "this.style.cssText='border-color:rgba(240,192,64,.3);background:rgba(240,192,64,.08);color:#c09020;border-radius:5px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:all .12s'"
-      : "this.style.cssText='border-color:rgba(80,200,128,.25);background:rgba(80,200,128,.07);color:#50c880;border-radius:5px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:all .12s'";
-    dlBtnHtml = `<button
-        onclick="event.stopPropagation();handleModDownload('${esc(mod.Name)}')"
-        data-tip="${tip}"
-        class="w-7 h-7 flex items-center justify-center rounded border transition-all"
-        style="${style}"
-        onmouseover="${hoverStyle}"
-        onmouseout="${outStyle}">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-      </button>`;
+  if (links.length > 0) {
+    const multiple = links.length > 1;
+    const col = isTranslation
+      ? {b:'rgba(240,192,64,.3)',bg:'rgba(240,192,64,.08)',t:'#c09020',hb:'rgba(240,192,64,.18)',ht:'#f0c040',hbr:'#f0c040'}
+      : {b:'rgba(80,200,128,.25)',bg:'rgba(80,200,128,.07)',t:'#50c880',hb:'rgba(80,200,128,.14)',ht:'#50c880',hbr:'#50c880'};
+    const tip = isTranslation ? 'Завантажити переклад' : (multiple ? 'Кілька файлів — оберіть' : 'Завантажити файл');
+    const icon = multiple
+      ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
+      : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+    dlBtnHtml = `<button onclick="event.stopPropagation();handleCardDownload('${esc(mod.Name)}')" data-tip="${tip}"
+      class="w-7 h-7 flex items-center justify-center rounded border transition-all"
+      style="border-color:${col.b};background:${col.bg};color:${col.t}"
+      onmouseover="this.style.borderColor='${col.hbr}';this.style.background='${col.hb}';this.style.color='${col.ht}'"
+      onmouseout="this.style.borderColor='${col.b}';this.style.background='${col.bg}';this.style.color='${col.t}'"
+    >${icon}</button>`;
   } else if (mod.ModUrl) {
-    dlBtnHtml = `<a href="${mod.ModUrl}" target="_blank" onclick="event.stopPropagation()"
-        data-tip="Сторінка мода"
-        class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-          <polyline points="15 3 21 3 21 9"/>
-          <line x1="10" y1="14" x2="21" y2="3"/>
-        </svg>
-      </a>`;
+    dlBtnHtml = `<a href="${mod.ModUrl}" target="_blank" onclick="event.stopPropagation()" data-tip="Сторінка мода" class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`;
   }
 
   wrap.innerHTML = `
     ${uaBadge}
-    <div class="${cbClass}" data-cb>${cbSvg}</div>
+    <div class="card-cb${isSel?' checked':''}" data-cb>${cbSvg}</div>
     ${imgHtml}
     <div class="flex flex-col flex-1 p-3 gap-2">
-      <!-- cats + status -->
-      <div class="flex items-center gap-1 flex-wrap">
-        ${cats}
-        <span class="font-mono text-[9px] ml-auto" data-tip="${sm.label}">${sm.icon}</span>
-      </div>
-      <!-- name -->
+      <div class="flex items-center gap-1 flex-wrap">${cats}<span class="font-mono text-[9px] ml-auto" data-tip="${sm.label}">${sm.icon}</span></div>
       <div>
         <h2 class="font-display text-[17px] text-white leading-tight" style="letter-spacing:1px">${esc(tName(mod))}</h2>
-        <p class="text-[11px] text-tmuted mt-0.5">
-          <a href="${mod.AuthorUrl||'#'}" target="_blank" onclick="event.stopPropagation()"
-             class="text-iced hover:text-ice transition-colors">${esc(mod.Author||'')}</a>
-        </p>
+        <p class="text-[11px] text-tmuted mt-0.5"><a href="${mod.AuthorUrl||'#'}" target="_blank" onclick="event.stopPropagation()" class="text-iced hover:text-ice transition-colors">${esc(mod.Author||'')}</a></p>
       </div>
-      <!-- desc -->
       <p class="clamp2 text-[12px] text-tdim leading-relaxed flex-1">${esc(tDesc(mod)||'Опис відсутній')}</p>
-      <!-- translation + deps (always shown) -->
       <div class="flex flex-col gap-1 border-t border-border pt-2">
         <div class="flex items-center gap-1 flex-wrap">${transHtml}</div>
         ${depsHtml}
       </div>
-      <!-- versions + links -->
       <div class="flex items-end justify-between gap-1.5 border-t border-border pt-2 mt-auto">
         <div class="flex flex-col gap-1 min-w-0">
-          <div class="flex items-center gap-1 flex-wrap">
-            ${modVerBadge}
-            <div class="w-1.5 h-1.5 rounded-full shrink-0 ${sm.dot}" data-tip="${sm.label}"></div>
-            ${updDate}
-          </div>
+          <div class="flex items-center gap-1 flex-wrap">${modVerBadge}<div class="w-1.5 h-1.5 rounded-full shrink-0 ${sm.dot}" data-tip="${sm.label}"></div>${updDate}</div>
           <div class="flex items-center gap-1 flex-wrap">${testedBadge}</div>
         </div>
         <div class="flex gap-1 shrink-0">${ghLink}${dlBtnHtml}</div>
@@ -1014,336 +632,199 @@ function makeCard(mod) {
   return wrap;
 }
 
-function esc(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
 function quickCat(cat) {
-  activeCats.has(cat) ? activeCats.delete(cat) : activeCats.add(cat);
-  document.querySelectorAll(`[data-cat="${CSS.escape(cat)}"]`).forEach(b => b.classList.toggle('on-cat', activeCats.has(cat)));
+  activeCats.has(cat)?activeCats.delete(cat):activeCats.add(cat);
+  document.querySelectorAll(`[data-cat="${CSS.escape(cat)}"]`).forEach(b=>b.classList.toggle('on-cat',activeCats.has(cat)));
   syncBadge(); render();
 }
 
-// ══ SINGLE MOD DOWNLOAD ══
-function handleModDownload(modName) {
-  const mod = allMods.find(m => m.Name === modName);
-  if (!mod) return;
-  const { files } = getModFiles(mod);
-  if (!files.length) return;
-  if (files.length === 1) {
-    window.open(files[0], '_blank');
-    return;
-  }
-  // Multiple files → modal
-  const trans = translations[modName];
-  document.getElementById('dlModalTitle').textContent = tName(mod);
-  const container = document.getElementById('dlModalFiles');
-  container.innerHTML = '';
-  files.forEach(url => {
-    const fname = url.split('/').pop().split('?')[0];
-    const row = document.createElement('a');
-    row.href = url; row.target = '_blank';
-    row.className = 'flex items-center gap-2 px-3 py-2 rounded border border-border bg-bg3 hover:border-iced hover:bg-bg2 transition-all group';
-    row.innerHTML = `
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4899c0" stroke-width="2" class="shrink-0">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
-      <span class="font-mono text-xs text-ttext group-hover:text-ice transition-colors flex-1">${esc(fname)}</span>
-      <span class="font-mono text-[9px] text-tmuted">${getFileExt(fname)}</span>`;
+// SINGLE MOD DOWNLOAD MODAL
+function handleCardDownload(modName) {
+  const mod = allMods.find(m => m.Name===modName); if (!mod) return;
+  const { links } = getModLinks(mod);
+  if (!links.length) return;
+  if (links.length===1) { window.open(links[0].url,'_blank'); return; }
+  document.getElementById('singleModalTitle').textContent = tName(mod);
+  const container = document.getElementById('singleModalFiles');
+  container.innerHTML='';
+  links.forEach(({url,label}) => {
+    const key = modName+'|'+url;
+    const row = makeDlRow(label, url, key, () => updateBatchProgress());
     container.appendChild(row);
   });
-  document.getElementById('dlModal').classList.add('open');
+  openModal('singleModal');
 }
 
-function getFileExt(fname) {
-  const m = fname.match(/\.([^.]+)$/);
-  return m ? m[1].toUpperCase() : '';
+function makeDlRow(label, url, key, onDone) {
+  const done = dlDone.has(key);
+  const row = document.createElement('a');
+  row.href=url; row.target='_blank';
+  row.className = 'dl-file-row' + (done?' done':'');
+  const ext = getFileExt(label) || 'LINK';
+  row.innerHTML = `
+    <div class="dl-check">${done?checkSvg():''}</div>
+    <div class="flex-1 min-w-0">
+      <p class="font-mono text-xs text-ttext truncate">${esc(label)}</p>
+      <p class="font-mono text-[9px] text-tmuted mt-0.5">${ext}</p>
+    </div>
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4899c0" stroke-width="2" class="shrink-0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+  row.addEventListener('click', () => {
+    dlDone.add(key);
+    row.classList.add('done');
+    row.querySelector('.dl-check').innerHTML = checkSvg();
+    if (onDone) onDone();
+  });
+  return row;
 }
 
-// close modal on backdrop click
-document.getElementById('dlModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
-});
+function checkSvg() { return `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`; }
 
-// ══ LAZY IMAGES ══
+// LAZY IMAGES
 const _lazyObs = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (!e.isIntersecting) return;
-    const img = e.target;
-    if (!img.dataset.src) return;
-    img.src = img.dataset.src;
-    delete img.dataset.src;
-    img.addEventListener('load',  () => img.classList.add('loaded'), {once:true});
-    img.addEventListener('error', () => img.classList.add('loaded'), {once:true});
+    const img = e.target; if (!img.dataset.src) return;
+    img.src=img.dataset.src; delete img.dataset.src;
+    img.addEventListener('load',  ()=>img.classList.add('loaded'),{once:true});
+    img.addEventListener('error', ()=>img.classList.add('loaded'),{once:true});
     _lazyObs.unobserve(img);
   });
-}, { root: document.getElementById('mainScroll'), rootMargin:'250px' });
+},{root:document.getElementById('mainScroll'),rootMargin:'250px'});
+function observeLazy() { document.querySelectorAll('img.card-img[data-src]').forEach(img=>_lazyObs.observe(img)); }
 
-function observeLazy() {
-  document.querySelectorAll('img.card-img[data-src]').forEach(img => _lazyObs.observe(img));
-}
-
-// ══ TOGGLE SELECTION ══
+// TOGGLE + AUTO-DEPS
 function toggle(name) {
-  selected.has(name) ? selected.delete(name) : selected.add(name);
-  lsSave();
-  const card = document.querySelector(`[data-name="${CSS.escape(name)}"]`);
-  if (card) {
-    const on = selected.has(name);
-    if (on) {
-      card.classList.remove('border-border','hover:border-borderg');
-      card.classList.add('border-gold','card-sel');
-    } else {
-      card.classList.remove('border-gold','card-sel');
-      card.classList.add('border-border','hover:border-borderg');
-    }
-    const cb = card.querySelector('[data-cb]');
-    if (cb) {
-      cb.classList.toggle('checked', on);
-      cb.innerHTML = on ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
-    }
+  const mod = allMods.find(m=>m.Name===name); if (!mod) return;
+  const willSelect = !selected.has(name);
+  if (willSelect) {
+    selected.add(name);
+    resolveDeps(mod.Dependencies||[]).forEach(dep => selected.add(dep.Name));
+  } else {
+    selected.delete(name);
   }
+  lsSave();
+  // refresh all affected card visuals
+  for (const n of [...selected, name]) updateCardVisual(n);
   updateBar();
   document.getElementById('sSelected').textContent = selected.size;
 }
 
-// ══ BOTTOM BAR ══
+function updateCardVisual(name) {
+  const card = document.querySelector(`[data-name="${CSS.escape(name)}"]`); if (!card) return;
+  const on = selected.has(name);
+  if (on) { card.classList.remove('border-border','hover:border-borderg'); card.classList.add('border-gold','card-sel'); }
+  else    { card.classList.remove('border-gold','card-sel'); card.classList.add('border-border','hover:border-borderg'); }
+  const cb = card.querySelector('[data-cb]');
+  if (cb) { cb.classList.toggle('checked',on); cb.innerHTML=on?`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`:''; }
+}
+
+// BOTTOM BAR
 function updateBar() {
   const n = selected.size;
-  document.getElementById('dlCount').textContent = n;
-  document.getElementById('dlBar').classList.toggle('visible', n > 0);
-  const chips = document.getElementById('chips');
-  chips.innerHTML = '';
+  document.getElementById('dlCount').textContent=n;
+  document.getElementById('dlBar').classList.toggle('visible',n>0);
+  const chips = document.getElementById('chips'); chips.innerHTML='';
   [...selected].slice(0,4).forEach(name => {
-    const mod = allMods.find(m => m.Name === name);
-    if (!mod) return;
+    const mod = allMods.find(m=>m.Name===name); if (!mod) return;
     const ch = document.createElement('div');
-    ch.className = 'flex items-center gap-1 text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5 whitespace-nowrap';
-    ch.innerHTML = `${esc(tName(mod))}<button class="text-tmuted hover:text-tred ml-1 leading-none text-sm p-0 bg-transparent border-0 cursor-pointer"
-            onclick="event.stopPropagation();toggle('${name.replace(/'/g,"\\'")}')">×</button>`;
+    ch.className='flex items-center gap-1 text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5 whitespace-nowrap';
+    ch.innerHTML=`${esc(tName(mod))}<button class="text-tmuted hover:text-tred ml-1 leading-none text-sm p-0 bg-transparent border-0 cursor-pointer" onclick="event.stopPropagation();toggle('${name.replace(/'/g,"\\'")}')">×</button>`;
     chips.appendChild(ch);
   });
-  if (n > 4) {
-    const ch = document.createElement('div');
-    ch.className = 'text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5';
-    ch.textContent = `+${n-4} ще`;
-    chips.appendChild(ch);
-  }
+  if (n>4) { const ch=document.createElement('div'); ch.className='text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5'; ch.textContent=`+${n-4} ще`; chips.appendChild(ch); }
 }
 
-// ══ BATCH DOWNLOAD ══
-document.getElementById('dlBtn').addEventListener('click', downloadArchive);
+// BATCH MODAL
+document.getElementById('dlBtn').addEventListener('click', openBatchModal);
 
-async function downloadArchive() {
-  const mods = allMods.filter(m => selected.has(m.Name));
-  if (!mods.length) return;
-  const overlay = document.getElementById('overlay');
-  const msg  = document.getElementById('ovMsg');
-  const fill = document.getElementById('progFill');
-  const btn  = document.getElementById('dlBtn');
-  overlay.classList.remove('hidden'); overlay.classList.add('flex');
-  btn.disabled = true;
+function openBatchModal() {
+  if (!selected.size) return;
 
-  const fileEntries = [];
-  let done = 0;
+  const selMods = allMods.filter(m=>selected.has(m.Name));
+  const depSet  = new Set(), extraDeps = [];
+  for (const mod of selMods) {
+    for (const dep of resolveDeps(mod.Dependencies||[])) {
+      if (!selected.has(dep.Name) && !depSet.has(dep.Name)) { depSet.add(dep.Name); extraDeps.push(dep); }
+    }
+  }
+  const allToList = [...selMods, ...extraDeps];
 
-  // resolve dependencies
-  const _dlSet  = new Set(mods.map(m => m.Name));
-  const _depMods = [];
-  for (const mod of mods)
-    for (const dep of resolveDeps(mod.Dependencies||[]))
-      if (!_dlSet.has(dep.Name)) { _dlSet.add(dep.Name); _depMods.push(dep); }
+  let totalLinks = 0;
+  allToList.forEach(m => {
+    const { links, noTranslation } = getModLinks(m);
+    if (!noTranslation) totalLinks += links.length || (m.ModUrl ? 1 : 0);
+  });
 
-  const allMods2dl = [...mods, ..._depMods];
+  document.getElementById('batchSubtitle').textContent =
+    `${selMods.length} мод${selMods.length!==1?'ів':''}${extraDeps.length?' + '+extraDeps.length+' залежн.':''} · ${totalLinks} файл${totalLinks===1?'':'ів'}`;
 
-  for (const mod of allMods2dl) {
-    msg.textContent = `Завантажуємо: ${tName(mod)} (${done+1}/${allMods2dl.length})`;
-    const { files: dlFiles, isTranslation: hasTrans } = getModFiles(mod);
+  const body = document.getElementById('batchModalBody'); body.innerHTML='';
 
-    if (hasTrans) {
-      // Translation files from local path
-      for (const path of dlFiles) {
-        const fname = path.split('/').pop();
-        try {
-          const r = await fetch(path);
-          if (!r.ok) throw new Error('not ok');
-          fileEntries.push({ name: fname, blob: await r.blob() });
-        } catch {
-          fileEntries.push({ name: `${fname}_НЕ_ЗАВАНТАЖЕНО.txt`,
-            blob: new Blob([`Не вдалося завантажити переклад: ${path}`], {type:'text/plain'}) });
-        }
-      }
-    } else if (dlFiles.length) {
-      // Download mod files
-      for (const url of dlFiles) {
-        const fname = url.split('/').pop().split('?')[0];
-        try {
-          const blob = await blobFetch(url);
-          // Unpack nested zip
-          if (/\.zip$/i.test(fname)) {
-            try {
-              const inner = await JSZip.loadAsync(blob);
-              for (const [path, file] of Object.entries(inner.files)) {
-                if (!file.dir) {
-                  const innerName = path.split('/').pop();
-                  fileEntries.push({ name: innerName, blob: await file.async('blob') });
-                }
-              }
-            } catch {
-              fileEntries.push({ name: fname, blob });
-            }
-          } else {
-            fileEntries.push({ name: fname, blob });
-          }
-        } catch {
-          fileEntries.push({ name: `${mod.Name}_НЕ_ЗАВАНТАЖЕНО.txt`,
-            blob: new Blob([`Не вдалося завантажити: ${url}\nЗавантаж вручну з: ${mod.ModUrl||''}`], {type:'text/plain'}) });
-        }
+  allToList.forEach(mod => {
+    const { links, isTranslation, noTranslation } = getModLinks(mod);
+    const isDep = extraDeps.includes(mod);
+
+    const group = document.createElement('div'); group.className='mod-group';
+
+    // Header
+    const header = document.createElement('div'); header.className='flex items-center gap-2 mb-2';
+    header.innerHTML=`
+      <div class="flex-1 min-w-0">
+        <p class="font-display text-[15px] text-white leading-none" style="letter-spacing:.5px">${esc(tName(mod))}</p>
+        <p class="font-mono text-[9px] text-tmuted mt-0.5">${esc(mod.Author||'')}${isDep?' · <span style="color:#4899c0">залежність</span>':''}</p>
+      </div>
+      ${isTranslation?`<span class="font-mono text-[8px] px-1.5 py-0.5 rounded" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);color:white">🇺🇦 UA</span>`:''}`;
+    group.appendChild(header);
+
+    if (noTranslation) {
+      const p = document.createElement('p'); p.className='font-mono text-[10px] text-tgreen italic pl-1'; p.textContent='✓ Переклад не потрібен'; group.appendChild(p);
+    } else if (!links.length) {
+      if (mod.ModUrl) {
+        const key = mod.Name+'|'+mod.ModUrl;
+        const row = makeDlRow('Відкрити сторінку мода', mod.ModUrl, key, updateBatchProgress);
+        // override label line 2
+        const sub = row.querySelector('p.font-mono.text-\\[9px\\]');
+        if (sub) sub.textContent = mod.ModUrl.slice(0,48)+(mod.ModUrl.length>48?'…':'');
+        group.appendChild(row);
+      } else {
+        const p = document.createElement('p'); p.className='font-mono text-[10px] text-tmuted italic pl-1'; p.textContent='Файли недоступні'; group.appendChild(p);
       }
     } else {
-      // Fallback: try all Downloads links
-      const urls = mod.Downloads || (mod.Download ? [mod.Download] : []);
-      for (const url of urls) {
-        const fname = url.split('/').pop().split('?')[0];
-        try {
-          const blob = await blobFetch(url);
-          if (/\.zip$/i.test(fname)) {
-            try {
-              const inner = await JSZip.loadAsync(blob);
-              for (const [path, file] of Object.entries(inner.files)) {
-                if (!file.dir) fileEntries.push({ name: path.split('/').pop(), blob: await file.async('blob') });
-              }
-            } catch { fileEntries.push({ name: fname, blob }); }
-          } else {
-            fileEntries.push({ name: fname, blob });
-          }
-        } catch {
-          fileEntries.push({ name: `${mod.Name}_НЕ_ЗАВАНТАЖЕНО.txt`,
-            blob: new Blob([`Не вдалося завантажити: ${url}\nЗавантаж вручну з: ${mod.ModUrl||''}`], {type:'text/plain'}) });
-        }
-      }
+      links.forEach(({url,label}) => {
+        const key = mod.Name+'|'+url;
+        const row = makeDlRow(label, url, key, updateBatchProgress);
+        group.appendChild(row);
+      });
     }
 
-    done++;
-    fill.style.width = (done / allMods2dl.length * 70) + '%';
-  }
-
-  msg.textContent = `Створюємо ${archiveFmt.toUpperCase()} архів…`;
-  fill.style.width = '85%';
-  try {
-    let blob, ext;
-    if (archiveFmt === '7z') ({ blob, ext } = await pack7z(fileEntries));
-    else ({ blob, ext } = await packZip(fileEntries));
-    fill.style.width = '100%';
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `TLD_Mods_UA_${new Date().toISOString().slice(0,10)}.${ext}`;
-    a.click(); URL.revokeObjectURL(a.href);
-  } catch(e) { alert('Помилка: ' + e.message); }
-
-  overlay.classList.add('hidden'); overlay.classList.remove('flex');
-  btn.disabled = false; fill.style.width = '0%';
-}
-
-async function packZip(entries) {
-  const zip = new JSZip();
-  for (const { name, blob } of entries) zip.file(name, blob);
-  return { blob: await zip.generateAsync({ type:'blob', compression:'DEFLATE' }), ext:'zip' };
-}
-async function load7zip() {
-  if (sz7zip) return sz7zip;
-  return new Promise((res,rej) => {
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/7zip-wasm/umd/7zip-wasm.js';
-    s.onload = async () => { try { sz7zip = await window.SevenZip(); res(sz7zip); } catch(e) { rej(e); } };
-    s.onerror = () => rej(new Error('7zip-wasm недоступний'));
-    document.head.appendChild(s);
+    body.appendChild(group);
   });
-}
-async function pack7z(entries) {
-  try {
-    const sz = await load7zip();
-    for (const { name } of entries) { try { sz.FS.unlink(name); } catch {} }
-    try { sz.FS.unlink('out.7z'); } catch {}
-    for (const { name, blob } of entries) sz.FS.writeFile(name, new Uint8Array(await blob.arrayBuffer()));
-    await sz.callMain(['a','-t7z','-mx=5','out.7z',...entries.map(e=>e.name)]);
-    const data = sz.FS.readFile('out.7z');
-    return { blob: new Blob([data],{type:'application/x-7z-compressed'}), ext:'7z' };
-  } catch(e) {
-    console.warn('7z fallback to zip:', e.message);
-    const r = await packZip(entries); r.ext = '7z'; return r;
-  }
-}
-async function blobFetch(url) {
-  const localName = url.split('/').pop().split('?')[0];
-  try {
-    const r = await fetch('./mods-files/'+localName, {signal:AbortSignal.timeout(10000)});
-    if (r.ok) return r.blob();
-  } catch {}
-  for (const m of DL_PROXIES) {
-    try {
-      const r = await fetch(m(url), {signal:AbortSignal.timeout(30000)});
-      if (!r.ok) continue; return r.blob();
-    } catch {}
-  }
-  throw new Error('Файл недоступний: '+localName);
+
+  updateBatchProgress();
+  openModal('batchModal');
 }
 
-// ══ EVENTS ══
+function updateBatchProgress() {
+  const rows = document.querySelectorAll('#batchModalBody .dl-file-row');
+  const done = [...rows].filter(r=>r.classList.contains('done')).length;
+  document.getElementById('batchProgress').textContent = rows.length>0 ? `Завантажено: ${done} / ${rows.length}` : '';
+}
+
+// EVENTS
 let st, ast;
-document.getElementById('search').addEventListener('input', e => {
-  clearTimeout(st); st = setTimeout(() => { searchQ = e.target.value.trim(); render(); }, 180);
-});
-document.getElementById('filterWrap').addEventListener('click', e => {
-  const b = e.target.closest('.mfbtn'); if (!b) return;
-  document.querySelectorAll('.mfbtn').forEach(x => x.classList.remove('active'));
-  b.classList.add('active'); activeFilter = b.dataset.filter; render();
-});
-document.getElementById('sortBtns').addEventListener('click', e => {
-  const b = e.target.closest('.sort-btn'); if (!b) return;
-  const field = b.dataset.field;
-  const [curField, curDir] = sortBy.split('-');
-  const newDir = (field === curField) ? (curDir === 'asc' ? 'desc' : 'asc') : b.dataset.dir;
-  sortBy = field + '-' + newDir;
-  setActiveSortBtn(sortBy); render();
-});
-document.querySelectorAll('.fmtbtn').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.fmtbtn').forEach(x => x.classList.remove('active'));
-    b.classList.add('active'); archiveFmt = b.dataset.fmt;
-    document.getElementById('dlBtnLabel').textContent = 'ЗАВАНТАЖИТИ ' + archiveFmt.toUpperCase();
-  });
-});
-document.getElementById('authorQ').addEventListener('input', e => {
-  clearTimeout(ast); ast = setTimeout(() => { authorQ = e.target.value.trim(); renderAuthorChips(); }, 150);
-});
-document.getElementById('resetFiltersBtn').addEventListener('click', () => {
-  activeCats.clear(); activeAuthors.clear(); activeStatuses.clear(); activeTypes.clear();
-  document.querySelectorAll('.ftag').forEach(b => b.className = b.className.replace(/on-\S*/g,'').trim());
-  document.querySelectorAll('.status-btn').forEach(b => b.className = b.className.replace(/on-\S*/g,'').trim());
-  syncBadge(); render();
-});
-document.getElementById('deselectBtn').addEventListener('click', () => { selected.clear(); lsSave(); render(); });
+document.getElementById('search').addEventListener('input', e => { clearTimeout(st); st=setTimeout(()=>{searchQ=e.target.value.trim();render();},180); });
+document.getElementById('filterWrap').addEventListener('click', e => { const b=e.target.closest('.mfbtn'); if(!b)return; document.querySelectorAll('.mfbtn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); activeFilter=b.dataset.filter; render(); });
+document.getElementById('sortBtns').addEventListener('click', e => { const b=e.target.closest('.sort-btn'); if(!b)return; const field=b.dataset.field; const[cf,cd]=sortBy.split('-'); const nd=field===cf?(cd==='asc'?'desc':'asc'):b.dataset.dir; sortBy=field+'-'+nd; setActiveSortBtn(sortBy);render(); });
+document.getElementById('authorQ').addEventListener('input', e => { clearTimeout(ast); ast=setTimeout(()=>{authorQ=e.target.value.trim();renderAuthorChips();},150); });
+document.getElementById('resetFiltersBtn').addEventListener('click', () => { activeCats.clear();activeAuthors.clear();activeStatuses.clear();activeTypes.clear(); document.querySelectorAll('.ftag').forEach(b=>b.className=b.className.replace(/on-\S*/g,'').trim()); document.querySelectorAll('.status-btn').forEach(b=>b.className=b.className.replace(/on-\S*/g,'').trim()); syncBadge();render(); });
+document.getElementById('deselectBtn').addEventListener('click', () => { selected.clear();lsSave();render(); });
+const _sidebar=document.getElementById('sidebar');
+document.getElementById('mobileFilterToggle').addEventListener('click', ()=>{ _sidebar.style.display=_sidebar.style.display==='flex'?'none':'flex'; });
 
-// mobile sidebar
-const _sidebar = document.getElementById('sidebar');
-document.getElementById('mobileFilterToggle').addEventListener('click', () => {
-  _sidebar.style.display = _sidebar.style.display === 'flex' ? 'none' : 'flex';
-});
-
-// ══ SNOWFLAKES ══
+// SNOWFLAKES
 function spawnSnow() {
-  const c = document.getElementById('snowflakes');
-  '❄❅❆✦✧'.split('').forEach(s => {
-    for (let i=0; i<3; i++) {
-      const el = document.createElement('span');
-      el.className = 'snowflake'; el.textContent = s;
-      el.style.cssText = `left:${Math.random()*100}%;font-size:${7+Math.random()*7}px;`
-        + `animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*8}s;opacity:${0.08+Math.random()*0.18}`;
-      c.appendChild(el);
-    }
-  });
+  const c=document.getElementById('snowflakes');
+  '❄❅❆✦✧'.split('').forEach(s=>{ for(let i=0;i<3;i++){const el=document.createElement('span');el.className='snowflake';el.textContent=s;el.style.cssText=`left:${Math.random()*100}%;font-size:${7+Math.random()*7}px;animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*8}s;opacity:${0.08+Math.random()*0.18}`;c.appendChild(el);} });
 }
 
 init();
