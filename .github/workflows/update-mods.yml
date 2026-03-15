@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Завантажити список модів з API
         run: |
@@ -29,8 +29,8 @@ jobs:
 
       - name: Зберегти в репозиторій (якщо змінився)
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add mods-cache.json
           if git diff --staged --quiet; then
             echo "Список модів не змінився, пропускаємо коміт"
