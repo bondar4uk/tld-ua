@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>TLD Mods UA — Українські переклади модів для The Long Dark</title>
+  <title>TLD Mods UA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
   <script>
     tailwind.config = {
       theme: {
@@ -52,6 +53,17 @@
     @keyframes spin { to{transform:rotate(360deg)} }
     .spin { animation:spin .75s linear infinite; }
 
+    .fade-up, .relative.flex.flex-col.rounded-lg {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+
+    /* ── PERFORMANCE ── */
+#content .grid > div {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 380px;
+}
+
     /* ── MODALS ── */
     .modal-backdrop {
       position:fixed; inset:0; z-index:9000;
@@ -70,8 +82,9 @@
     }
     .modal-backdrop.open .modal-box { transform:translateY(0) scale(1); opacity:1; }
 
-    .dl-bar { transform:translateY(100%); transition:transform .3s cubic-bezier(.16,1,.3,1); }
-    .dl-bar.visible { transform:translateY(0); }
+.dl-bar { transform:translateY(calc(100% + 40px)); transition:transform .3s cubic-bezier(.16,1,.3,1); }
+.dl-bar.visible { transform:translateY(0); }
+.dl-bar.visible ~ #backTop { bottom:118px; }
 
     /* ── CARD ── */
     .card-sel { box-shadow:0 0 0 1px #f0c040, inset 0 0 40px rgba(240,192,64,.04); }
@@ -90,7 +103,7 @@
     .ph-cats { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; color:rgba(78,153,192,.4); text-transform:uppercase; position:relative; z-index:1; }
 
     /* ── SIDEBAR ── */
-    #sidebar { width:200px; flex-shrink:0; border-right:1px solid #1c2a3a; display:flex; flex-direction:column; overflow:hidden; }
+    #sidebar { width:230px; flex-shrink:0; border-right:1px solid #1c2a3a; display:flex; flex-direction:column; overflow:hidden; }
     @media(max-width:900px){ #sidebar{display:none} #mobileFilterToggle{display:flex!important} }
     #mobileFilterToggle { display:none; }
     .sb-section { border-bottom:1px solid #1c2a3a; padding:10px 12px; }
@@ -118,9 +131,18 @@
     #tooltip { position:fixed; background:#0f1620; border:1px solid #254060; border-radius:6px; padding:5px 10px; font-size:11.5px; color:#cdd8e8; pointer-events:none; z-index:10000; opacity:0; transition:opacity .12s ease; white-space:nowrap; max-width:280px; box-shadow:0 4px 16px rgba(0,0,0,.5); transform:translateX(-50%); }
     #tooltip.show { opacity:1; }
 
-    #backTop { position:fixed; bottom:76px; right:20px; z-index:500; width:34px; height:34px; border-radius:8px; background:#131a22; border:1px solid #254060; color:#4899c0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; opacity:0; pointer-events:none; }
-    #backTop.show { opacity:1; pointer-events:auto; }
-    #backTop:hover { background:#1a2f44; border-color:#4899c0; color:#7ecfee; transform:translateY(-2px); }
+#backTop {
+  position:fixed; bottom:56px; right:20px; z-index:500;
+  width:34px; height:34px; border-radius:8px;
+  background:#131a22; border:1px solid #254060; color:#4899c0;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; opacity:0; pointer-events:none;
+  transition: opacity .2s, transform .2s, bottom .3s cubic-bezier(.16,1,.3,1);
+}
+#backTop.show { opacity:1; pointer-events:auto; }
+#backTop:hover { background:#1a2f44; border-color:#4899c0; color:#7ecfee; transform:translateY(-2px); }
+
+
 
     .mfbtn { padding:4px 10px; border-radius:4px; border:1px solid #1c2a3a; background:#131a22; color:#6a84a0; font-size:12px; cursor:pointer; transition:all .12s; }
     .mfbtn:hover { border-color:#254060; color:#cdd8e8; }
@@ -151,6 +173,7 @@
     input:focus, select:focus { outline:none; }
     #authorChips { scrollbar-width:none; -ms-overflow-style:none; }
     #authorChips::-webkit-scrollbar { display:none; }
+    .card-desc::-webkit-scrollbar { display:none; }
   </style>
 </head>
 <body>
@@ -199,18 +222,35 @@
 
 <!-- HEADER -->
 <div id="headerBlock" class="relative z-[60] flex-shrink-0" style="background:rgba(9,11,14,.97);backdrop-filter:blur(16px);border-bottom:1px solid #1c2a3a">
-  <header class="relative border-b border-border overflow-hidden">
-    <div class="absolute inset-0 pointer-events-none overflow-hidden" id="snowflakes"></div>
-    <div class="relative flex items-center justify-center py-2 px-4">
-      <h1 class="font-display text-white leading-none select-none" style="font-size:26px;letter-spacing:5px;text-shadow:0 0 30px rgba(126,207,238,.1)">
-        TLD <span class="text-gold" style="text-shadow:0 0 20px rgba(240,192,64,.35)">MODS</span> UA
-      </h1>
-      <div class="absolute right-4 inline-flex rounded overflow-hidden border border-border opacity-60">
-        <span class="block w-8 h-1" style="background:#005BBB"></span>
-        <span class="block w-8 h-1" style="background:#FFD500"></span>
-      </div>
+<header class="relative border-b border-border overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none overflow-hidden" id="snowflakes"></div>
+  <div class="relative flex flex-col items-center justify-center py-2.5 px-4 gap-0.5">
+    <h1 class="font-display text-white leading-none select-none" style="font-size:26px;letter-spacing:5px;text-shadow:0 0 30px rgba(126,207,238,.1)">
+      TLD <span class="text-gold" style="text-shadow:0 0 20px rgba(240,192,64,.35)">MODS</span> UA
+    </h1>
+    <p class="font-mono text-[9px] text-tmuted tracking-wide text-center">
+      Неофіційний сайт з українськими перекладами · Усі моди належать їхнім авторам
+              · <span class="text-tmuted">Інформація про моди отримано з</span>
+      <a href="https://tldmods.com/" target="_blank" class="text-tmuted hover:text-ice transition-colors">tldmods.com</a>
+    </p>
+    <div class="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1">
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3601234719" target="_blank"
+         class="font-mono text-[9px] text-tmuted hover:text-ice transition-colors flex items-center gap-1 whitespace-nowrap">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" class="shrink-0"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.718L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.606 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.455 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.252 0-2.265-1.014-2.265-2.265z"/></svg>
+        Покращений переклад гри
+      </a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3601249489" target="_blank"
+         class="font-mono text-[9px] text-tmuted hover:text-ice transition-colors flex items-center gap-1 whitespace-nowrap">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Посібник зі встановлення модів
+      </a>
     </div>
-  </header>
+    <div class="absolute right-4 top-1/2 -translate-y-1/2 inline-flex rounded overflow-hidden border border-border opacity-60">
+      <span class="block w-8 h-1" style="background:#005BBB"></span>
+      <span class="block w-8 h-1" style="background:#FFD500"></span>
+    </div>
+  </div>
+</header>
 
   <div class="px-3 py-2 flex items-center gap-2 flex-wrap border-b border-border" style="border-color:rgba(28,42,58,.6)">
     <div class="relative flex-1 min-w-[160px]">
@@ -219,7 +259,7 @@
     </div>
     <div class="flex gap-1" id="filterWrap">
       <button class="mfbtn active" data-filter="all">Усі</button>
-      <button class="mfbtn" data-filter="translated">🇺🇦 Перекладені</button>
+      <button class="mfbtn" data-filter="translated">Перекладені</button>
     </div>
     <button class="mfbtn items-center gap-1.5" id="mobileFilterToggle" style="display:none">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
@@ -229,21 +269,20 @@
     <button id="deselectBtn" class="px-3 py-1.5 rounded border border-border bg-transparent text-tdim text-xs cursor-pointer transition-all hover:border-goldd hover:text-gold font-mono">Скинути вибір</button>
   </div>
 
-  <div class="px-3 py-1.5 flex items-center gap-2 flex-wrap">
-    <div class="flex items-center gap-1 flex-wrap" id="sortBtns">
-      <span class="font-mono text-[9px] text-tmuted mr-1 tracking-widest">СОРТ:</span>
-      <button class="sort-btn" data-field="updated" data-dir="desc">Оновлення<span class="sort-arrow">↓</span></button>
-      <button class="sort-btn" data-field="trans"   data-dir="desc">Переклад<span class="sort-arrow">↓</span></button>
-      <button class="sort-btn" data-field="name"    data-dir="asc">Назва<span class="sort-arrow">А→Я</span></button>
-      <button class="sort-btn" data-field="author"  data-dir="asc">Автор<span class="sort-arrow">А→Я</span></button>
-    </div>
-    <div class="flex-1"></div>
-    <div class="flex items-center gap-3">
-      <div class="stat-item">Показано: <strong id="sVisible" class="text-ice">0</strong></div>
-      <div class="stat-item">Перекладено: <strong id="sTranslated" class="text-gold">0</strong></div>
-      <div class="stat-item">Вибрано: <strong id="sSelected" class="text-tgreen">0</strong></div>
-    </div>
+<div class="px-3 py-1.5 flex items-center justify-center gap-3 flex-wrap">
+  <div class="flex items-center gap-1 flex-wrap" id="sortBtns">
+    <button class="sort-btn" data-field="updated" data-dir="desc">Дата оновлення<span class="sort-arrow">↓</span></button>
+    <button class="sort-btn" data-field="trans"   data-dir="desc">Переклад<span class="sort-arrow">↓</span></button>
+    <button class="sort-btn" data-field="name"    data-dir="asc">Назва<span class="sort-arrow">А→Я</span></button>
+    <button class="sort-btn" data-field="author"  data-dir="asc">Автор<span class="sort-arrow">А→Я</span></button>
   </div>
+  <div class="w-px h-3.5 bg-border flex-shrink-0"></div>
+  <div class="flex items-center gap-3">
+    <div class="stat-item">Показано: <strong id="sVisible" class="text-ice">0</strong></div>
+    <div class="stat-item">Перекладено: <strong id="sTranslated" class="text-gold">0</strong></div>
+    <div class="stat-item">Вибрано: <strong id="sSelected" class="text-tgreen">0</strong></div>
+  </div>
+</div>
 </div>
 
 <!-- CONTENT ROW -->
@@ -260,18 +299,26 @@
             <button class="status-btn" data-status="working" data-tip="Працює">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
-            <button class="status-btn" data-status="issues" data-tip="З проблемами">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            </button>
+<button class="status-btn" data-status="issues" data-tip="З проблемами">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/>
+    <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+  </svg>
+</button>
             <button class="status-btn" data-status="notupdated" data-tip="Не оновлено">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </button>
             <button class="status-btn" data-status="notworking" data-tip="Не працює">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <button class="status-btn" data-status="noinfo" data-tip="Без інфо">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </button>
+<button class="status-btn" data-status="noinfo" data-tip="Без інфо">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+    <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+  </svg>
+</button>
             </div>
       </div>
       <div class="sb-section">
@@ -303,9 +350,9 @@
 </div>
 
 <!-- DOWNLOAD BAR -->
-<div id="dlBar" class="dl-bar fixed bottom-0 left-0 right-0 z-[200] border-t border-border px-4 py-2.5 flex items-center gap-3" style="background:rgba(9,11,14,.98);backdrop-filter:blur(20px)">
+<div id="dlBar" class="dl-bar fixed bottom-10 left-0 right-0 z-[200] border-t border-border px-4 py-2.5 flex items-center gap-3" style="background:rgba(9,11,14,.98);backdrop-filter:blur(20px)">
   <p class="flex-1 text-sm text-tdim whitespace-nowrap">
-    Вибрано: <strong id="dlCount" class="font-mono text-gold">0 модів</strong>
+    Вибрано <strong id="dlCount" class="font-mono text-gold">0 модів</strong>
   </p>
   <div id="chips" class="flex gap-1.5 flex-wrap overflow-hidden max-h-7 max-w-[40%]"></div>
   <button id="dlBtn" class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gold text-bg font-display text-lg tracking-widest cursor-pointer border-0 whitespace-nowrap transition-all hover:bg-[#ffd060] hover:-translate-y-px active:translate-y-0" style="letter-spacing:2px">
@@ -434,10 +481,18 @@ function tDesc(mod) { return translations[mod.Name]?.description  || mod.Descrip
 function tCats(mod) { return (mod.Categories||[]).map(c => catMap[c]||c); }
 function imgSrc(mod){ return imgManifest[mod.Name] || mod.Images?.[0] || null; }
 function esc(s)     { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(raw) {
+  if (!raw) return '';
+  const parts = String(raw).split('-');
+  if (parts.length !== 3) return raw;
+  return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
+}
 function uniq(arr)  { return [...new Set(arr)]; }
 function getFileExt(fname) { const m = fname.match(/\.([^.]+)$/); return m ? m[1].toUpperCase() : ''; }
 function isFileUrl(url)    { return /\.(zip|7z|dll|modcomponent)(\?.*)?$/i.test(url); }
-function isTagUrl(url)     { return /\/releases\/tag\//i.test(url); }
+function isTagUrl(url) {
+  return /\/releases\/tag\//i.test(url) || /\/-\/releases\//i.test(url);
+}
 // Extract version from tag URL: .../tag/v1.2.3 → "v1.2.3"
 function tagVersion(url)   { const m=url.match(/\/releases\/tag\/([^/?]+)/i); return m?m[1]:''; }
 
@@ -504,7 +559,7 @@ function buildSidebar() {
     b.addEventListener('click', () => { activeCats.has(cat)?activeCats.delete(cat):activeCats.add(cat); b.classList.toggle('on-cat',activeCats.has(cat)); syncBadge();render(); });
     catWrap.appendChild(b);
   });
-  const typeLabels = {mod:'Мод',plugin:'Плагін',lib:'Бібліотека'};
+  const typeLabels = {mod:'Мод',plugin:'Плагін',library:'Бібліотека'};
   const types = [...new Set(allMods.map(m=>m.Type).filter(Boolean))].sort();
   const typeWrap = document.getElementById('typeChips');
   types.forEach(type => {
@@ -562,35 +617,52 @@ function getList() {
     if (field==='name') return asc?tName(a).localeCompare(tName(b),'uk'):tName(b).localeCompare(tName(a),'uk');
     let va,vb;
     if (field==='author')  { va=(a.Author||'').toLowerCase(); vb=(b.Author||'').toLowerCase(); }
-    if (field==='updated') { va=a.Updated||'0'; vb=b.Updated||'0'; }
-    if (field==='trans')   { va=translations[a.Name]?(a.Updated||'0'):'0'; vb=translations[b.Name]?(b.Updated||'0'):'0'; }
+    if (field==='updated') { va=fmtDate(a.Updated||'0'); vb=fmtDate(b.Updated||'0'); }
+    if (field==='trans')   { va=translations[a.Name]?fmtDate(a.Updated||'0'):'0'; vb=translations[b.Name]?fmtDate(b.Updated||'0'):'0'; }
     return asc?(va<vb?-1:va>vb?1:0):(vb<va?-1:vb>va?1:0);
   });
   return mods;
 }
 
 // RENDER
+let _renderRaf;
 function render() {
+  cancelAnimationFrame(_renderRaf);
+  _renderRaf = requestAnimationFrame(_doRender);
+}
+
+function _doRender() {
   const list = getList();
   document.getElementById('sVisible').textContent    = list.length;
   document.getElementById('sTranslated').textContent = allMods.filter(m=>translations[m.Name]).length;
   document.getElementById('sSelected').textContent   = selected.size;
-  // update bar count plural
   updateBar();
+
   const cnt = document.getElementById('content');
-  cnt.querySelectorAll('img.card-img').forEach(i=>{i.onerror=null;i.src='';});
-  cnt.innerHTML='';
-  if (!list.length) { cnt.innerHTML=`<div class="text-center py-16 text-tmuted text-sm">Нічого не знайдено</div>`; updateBar(); return; }
+  cnt.querySelectorAll('img.card-img').forEach(i=>{ i.onerror=null; i.src=''; });
+  cnt.innerHTML = '';
+
+  if (!list.length) { cnt.innerHTML=`<div class="text-center py-16 text-tmuted text-sm">Нічого не знайдено</div>`; return; }
+
+  const big = list.length > 40; // вимикаємо анімації на великих списках
+  const frag = document.createDocumentFragment();
   const grid = document.createElement('div');
-  grid.className='grid gap-3';
-  grid.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
-  list.forEach((mod,i) => { const c=makeCard(mod); c.style.animationDelay=Math.min(i*18,260)+'ms'; grid.appendChild(c); });
-  cnt.appendChild(grid);
+  grid.className = 'grid gap-3';
+  grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(280px,1fr))';
+
+  list.forEach((mod, i) => {
+    const c = makeCard(mod, big);
+    if (!big) c.style.animationDelay = Math.min(i*18, 260) + 'ms';
+    grid.appendChild(c);
+  });
+
+  frag.appendChild(grid);
+  cnt.appendChild(frag);
   observeLazy();
 }
 
 // CARD
-function makeCard(mod) {
+function makeCard(mod, noAnim=false) {
   const isSel  = selected.has(mod.Name);
   const trans  = translations[mod.Name];
   const status = getStatus(mod);
@@ -602,13 +674,13 @@ function makeCard(mod) {
   const { links, isTranslation, noTranslation } = getModLinks(mod);
 
   const wrap = document.createElement('div');
-  wrap.className = 'fade-up relative flex flex-col rounded-lg overflow-hidden cursor-pointer border transition-all duration-150'
+  wrap.className = (noAnim ? 'relative' : 'fade-up relative') + ' flex flex-col rounded-lg overflow-hidden cursor-pointer border transition-all duration-150'
     +(isSel?' border-gold card-sel':' border-border hover:border-borderg hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(0,0,0,.5)]');
   wrap.style.background='#0f1620'; wrap.dataset.name=mod.Name;
 
   const cbSvg = isSel ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
 
-  const uaBadge = isTranslation ? `<div class="absolute top-2 left-2 z-10 font-mono text-[8px] font-semibold text-white rounded px-1.5 py-0.5 select-none" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);box-shadow:0 1px 6px rgba(0,0,0,.5)">🇺🇦 UA</div>` : '';
+  const uaBadge = isTranslation ? `<div class="absolute top-2 left-2 z-10 font-mono text-[8px] font-semibold text-white rounded px-1.5 py-0.5 select-none" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);box-shadow:0 1px 6px rgba(0,0,0,.5)">&nbsp;&nbsp;&nbsp;</div>` : '';
 
   // status badge for image overlay (bottom-left)
   const statusBadgeColors = {
@@ -631,20 +703,20 @@ function makeCard(mod) {
   }).join('');
 
   const modVerBadge = `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" style="background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.2);color:#50c880">v${esc(mod.Version||'?')}</span>`;
-  const testedBadge = testedVer ? `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}" style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?' ⚠':''}</span>` : '';
-  const updDate = mod.Updated ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${mod.Updated}</span>` : '';
+  const testedBadge = testedVer ? `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}" style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?'':''}</span>` : '';
+const updDate = mod.Updated ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${fmtDate(mod.Updated)}</span>` : '';
 
-  let transHtml = noTranslation
-    ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880" data-tip="Цей мод не потребує перекладу">✓ Переклад не потрібен</span>`
+let transHtml = noTranslation
+    ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880">Переклад не потрібен</span>`
     : isTranslation && trans?.translatedVersion
-      ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);color:#c09020" data-tip="Версія українського перекладу">🇺🇦 v${esc(trans.translatedVersion)}</span>`
+      ? `<span class="font-mono text-[9px] text-tmuted shrink-0">Версія перекладу:</span><span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);color:#c09020">🇺🇦 v${esc(trans.translatedVersion)}</span>`
       : `<span class="font-mono text-[9px] text-tmuted">Перекладу немає</span>`;
 
   let depsHtml = deps.length
-    ? `<div class="hscroll"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span>${deps.map(d=>{const dm=allMods.find(m=>m.Name===d);return`<span class="font-mono text-[9px] px-1.5 py-px rounded border shrink-0" style="background:rgba(74,153,192,.04);border-color:rgba(74,153,192,.12);color:#4899c0" data-tip="${esc(d)}">${esc(dm?tName(dm):d)}</span>`;}).join('')}</div>`
-    : `<div class="flex items-center gap-1"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span><span class="font-mono text-[9px] text-tmuted">Відсутні</span></div>`;
+    ? `<span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span><div class="hscroll flex-1">${deps.map(d=>{const dm=allMods.find(m=>m.Name===d);return`<span class="font-mono text-[9px] px-1.5 py-px rounded border shrink-0" style="background:rgba(74,153,192,.04);border-color:rgba(74,153,192,.12);color:#4899c0">${esc(dm?tName(dm):d)}</span>`;}).join('')}</div>`
+    : `<span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span><span class="font-mono text-[9px] text-tmuted">Відсутні</span>`;
 
-  const ghLink = mod.ModUrl ? `<a href="${mod.ModUrl}" target="_blank" onclick="event.stopPropagation()" data-tip="GitHub мода" class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></a>` : '';
+  const ghLink = mod.ModUrl ? `<a href="${mod.ModUrl}" target="_blank" onclick="event.stopPropagation()" data-tip="Сторінка мода" class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></a>` : '';
 
   // DL button — detect if all links are tags
   let dlBtnHtml = '';
@@ -654,10 +726,10 @@ function makeCard(mod) {
     const col = isTranslation
       ? {b:'rgba(240,192,64,.3)',bg:'rgba(240,192,64,.08)',t:'#c09020',hb:'rgba(240,192,64,.18)',ht:'#f0c040',hbr:'#f0c040'}
       : {b:'rgba(80,200,128,.25)',bg:'rgba(80,200,128,.07)',t:'#50c880',hb:'rgba(80,200,128,.14)',ht:'#50c880',hbr:'#50c880'};
-    const tip = isTranslation ? 'Завантажити переклад'
+    const tip = isTranslation ? 'Завантажити мод з перекладом'
               : allTags       ? 'Перейти на сторінку релізу'
-              : multiple      ? 'Кілька файлів — оберіть'
-              :                 'Завантажити файл';
+              : multiple      ? 'Кілька файлів'
+              :                 'Завантажити мод';
     // icon: external link for tags, list for multiple files, download for single file
     const icon = allTags
       ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`
@@ -675,7 +747,7 @@ function makeCard(mod) {
   }
 
   wrap.innerHTML = `
-    <div class="card-cb${isSel?' checked':''}" data-cb>${cbSvg}</div>
+
     ${imgHtml}
     <div class="flex flex-col flex-1 p-3 gap-2">
       <div class="hscroll">${cats}</div>
@@ -683,15 +755,15 @@ function makeCard(mod) {
         <h2 class="font-display text-[17px] text-white leading-tight" style="letter-spacing:1px">${esc(tName(mod))}</h2>
         <p class="text-[11px] text-tmuted mt-0.5"><a href="${mod.AuthorUrl||'#'}" target="_blank" onclick="event.stopPropagation()" class="text-iced hover:text-ice transition-colors">${esc(mod.Author||'')}</a></p>
       </div>
-      <p class="clamp2 text-[12px] text-tdim leading-relaxed flex-1">${esc(tDesc(mod)||'Опис відсутній')}</p>
+      <p class="card-desc text-[12px] text-tdim leading-relaxed flex-1 overflow-y-auto" style="max-height:3em">${esc(tDesc(mod)||'Опис відсутній')}</p>
       <div class="flex flex-col gap-1 border-t border-border pt-2">
-        <div class="flex items-center gap-1">${transHtml}</div>
-        ${depsHtml}
+        <div class="flex items-center gap-1 min-w-0 h-5">${transHtml}</div>
+        <div class="flex items-center gap-1 min-w-0 h-5">${depsHtml}</div>
       </div>
 <div class="flex items-center justify-between gap-1.5 border-t border-border pt-2 mt-auto">
         <div class="flex items-center justify-between gap-2 min-w-0 flex-1">
           <div class="hscroll">${modVerBadge}${testedBadge}</div>
-          ${updDate ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${mod.Updated}</span>` : ''}
+          ${updDate}
         </div>
         <div class="flex gap-1 shrink-0">${ghLink}${dlBtnHtml}</div>
       </div>
@@ -796,7 +868,8 @@ function updateCardVisual(name) {
 function updateBar() {
   const n = selected.size;
   document.getElementById('dlCount').textContent=pluralMod(n);
-  document.getElementById('dlBar').classList.toggle('visible',n>0);
+document.getElementById('dlBar').classList.toggle('visible', n > 0);
+document.getElementById('backTop').style.bottom = n > 0 ? '118px' : '56px';
   const chips = document.getElementById('chips'); chips.innerHTML='';
   [...selected].slice(0,4).forEach(name => {
     const mod = allMods.find(m=>m.Name===name); if (!mod) return;
@@ -807,7 +880,7 @@ function updateBar() {
     ch.addEventListener('click', e=>{ e.stopPropagation(); toggle(name); });
     chips.appendChild(ch);
   });
-  if (n>4) { const ch=document.createElement('div'); ch.className='text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5'; ch.textContent=`+${n-4} ще`; chips.appendChild(ch); }
+  if (n>4) { const ch=document.createElement('div'); ch.className='text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5'; ch.textContent=`+${n-4} `; chips.appendChild(ch); }
 }
 
 // BATCH MODAL
@@ -849,7 +922,7 @@ function openBatchModal() {
         <p class="font-display text-[15px] text-white leading-none" style="letter-spacing:.5px">${esc(tName(mod))}</p>
         <p class="font-mono text-[9px] text-tmuted mt-0.5">${esc(mod.Author||'')}${isDep?' · <span style="color:#4899c0">залежність</span>':''}</p>
       </div>
-      ${isTranslation?`<span class="font-mono text-[8px] px-1.5 py-0.5 rounded" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);color:white">🇺🇦 UA</span>`:''}`;
+      ${isTranslation?`<span class="font-mono text-[8px] px-1.5 py-0.5 rounded" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);color:white"></span>`:''}`;
     group.appendChild(header);
 
     if (noTranslation) {
@@ -886,10 +959,10 @@ function updateBatchProgress() {
   document.getElementById('batchProgress').textContent = rows.length>0 ? `Завантажено: ${done} / ${rows.length}` : '';
 }
 let st, ast;
-document.getElementById('search').addEventListener('input', e => { clearTimeout(st); st=setTimeout(()=>{searchQ=e.target.value.trim();render();},180); });
+document.getElementById('search').addEventListener('input', e => { clearTimeout(st); st=setTimeout(()=>{searchQ=e.target.value.trim();render();},250); });
 document.getElementById('filterWrap').addEventListener('click', e => { const b=e.target.closest('.mfbtn'); if(!b)return; document.querySelectorAll('.mfbtn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); activeFilter=b.dataset.filter; render(); });
 document.getElementById('sortBtns').addEventListener('click', e => { const b=e.target.closest('.sort-btn'); if(!b)return; const field=b.dataset.field; const[cf,cd]=sortBy.split('-'); const nd=field===cf?(cd==='asc'?'desc':'asc'):b.dataset.dir; sortBy=field+'-'+nd; setActiveSortBtn(sortBy);render(); });
-document.getElementById('authorQ').addEventListener('input', e => { clearTimeout(ast); ast=setTimeout(()=>{authorQ=e.target.value.trim();renderAuthorChips();},150); });
+document.getElementById('authorQ').addEventListener('input', e => { clearTimeout(ast); ast=setTimeout(()=>{authorQ=e.target.value.trim();renderAuthorChips();},200); });
 document.getElementById('resetFiltersBtn').addEventListener('click', () => { activeCats.clear();activeAuthors.clear();activeStatuses.clear();activeTypes.clear(); document.querySelectorAll('.ftag').forEach(b=>b.className=b.className.replace(/on-\S*/g,'').trim()); document.querySelectorAll('.status-btn').forEach(b=>b.className=b.className.replace(/on-\S*/g,'').trim()); syncBadge();render(); });
 document.getElementById('deselectBtn').addEventListener('click', () => { selected.clear();lsSave();render(); });
 const _sidebar=document.getElementById('sidebar');
@@ -903,5 +976,22 @@ function spawnSnow() {
 
 init();
 </script>
+<footer class="flex-shrink-0 h-10 border-t border-border flex items-center justify-between px-4 z-[150]" style="background:rgba(9,11,14,.98);backdrop-filter:blur(12px)">
+<span class="font-mono text-[10px] text-tmuted">Copyright 2026 by bondar4uk</span>
+<div class="flex items-center gap-3">
+  <a href="https://github.com/bondar4uk" target="_blank" class="font-mono text-[10px] text-tmuted hover:text-ice transition-colors flex items-center gap-1">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    GitHub
+  </a>
+  <a href="https://discord.com/users/bondar4uk" target="_blank" class="font-mono text-[10px] text-tmuted hover:text-ice transition-colors flex items-center gap-1">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+    Discord
+  </a>
+  <a href="https://steamcommunity.com/id/bondar4uk" target="_blank" class="font-mono text-[10px] text-tmuted hover:text-ice transition-colors flex items-center gap-1">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.718L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.606 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.455 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.252 0-2.265-1.014-2.265-2.265z"/></svg>
+    Steam
+  </a>
+</div>
+</footer>
 </body>
 </html>
