@@ -1,26 +1,27 @@
 {
   "_comment": "categoryMap — переклад категорій. mods — переклади конкретних модів. displayName/description/categories — необов'язкові. downloadUrl — посилання на сторінку завантаження (якщо нема — береться ModUrl з API).",
+  "gameVersion": "2.51",
   "categoryMap": {
-    "Gameplay":        "Геймплей",
-    "Overhaul":        "Перероблення",
+    "Gameplay": "Геймплей",
+    "Overhaul": "Перероблення",
     "Quality of Life": "Якість гри",
-    "Misc":            "Різне",
-    "Weapons":         "Зброя",
-    "Survival":        "Виживання",
-    "UI":              "Інтерфейс",
-    "Graphics":        "Графіка",
-    "Audio":           "Звук",
-    "Cheats":          "Читерство",
-    "Bug Fixes":       "Виправлення помилок",
-    "Immersion":       "Занурення",
-    "Balance":         "Баланс",
-    "Items":           "Предмети",
-    "Environment":     "Оточення",
-    "Movement":        "Рух",
-    "Animals":         "Тварини",
-    "Food":            "Їжа",
-    "Crafting":        "Крафт",
-    "HUD":             "HUD"
+    "Misc": "Різне",
+    "Weapons": "Зброя",
+    "Survival": "Виживання",
+    "UI": "Інтерфейс",
+    "Graphics": "Графіка",
+    "Audio": "Звук",
+    "Cheats": "Читерство",
+    "Bug Fixes": "Виправлення помилок",
+    "Immersion": "Занурення",
+    "Balance": "Баланс",
+    "Items": "Предмети",
+    "Environment": "Оточення",
+    "Movement": "Рух",
+    "Animals": "Тварини",
+    "Food": "Їжа",
+    "Crafting": "Крафт",
+    "HUD": "HUD"
   },
   "mods": {
     "AdaptiveArsenal": {
@@ -28,7 +29,9 @@
       "displayName": "Адаптивний арсенал",
       "description": "Адаптивний Арсенал — модифікація, яка вдосконалює механіки зброї в The Long Dark.",
       "downloadUrl": "https://github.com/your-username/AdaptiveArsenal-UA/releases/latest",
-      "files": ["translations/AdaptiveArsenal.dll"]
+      "files": [
+        "translations/AdaptiveArsenal.dll"
+      ]
     }
   }
 }
