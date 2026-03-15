@@ -30,19 +30,51 @@ jobs:
       - name: Кешувати картинки модів
         run: |
           mkdir -p images-cache
-          jq -r '.[].Images[]? // empty' mods-cache.json | while read url; do
-            fname=$(echo "$url" | md5sum | cut -d' ' -f1).${url##*.}
-            [ ! -f "images-cache/$fname" ] && curl -fsSL "$url" -o "images-cache/$fname" 2>/dev/null || true
+          # Збираємо: Name \t ImageURL
+          jq -r '.[] | .Name as $n | (.Images // []) | .[] | "\($n)\t\(.)"' mods-cache.json \
+          | while IFS=$'\t' read -r modname imgurl; do
+              [ -z "$imgurl" ] && continue
+              # розширення з URL (webp/jpg/png), fallback jpg
+              ext="${imgurl##*.}"; ext="${ext%%\?*}"
+              case "$ext" in webp|jpg|jpeg|png|gif) ;; *) ext="jpg" ;; esac
+              dest="images-cache/${modname}.${ext}"
+              # пропускаємо якщо вже є
+              if [ -f "$dest" ]; then
+                echo "SKIP: $dest"; continue
+              fi
+              echo "IMG: $imgurl -> $dest"
+              curl -fsSL -L --retry 2 --retry-delay 1 \
+                -H "User-Agent: Mozilla/5.0" \
+                -o "$dest" "$imgurl" \
+              && echo "OK ($(wc -c < "$dest") bytes)" \
+              || { echo "FAIL: $imgurl"; rm -f "$dest"; }
           done
+          echo "Картинок в images-cache/: $(ls images-cache/ 2>/dev/null | wc -l)"
 
-      - name: Зберегти в репозиторій (якщо змінився)
+      - name: Генерувати маніфест картинок
         run: |
-          git config user.name "github-actions[bot]"
+          # manifest.json: { "ModName": "images-cache/ModName.ext", ... }
+          python3 - << 'PYEOF'
+          import os, json
+          cache_dir = 'images-cache'
+          manifest = {}
+          if os.path.isdir(cache_dir):
+              for fname in os.listdir(cache_dir):
+                  name, ext = os.path.splitext(fname)
+                  manifest[name] = f'{cache_dir}/{fname}'
+          with open('images-cache/manifest.json', 'w') as f:
+              json.dump(manifest, f, ensure_ascii=False, separators=(',',':'))
+          print(f'Маніфест: {len(manifest)} записів')
+          PYEOF
+
+      - name: Зберегти зміни
+        run: |
+          git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add mods-cache.json
+          git add mods-cache.json images-cache/
           if git diff --staged --quiet; then
-            echo "Список модів не змінився, пропускаємо коміт"
+            echo "Змін немає"
           else
-            git commit -m "chore: оновлення списку модів $(date -u +%Y-%m-%d)"
+            git commit -m "chore: оновлення модів та картинок $(date -u +%Y-%m-%d)"
             git push
           fi
