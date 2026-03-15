@@ -69,24 +69,6 @@
     ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:#090b0e} ::-webkit-scrollbar-thumb{background:#1c2a3a;border-radius:3px} ::-webkit-scrollbar-thumb:hover{background:#254060}
     input:focus,select:focus{outline:none}
 
-    /* ── Splash screen ── */
-    #splash {
-      position:fixed; inset:0; z-index:9999;
-      background:#090b0e;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
-      transition:opacity .6s ease, visibility .6s ease;
-    }
-    #splash.hidden { opacity:0; visibility:hidden; pointer-events:none; }
-    .splash-logo { font-family:'Bebas Neue',sans-serif; letter-spacing:6px; color:#fff; line-height:1; }
-    .splash-logo em { color:#f0c040; font-style:normal; text-shadow:0 0 40px rgba(240,192,64,.5); }
-    .splash-bar-wrap { width:180px; height:2px; background:#1c2a3a; border-radius:1px; overflow:hidden; }
-    .splash-bar { height:100%; background:linear-gradient(90deg,#4899c0,#f0c040); border-radius:1px;
-      animation:splashLoad 1.4s cubic-bezier(.4,0,.2,1) forwards; }
-    @keyframes splashLoad { from{width:0} to{width:100%} }
-    .splash-sub { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:3px;
-      color:#3a526a; text-transform:uppercase; animation:splashFade 1s ease .3s both; }
-    @keyframes splashFade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-
     .fbtn { font-family:'Inter',sans-serif; transition:all .15s; }
     .fbtn:hover { border-color:#4899c0; color:#cdd8e8; }
     .fbtn.active { background:#4899c0; border-color:#7ecfee; color:#fff; }
@@ -117,13 +99,8 @@
 </head>
 <body class="bg-bg text-ttext min-h-screen overflow-x-hidden">
 
-<!-- SPLASH SCREEN -->
-<div id="splash">
-  <p class="font-mono text-[10px] tracking-[5px] text-iced/50 uppercase mb-2">❄ The Long Dark</p>
-  <div class="splash-logo" style="font-size:clamp(42px,8vw,80px)">TLD <em>MODS</em> UA</div>
-  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
-  <p class="splash-sub">Завантаження…</p>
-</div>
+<!-- PRELOADER -->
+<div id="preloader" class="fixed inset-0 bg-black z-[9999] pointer-events-none" style="transition:opacity .8s ease"></div>
 
 <!-- PROGRESS OVERLAY -->
 <div id="overlay" class="fixed inset-0 bg-bg/92 backdrop-blur-md z-[999] hidden flex-col items-center justify-center gap-5">
@@ -1004,12 +981,14 @@ function spawnSnow() {
   });
 }
 
-// ══ SPLASH ══
+// ══ PRELOADER ══
 function dismissSplash() {
-  // wait for bar animation to finish (~1.4s), then fade out
+  const el = document.getElementById('preloader');
+  if (!el) return;
   setTimeout(() => {
-    document.getElementById('splash').classList.add('hidden');
-  }, 200);
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 800);
+  }, 100);
 }
 
 // ══ LAZY IMG OBSERVER ══
