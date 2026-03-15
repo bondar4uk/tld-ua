@@ -1,17 +1,34 @@
 {
-  "_comment": "Додай сюди моди які ти переклав. Ключ — це точне Name з API (наприклад 'AdaptiveArsenal'). files — масив файлів перекладу що лежать у папці translations/ цього репозиторію.",
+  "_comment": "categoryMap — переклад категорій. mods — переклади конкретних модів. displayName/description/categories — необов'язкові. downloadUrl — посилання на сторінку завантаження (якщо нема — береться ModUrl з API).",
+  "categoryMap": {
+    "Gameplay":        "Геймплей",
+    "Overhaul":        "Перероблення",
+    "Quality of Life": "Якість гри",
+    "Misc":            "Різне",
+    "Weapons":         "Зброя",
+    "Survival":        "Виживання",
+    "UI":              "Інтерфейс",
+    "Graphics":        "Графіка",
+    "Audio":           "Звук",
+    "Cheats":          "Читерство",
+    "Bug Fixes":       "Виправлення помилок",
+    "Immersion":       "Занурення",
+    "Balance":         "Баланс",
+    "Items":           "Предмети",
+    "Environment":     "Оточення",
+    "Movement":        "Рух",
+    "Animals":         "Тварини",
+    "Food":            "Їжа",
+    "Crafting":        "Крафт",
+    "HUD":             "HUD"
+  },
   "mods": {
     "AdaptiveArsenal": {
       "translatedVersion": "1.0.9",
-      "files": [
-        "translations/AdaptiveArsenal.dll"
-      ]
-    },
-    "AdjustableWalkSpeed": {
-      "translatedVersion": "1.1.0",
-      "files": [
-        "translations/AdjustableWalkSpeed.dll"
-      ]
+      "displayName": "Адаптивний арсенал",
+      "description": "Адаптивний Арсенал — модифікація, яка вдосконалює механіки зброї в The Long Dark.",
+      "downloadUrl": "https://github.com/your-username/AdaptiveArsenal-UA/releases/latest",
+      "files": ["translations/AdaptiveArsenal.dll"]
     }
   }
 }
