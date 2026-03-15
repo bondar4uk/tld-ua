@@ -78,6 +78,9 @@
     .clamp2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .card-img { opacity:0; transition:opacity .4s ease; }
     .card-img.loaded { opacity:1; }
+    /* horizontal scroll rows — no wrap, hidden scrollbar */
+    .hscroll { display:flex; flex-wrap:nowrap; gap:4px; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; align-items:center; }
+    .hscroll::-webkit-scrollbar { display:none; }
     .aspect-16-9 { position:relative; width:100%; padding-top:56.25%; overflow:hidden; }
     .aspect-16-9 img, .aspect-16-9 .ph { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
     .ph { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
@@ -435,8 +438,11 @@ function getModLinks(mod) {
   if (trans?.files?.length) {
     return { links: uniq(trans.files).map(url => ({ url, isFile:isFileUrl(url), isTag:false, label:url.split('/').pop().split('?')[0], version:'' })), isTranslation:true, noTranslation:false };
   }
-  const raw = uniq(mod.Downloads || (mod.Download ? [mod.Download] : []));
-  const allLinks = raw.map(url => ({ url, isFile:isFileUrl(url), isTag:isTagUrl(url), label:url.split('/').pop().split('?')[0]||url, version:tagVersion(url) }));
+  const raw = mod.Downloads || (mod.Download ? [mod.Download] : []);
+  // deduplicate by normalized URL (trim + lowercase)
+  const seen = new Set();
+  const deduped = raw.filter(u => { const k=u.trim().toLowerCase(); if(seen.has(k))return false; seen.add(k);return true; });
+  const allLinks = deduped.map(url => ({ url, isFile:isFileUrl(url), isTag:isTagUrl(url), label:url.split('/').pop().split('?')[0]||url, version:tagVersion(url) }));
   // If there are real files AND tag links — drop the tag links
   const hasFiles = allLinks.some(l => l.isFile);
   const links = hasFiles ? allLinks.filter(l => l.isFile) : allLinks;
@@ -592,42 +598,60 @@ function makeCard(mod) {
 
   const cbSvg = isSel ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
 
-  let imgHtml = url
-    ? `<div class="aspect-16-9"><img data-src="${url}" alt="${esc(tName(mod))}" decoding="async" class="card-img w-full h-full object-cover" onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="ph" style="display:none"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`
-    : `<div class="aspect-16-9"><div class="ph"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`;
-
   const uaBadge = isTranslation ? `<div class="absolute top-2 left-2 z-10 font-mono text-[8px] font-semibold text-white rounded px-1.5 py-0.5 select-none" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);box-shadow:0 1px 6px rgba(0,0,0,.5)">🇺🇦 UA</div>` : '';
+
+  // status badge for image overlay (bottom-left)
+  const statusBadgeColors = {
+    working:    'background:rgba(10,20,14,.8);border-color:rgba(80,200,128,.5);color:#50c880',
+    issues:     'background:rgba(20,16,8,.8);border-color:rgba(232,192,96,.5);color:#e8c060',
+    notupdated: 'background:rgba(8,14,22,.8);border-color:rgba(74,153,192,.5);color:#7ecfee',
+    notworking: 'background:rgba(20,8,12,.8);border-color:rgba(224,64,96,.5);color:#e04060',
+    noinfo:     'background:rgba(10,14,18,.8);border-color:rgba(58,82,106,.4);color:#6a84a0',
+  };
+  const statusBadge = `<div class="absolute bottom-2 left-2 z-10 font-mono text-[9px] font-medium rounded px-1.5 py-0.5 select-none flex items-center gap-1 border" style="${statusBadgeColors[status]};backdrop-filter:blur(6px)">${sm.icon} ${sm.label}</div>`;
+
+  // image with overlays
+  let imgHtml = url
+    ? `<div class="aspect-16-9">${uaBadge}${statusBadge}<img data-src="${url}" alt="${esc(tName(mod))}" decoding="async" class="card-img w-full h-full object-cover" onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="ph" style="display:none"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`
+    : `<div class="aspect-16-9">${uaBadge}${statusBadge}<div class="ph"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`;
 
   const cats = tCats(mod).map(c => {
     const on = activeCats.has(c);
-    return `<span class="font-mono text-[9px] px-1.5 py-px rounded border cursor-pointer select-none transition-all" style="${on?'background:#254060;border-color:#4899c0;color:#7ecfee':'background:rgba(74,153,192,.06);border-color:rgba(74,153,192,.15);color:#4899c0'}" onclick="event.stopPropagation();quickCat('${esc(c)}')">${esc(c)}</span>`;
+    return `<span class="font-mono text-[9px] px-1.5 py-px rounded border cursor-pointer select-none transition-all shrink-0" style="${on?'background:#254060;border-color:#4899c0;color:#7ecfee':'background:rgba(74,153,192,.06);border-color:rgba(74,153,192,.15);color:#4899c0'}" onclick="event.stopPropagation();quickCat('${esc(c)}')">${esc(c)}</span>`;
   }).join('');
 
-  const modVerBadge = `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.2);color:#50c880">v${esc(mod.Version||'?')}</span>`;
-  const testedBadge = testedVer ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}" style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?' ⚠':''}</span>` : '';
-  const updDate = mod.Updated ? `<span class="font-mono text-[9px] text-tmuted">${mod.Updated}</span>` : '';
+  const modVerBadge = `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" style="background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.2);color:#50c880">v${esc(mod.Version||'?')}</span>`;
+  const testedBadge = testedVer ? `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}" style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?' ⚠':''}</span>` : '';
+  const updDate = mod.Updated ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${mod.Updated}</span>` : '';
 
   let transHtml = noTranslation
     ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880" data-tip="Цей мод не потребує перекладу">✓ Переклад не потрібен</span>`
     : isTranslation && trans?.translatedVersion
       ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);color:#c09020" data-tip="Версія українського перекладу">🇺🇦 v${esc(trans.translatedVersion)}</span>`
-      : `<span class="font-mono text-[9px] text-tmuted italic">Перекладу немає</span>`;
+      : `<span class="font-mono text-[9px] text-tmuted">Перекладу немає</span>`;
 
   let depsHtml = deps.length
-    ? `<div class="flex items-center gap-1 flex-wrap"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span>${deps.map(d=>{const dm=allMods.find(m=>m.Name===d);return`<span class="font-mono text-[9px] px-1.5 py-px rounded border" style="background:rgba(74,153,192,.04);border-color:rgba(74,153,192,.12);color:#4899c0" data-tip="${esc(d)}">${esc(dm?tName(dm):d)}</span>`;}).join('')}</div>`
-    : `<div class="flex items-center gap-1"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span><span class="font-mono text-[9px] text-tmuted italic">Відсутні</span></div>`;
+    ? `<div class="hscroll"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span>${deps.map(d=>{const dm=allMods.find(m=>m.Name===d);return`<span class="font-mono text-[9px] px-1.5 py-px rounded border shrink-0" style="background:rgba(74,153,192,.04);border-color:rgba(74,153,192,.12);color:#4899c0" data-tip="${esc(d)}">${esc(dm?tName(dm):d)}</span>`;}).join('')}</div>`
+    : `<div class="flex items-center gap-1"><span class="font-mono text-[9px] text-tmuted shrink-0">Залежності:</span><span class="font-mono text-[9px] text-tmuted">Відсутні</span></div>`;
 
   const ghLink = mod.ModUrl ? `<a href="${mod.ModUrl}" target="_blank" onclick="event.stopPropagation()" data-tip="GitHub мода" class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></a>` : '';
 
-  // DL button for card
+  // DL button — detect if all links are tags
   let dlBtnHtml = '';
   if (links.length > 0) {
+    const allTags  = links.every(l => l.isTag);
     const multiple = links.length > 1;
     const col = isTranslation
       ? {b:'rgba(240,192,64,.3)',bg:'rgba(240,192,64,.08)',t:'#c09020',hb:'rgba(240,192,64,.18)',ht:'#f0c040',hbr:'#f0c040'}
       : {b:'rgba(80,200,128,.25)',bg:'rgba(80,200,128,.07)',t:'#50c880',hb:'rgba(80,200,128,.14)',ht:'#50c880',hbr:'#50c880'};
-    const tip = isTranslation ? 'Завантажити переклад' : (multiple ? 'Кілька файлів — оберіть' : 'Завантажити файл');
-    const icon = multiple
+    const tip = isTranslation ? 'Завантажити переклад'
+              : allTags       ? 'Перейти на сторінку релізу'
+              : multiple      ? 'Кілька файлів — оберіть'
+              :                 'Завантажити файл';
+    // icon: external link for tags, list for multiple files, download for single file
+    const icon = allTags
+      ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`
+      : multiple
       ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
       : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
     dlBtnHtml = `<button onclick="event.stopPropagation();handleCardDownload('${esc(mod.Name)}')" data-tip="${tip}"
@@ -641,24 +665,23 @@ function makeCard(mod) {
   }
 
   wrap.innerHTML = `
-    ${uaBadge}
     <div class="card-cb${isSel?' checked':''}" data-cb>${cbSvg}</div>
     ${imgHtml}
     <div class="flex flex-col flex-1 p-3 gap-2">
-      <div class="flex items-center gap-1 flex-wrap">${cats}<span class="font-mono text-[9px] ml-auto" data-tip="${sm.label}">${sm.icon}</span></div>
+      <div class="hscroll">${cats}</div>
       <div>
         <h2 class="font-display text-[17px] text-white leading-tight" style="letter-spacing:1px">${esc(tName(mod))}</h2>
         <p class="text-[11px] text-tmuted mt-0.5"><a href="${mod.AuthorUrl||'#'}" target="_blank" onclick="event.stopPropagation()" class="text-iced hover:text-ice transition-colors">${esc(mod.Author||'')}</a></p>
       </div>
       <p class="clamp2 text-[12px] text-tdim leading-relaxed flex-1">${esc(tDesc(mod)||'Опис відсутній')}</p>
       <div class="flex flex-col gap-1 border-t border-border pt-2">
-        <div class="flex items-center gap-1 flex-wrap">${transHtml}</div>
+        <div class="flex items-center gap-1">${transHtml}</div>
         ${depsHtml}
       </div>
       <div class="flex items-end justify-between gap-1.5 border-t border-border pt-2 mt-auto">
         <div class="flex flex-col gap-1 min-w-0">
-          <div class="flex items-center gap-1 flex-wrap">${modVerBadge}<div class="w-1.5 h-1.5 rounded-full shrink-0 ${sm.dot}" data-tip="${sm.label}"></div>${updDate}</div>
-          <div class="flex items-center gap-1 flex-wrap">${testedBadge}</div>
+          <div class="hscroll">${modVerBadge}<div class="w-1.5 h-1.5 rounded-full shrink-0 ${sm.dot}"></div>${updDate}</div>
+          <div class="hscroll">${testedBadge}</div>
         </div>
         <div class="flex gap-1 shrink-0">${ghLink}${dlBtnHtml}</div>
       </div>
