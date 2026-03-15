@@ -27,6 +27,14 @@ jobs:
             -o mods-cache.json
           echo "Завантажено $(jq length mods-cache.json) модів"
 
+      - name: Кешувати картинки модів
+        run: |
+          mkdir -p images-cache
+          jq -r '.[].Images[]? // empty' mods-cache.json | while read url; do
+            fname=$(echo "$url" | md5sum | cut -d' ' -f1).${url##*.}
+            [ ! -f "images-cache/$fname" ] && curl -fsSL "$url" -o "images-cache/$fname" 2>/dev/null || true
+          done
+
       - name: Зберегти в репозиторій (якщо змінився)
         run: |
           git config user.name "github-actions[bot]"
