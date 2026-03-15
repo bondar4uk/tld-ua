@@ -1,0 +1,17 @@
+{
+  "_comment": "Додай сюди моди які ти переклав. Ключ — це точне Name з API (наприклад 'AdaptiveArsenal'). files — масив файлів перекладу що лежать у папці translations/ цього репозиторію.",
+  "mods": {
+    "AdaptiveArsenal": {
+      "translatedVersion": "1.0.9",
+      "files": [
+        "translations/AdaptiveArsenal.dll"
+      ]
+    },
+    "AdjustableWalkSpeed": {
+      "translatedVersion": "1.1.0",
+      "files": [
+        "translations/AdjustableWalkSpeed.dll"
+      ]
+    }
+  }
+}

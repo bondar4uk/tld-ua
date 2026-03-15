@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TLD Mods UA — Українські переклади модів для The Long Dark</title>
+  <meta name="description" content="Завантаж українські переклади модів для The Long Dark одним ZIP-архівом">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --bg:          #090b0e;
+      --bg2:         #0d1117;
+      --bg3:         #131a22;
+      --card:        #0f1620;
+      --card-hover:  #141e2a;
+      --border:      #1c2a3a;
+      --border-glow: #254060;
+      --gold:        #f0c040;
+      --gold-dim:    #c09020;
+      --gold-glow:   rgba(240,192,64,.10);
+      --ice:         #7ecfee;
+      --ice-dim:     #4899c0;
+      --text:        #cdd8e8;
+      --text-dim:    #6a84a0;
+      --text-muted:  #3a526a;
+      --green:       #50c880;
+      --red:         #e04060;
+      --font-d: 'Bebas Neue', sans-serif;
+      --font-b: 'Raleway', sans-serif;
+      --font-m: 'Share Tech Mono', monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+    /* HEADER */
+    header{position:relative;padding:64px 24px 44px;text-align:center;border-bottom:1px solid var(--border);overflow:hidden}
+    header::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:320px;background:radial-gradient(ellipse,rgba(126,207,238,.06) 0%,transparent 70%);pointer-events:none}
+    .snowflakes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .snowflake{position:absolute;top:-12px;color:rgba(126,207,238,.25);animation:fall linear infinite}
+    @keyframes fall{to{transform:translateY(220px);opacity:0}}
+    .eyebrow{font-family:var(--font-m);font-size:11px;letter-spacing:4px;color:var(--ice-dim);text-transform:uppercase;margin-bottom:12px;opacity:.75}
+    h1{font-family:var(--font-d);font-size:clamp(52px,9vw,104px);letter-spacing:5px;line-height:1;color:#fff;text-shadow:0 0 70px rgba(126,207,238,.15);margin-bottom:4px}
+    h1 em{color:var(--gold);font-style:normal;text-shadow:0 0 40px rgba(240,192,64,.35)}
+    .header-sub{font-size:14px;color:var(--text-dim);font-weight:300;letter-spacing:.5px;margin-top:10px;margin-bottom:24px}
+    .ua-flag{display:inline-flex;overflow:hidden;border-radius:3px;border:1px solid var(--border);margin-top:4px}
+    .ua-flag span{display:block;width:54px;height:7px}
+    .ua-flag .sky{background:#005BBB}
+    .ua-flag .sun{background:#FFD500}
+
+    /* CONTROLS */
+    .controls{position:sticky;top:0;z-index:100;background:rgba(9,11,14,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .search-wrap{flex:1;min-width:200px;position:relative}
+    .search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none}
+    #search{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 12px 8px 36px;color:var(--text);font-family:var(--font-b);font-size:14px;outline:none;transition:border-color .2s}
+    #search:focus{border-color:var(--ice-dim)}
+    #search::placeholder{color:var(--text-muted)}
+    .filters{display:flex;gap:5px;flex-wrap:wrap}
+    .fbtn{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:6px 14px;color:var(--text-dim);font-family:var(--font-b);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .fbtn:hover{border-color:var(--ice-dim);color:var(--text)}
+    .fbtn.active{background:var(--ice-dim);border-color:var(--ice);color:#fff}
+    .fbtn.ua-btn.active{background:#005BBB;border-color:#FFD500;color:#FFD500}
+    .cbtn{background:transparent;border:1px solid var(--border);border-radius:4px;padding:6px 14px;color:var(--text-dim);font-family:var(--font-b);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .cbtn:hover{border-color:var(--gold-dim);color:var(--gold)}
+
+    /* MAIN */
+    main{max-width:1440px;margin:0 auto;padding:26px 24px 130px;position:relative;z-index:1}
+    .stats-bar{display:flex;align-items:center;gap:20px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+    .stat{font-family:var(--font-m);font-size:12px;color:var(--text-muted)}
+    .stat strong{color:var(--ice)}
+    .stat strong.ua{color:var(--gold)}
+    .stat strong.sel{color:var(--green)}
+    .mods-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+
+    /* CARD */
+    .mod-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;position:relative;display:flex;flex-direction:column;transition:border-color .2s,background .2s,transform .15s,box-shadow .2s;animation:fadeUp .3s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .mod-card:hover{background:var(--card-hover);border-color:var(--border-glow);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+    .mod-card.selected{border-color:var(--gold)}
+    .mod-card.selected::before{content:'';position:absolute;inset:0;background:var(--gold-glow);pointer-events:none;border-radius:7px}
+    .ua-badge{position:absolute;top:10px;left:10px;display:none;background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);border-radius:3px;padding:2px 7px;font-family:var(--font-m);font-size:10px;color:#fff;letter-spacing:.5px;z-index:3;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+    .mod-card.has-ua .ua-badge{display:block}
+    .ccheck{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:4px;border:2px solid var(--border-glow);background:var(--bg2);display:flex;align-items:center;justify-content:center;z-index:3;transition:all .15s}
+    .mod-card.selected .ccheck{background:var(--gold);border-color:var(--gold)}
+    .ccheck svg{display:none}
+    .mod-card.selected .ccheck svg{display:block}
+    .card-img{width:100%;height:158px;object-fit:cover;display:block;background:var(--bg3);flex-shrink:0}
+    .card-ph{width:100%;height:158px;background:linear-gradient(135deg,#0c1720 0%,#182535 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .card-ph svg{opacity:.1}
+    .card-body{padding:14px 14px 12px;display:flex;flex-direction:column;flex:1}
+    .card-cats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
+    .cat{font-family:var(--font-m);font-size:10px;color:var(--ice-dim);background:rgba(126,207,238,.06);border:1px solid rgba(126,207,238,.12);border-radius:3px;padding:1px 6px}
+    .card-name{font-family:var(--font-d);font-size:21px;letter-spacing:1px;color:#fff;line-height:1.15;margin-bottom:4px}
+    .card-author{font-size:12px;color:var(--text-muted);margin-bottom:9px}
+    .card-author a{color:var(--ice-dim);text-decoration:none}
+    .card-author a:hover{color:var(--ice)}
+    .card-desc{font-size:13px;color:var(--text-dim);line-height:1.5;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:12px}
+    .card-footer{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;border-top:1px solid var(--border);padding-top:10px;margin-top:auto}
+    .versions{display:flex;flex-direction:column;gap:4px}
+    .vrow{display:flex;align-items:center;gap:6px}
+    .vlbl{font-size:10px;color:var(--text-muted);letter-spacing:.3px;min-width:58px}
+    .vbadge{font-family:var(--font-m);font-size:11px;padding:1px 7px;border-radius:3px}
+    .vbadge.cur{background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.22);color:var(--green)}
+    .vbadge.ua{background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.22);color:var(--gold-dim)}
+    .vbadge.none{background:rgba(58,82,106,.08);border:1px solid rgba(58,82,106,.18);color:var(--text-muted);font-style:italic}
+    .sdot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
+    .sdot.broken{background:var(--red);box-shadow:0 0 5px var(--red)}
+    .clinks{display:flex;gap:5px}
+    .ilink{width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;color:var(--text-muted);text-decoration:none;transition:all .15s}
+    .ilink:hover{border-color:var(--ice-dim);color:var(--ice);background:rgba(126,207,238,.05)}
+
+    /* DL BAR */
+    .dl-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(9,11,14,.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:14px;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+    .dl-bar.visible{transform:translateY(0)}
+    .dl-info{flex:1;font-size:13px;color:var(--text-dim);white-space:nowrap}
+    .dl-info strong{font-family:var(--font-m);color:var(--gold)}
+    .chips{display:flex;gap:5px;flex-wrap:wrap;overflow:hidden;max-height:30px;max-width:45%}
+    .chip{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:2px 8px;font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:4px;white-space:nowrap}
+    .chip button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;line-height:1;padding:0}
+    .chip button:hover{color:var(--red)}
+    .dl-btn{background:var(--gold);border:none;border-radius:6px;padding:11px 26px;color:#090b0e;font-family:var(--font-d);font-size:18px;letter-spacing:2px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;transition:all .15s}
+    .dl-btn:hover{background:#ffd060;transform:translateY(-1px);box-shadow:0 4px 22px rgba(240,192,64,.3)}
+    .dl-btn:active{transform:translateY(0)}
+    .dl-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+    /* OVERLAY */
+    .overlay{position:fixed;inset:0;background:rgba(9,11,14,.92);backdrop-filter:blur(10px);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+    .overlay.on{display:flex}
+    .ring{width:44px;height:44px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ov-title{font-family:var(--font-d);font-size:30px;letter-spacing:3px;color:var(--gold)}
+    .ov-msg{font-family:var(--font-m);font-size:13px;color:var(--text-dim);max-width:380px;text-align:center}
+    .prog-wrap{width:320px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+    .prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .3s ease;width:0%}
+
+    /* STATES */
+    .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;gap:18px;color:var(--text-muted)}
+    .loading .ring{border-top-color:var(--ice-dim)}
+    .empty,.error-msg{text-align:center;padding:60px 24px;color:var(--text-muted)}
+    .error-msg{color:var(--red)}
+
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--border-glow)}
+
+    @media(max-width:600px){.mods-grid{grid-template-columns:1fr}.chips{display:none}}
+  </style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="ring"></div>
+  <div class="ov-title">ЗБИРАЄМО ZIP</div>
+  <div class="ov-msg" id="ovMsg">Підготовка…</div>
+  <div class="prog-wrap"><div class="prog-fill" id="progFill"></div></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="snowflakes" id="snowflakes"></div>
+  <div class="eyebrow">❄ The Long Dark — Українські переклади модів</div>
+  <h1>TLD <em>MODS</em> UA</h1>
+  <p class="header-sub">Вибери потрібні моди і завантаж одним ZIP-архівом</p>
+  <div class="ua-flag"><span class="sky"></span><span class="sun"></span></div>
+</header>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="search" placeholder="Пошук за назвою, автором, описом…" autocomplete="off">
+  </div>
+  <div class="filters">
+    <button class="fbtn active" data-filter="all">Усі моди</button>
+    <button class="fbtn ua-btn" data-filter="translated">🇺🇦 Перекладені</button>
+  </div>
+  <button class="cbtn" id="deselectBtn">Скинути вибір</button>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat">Показано: <strong id="sVisible">0</strong></div>
+    <div class="stat">Перекладено: <strong class="ua" id="sTranslated">0</strong></div>
+    <div class="stat">Вибрано: <strong class="sel" id="sSelected">0</strong></div>
+  </div>
+  <div id="content">
+    <div class="loading">
+      <div class="ring"></div>
+      <span>Завантаження списку модів…</span>
+    </div>
+  </div>
+</main>
+
+<!-- DL BAR -->
+<div class="dl-bar" id="dlBar">
+  <div class="dl-info">Вибрано: <strong id="dlCount">0</strong> модів</div>
+  <div class="chips" id="chips"></div>
+  <button class="dl-btn" id="dlBtn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    ЗАВАНТАЖИТИ ZIP
+  </button>
+</div>
+
+<script>
+const API_URL    = 'https://tldmods.com/api.json?details';
+const TRANS_URL  = './translations.json';
+const PROXY      = 'https://corsproxy.io/?';
+
+let allMods      = [];
+let translations = {};
+let selected     = new Set();
+let activeFilter = 'all';
+let searchQ      = '';
+
+async function init() {
+  spawnSnow();
+  try {
+    const [modsRaw, transRaw] = await Promise.all([apiFetch(API_URL), localFetch(TRANS_URL)]);
+    translations = transRaw.mods || {};
+    allMods = modsRaw.filter(m => m.Type === 'mod');
+    document.getElementById('statsBar').style.display = 'flex';
+    render();
+  } catch (e) {
+    document.getElementById('content').innerHTML =
+      `<div class="error-msg">⚠ Не вдалося завантажити список модів<br>
+       <small style="font-size:12px;color:var(--text-muted)">${e.message}</small></div>`;
+  }
+}
+
+async function apiFetch(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw 0;
+    return r.json();
+  } catch {
+    const r = await fetch(PROXY + encodeURIComponent(url));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }
+}
+
+async function localFetch(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return { mods: {} };
+    return r.json();
+  } catch { return { mods: {} }; }
+}
+
+function getFiltered() {
+  let mods = allMods;
+  if (activeFilter === 'translated') mods = mods.filter(m => translations[m.Name]);
+  if (searchQ) {
+    const q = searchQ.toLowerCase();
+    mods = mods.filter(m =>
+      m.DisplayName.toLowerCase().includes(q) ||
+      (m.Description || '').toLowerCase().includes(q) ||
+      (m.Author || '').toLowerCase().includes(q) ||
+      (m.Categories || []).some(c => c.toLowerCase().includes(q))
+    );
+  }
+  return mods;
+}
+
+function render() {
+  const list = getFiltered();
+  const transCount = allMods.filter(m => translations[m.Name]).length;
+  document.getElementById('sVisible').textContent    = list.length;
+  document.getElementById('sTranslated').textContent = transCount;
+  document.getElementById('sSelected').textContent   = selected.size;
+
+  if (!list.length) {
+    document.getElementById('content').innerHTML =
+      `<div class="empty">Нічого не знайдено за запитом «${esc(searchQ)}»</div>`;
+    return;
+  }
+  const grid = document.createElement('div');
+  grid.className = 'mods-grid';
+  list.forEach((mod, i) => {
+    const card = makeCard(mod);
+    card.style.animationDelay = Math.min(i * 25, 350) + 'ms';
+    grid.appendChild(card);
+  });
+  document.getElementById('content').innerHTML = '';
+  document.getElementById('content').appendChild(grid);
+  updateBar();
+}
+
+function makeCard(mod) {
+  const isSel  = selected.has(mod.Name);
+  const trans  = translations[mod.Name];
+  const hasImg = mod.Images && mod.Images.length > 0;
+  const ok     = !(mod.Status && mod.Status.working === false);
+
+  const card = document.createElement('div');
+  card.className = 'mod-card' + (isSel ? ' selected' : '') + (trans ? ' has-ua' : '');
+  card.dataset.name = mod.Name;
+
+  const cats = (mod.Categories || []).map(c => `<span class="cat">${esc(c)}</span>`).join('');
+
+  const imgHtml = hasImg
+    ? `<img class="card-img" src="${mod.Images[0]}" alt="${esc(mod.DisplayName)}" loading="lazy"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+    : '';
+  const ph = `<div class="card-ph"${hasImg ? ' style="display:none"' : ''}>
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg></div>`;
+
+  const uaRow = trans
+    ? `<div class="vrow"><span class="vlbl">Переклад:</span><span class="vbadge ua">v${esc(trans.translatedVersion)}</span></div>`
+    : `<div class="vrow"><span class="vlbl">Переклад:</span><span class="vbadge none">немає</span></div>`;
+
+  const ghLink = mod.ModUrl
+    ? `<a class="ilink" href="${mod.ModUrl}" target="_blank" title="GitHub мода" onclick="event.stopPropagation()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg></a>`
+    : '';
+
+  card.innerHTML = `
+    <div class="ua-badge">🇺🇦 UA</div>
+    <div class="ccheck">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    ${imgHtml}${ph}
+    <div class="card-body">
+      <div class="card-cats">${cats}</div>
+      <div class="card-name">${esc(mod.DisplayName)}</div>
+      <div class="card-author">автор: <a href="${mod.AuthorUrl||'#'}" target="_blank" onclick="event.stopPropagation()">${esc(mod.Author)}</a></div>
+      <div class="card-desc">${esc(mod.Description || 'Опис відсутній')}</div>
+      <div class="card-footer">
+        <div class="versions">
+          <div class="vrow">
+            <span class="vlbl">Мод:</span>
+            <span class="vbadge cur">v${esc(mod.Version)}</span>
+            <div class="sdot${ok?'':' broken'}" title="${ok?'Працює':'Є проблеми'}"></div>
+          </div>
+          ${uaRow}
+        </div>
+        <div class="clinks">${ghLink}</div>
+      </div>
+    </div>`;
+
+  card.addEventListener('click', () => toggle(mod.Name));
+  return card;
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toggle(name) {
+  selected.has(name) ? selected.delete(name) : selected.add(name);
+  const c = document.querySelector(`.mod-card[data-name="${CSS.escape(name)}"]`);
+  if (c) c.classList.toggle('selected', selected.has(name));
+  updateBar();
+  document.getElementById('sSelected').textContent = selected.size;
+}
+
+function updateBar() {
+  const n = selected.size;
+  document.getElementById('dlCount').textContent = n;
+  document.getElementById('dlBar').classList.toggle('visible', n > 0);
+  const chips = document.getElementById('chips');
+  chips.innerHTML = '';
+  [...selected].slice(0, 5).forEach(name => {
+    const mod = allMods.find(m => m.Name === name);
+    if (!mod) return;
+    const ch = document.createElement('div');
+    ch.className = 'chip';
+    ch.innerHTML = `${esc(mod.DisplayName)}
+      <button onclick="event.stopPropagation();toggle('${name.replace(/'/g,"\\'")}')">×</button>`;
+    chips.appendChild(ch);
+  });
+  if (n > 5) {
+    const ch = document.createElement('div');
+    ch.className = 'chip';
+    ch.textContent = `+${n-5} ще`;
+    chips.appendChild(ch);
+  }
+}
+
+// ── DOWNLOAD ──
+document.getElementById('dlBtn').addEventListener('click', downloadZip);
+
+async function downloadZip() {
+  const mods = allMods.filter(m => selected.has(m.Name));
+  if (!mods.length) return;
+
+  const overlay = document.getElementById('overlay');
+  const msg     = document.getElementById('ovMsg');
+  const fill    = document.getElementById('progFill');
+  const btn     = document.getElementById('dlBtn');
+  overlay.classList.add('on');
+  btn.disabled = true;
+
+  const zip = new JSZip();
+  let done = 0;
+
+  for (const mod of mods) {
+    msg.textContent = `Завантажуємо: ${mod.DisplayName} (${done+1}/${mods.length})`;
+
+    // original mod files
+    const urls = mod.Downloads || (mod.Download ? [mod.Download] : []);
+    for (const url of urls) {
+      const fname = url.split('/').pop().split('?')[0];
+      try { zip.file(fname, await blobFetch(url)); }
+      catch { zip.file(`${mod.Name}_НЕ_ЗАВАНТАЖЕНО.txt`,
+        `Не вдалося завантажити: ${url}\nЗавантаж вручну з: ${mod.ModUrl||''}`); }
+    }
+
+    // translation files from THIS repo (папка translations/)
+    const trans = translations[mod.Name];
+    if (trans && trans.files) {
+      for (const relPath of trans.files) {
+        try {
+          const r = await fetch(relPath);
+          if (!r.ok) throw new Error('not found');
+          const fname = relPath.split('/').pop();
+          zip.file(fname, await r.blob());
+        } catch {
+          // файл перекладу ще не завантажено — просто пропускаємо
+        }
+      }
+    }
+
+    done++;
+    fill.style.width = (done / mods.length * 100) + '%';
+  }
+
+  msg.textContent = 'Створюємо архів…';
+  try {
+    const blob = await zip.generateAsync({ type:'blob', compression:'DEFLATE' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `TLD_Mods_UA_${new Date().toISOString().slice(0,10)}.zip`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } catch(e) { alert('Помилка: ' + e.message); }
+
+  overlay.classList.remove('on');
+  btn.disabled = false;
+  fill.style.width = '0%';
+}
+
+async function blobFetch(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw 0;
+    return r.blob();
+  } catch {
+    const r = await fetch(PROXY + encodeURIComponent(url));
+    if (!r.ok) throw new Error(r.status);
+    return r.blob();
+  }
+}
+
+// ── EVENTS ──
+let st;
+document.getElementById('search').addEventListener('input', e => {
+  clearTimeout(st);
+  st = setTimeout(() => { searchQ = e.target.value.trim(); render(); }, 180);
+});
+document.querySelector('.filters').addEventListener('click', e => {
+  const b = e.target.closest('.fbtn');
+  if (!b) return;
+  document.querySelectorAll('.fbtn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  activeFilter = b.dataset.filter;
+  render();
+});
+document.getElementById('deselectBtn').addEventListener('click', () => {
+  selected.clear();
+  document.querySelectorAll('.mod-card.selected').forEach(c => c.classList.remove('selected'));
+  updateBar();
+  document.getElementById('sSelected').textContent = 0;
+});
+
+// ── SNOW ──
+function spawnSnow() {
+  const c = document.getElementById('snowflakes');
+  '❄❅❆✦✧'.split('').forEach(s => {
+    for (let i = 0; i < 3; i++) {
+      const el = document.createElement('span');
+      el.className = 'snowflake';
+      el.textContent = s;
+      el.style.cssText = `left:${Math.random()*100}%;font-size:${7+Math.random()*7}px;`
+        + `animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*8}s;`
+        + `opacity:${0.1+Math.random()*0.25}`;
+      c.appendChild(el);
+    }
+  });
+}
+
+init();
+</script>
+</body>
+</html>
