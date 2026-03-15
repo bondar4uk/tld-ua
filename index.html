@@ -688,11 +688,11 @@ function makeCard(mod) {
         <div class="flex items-center gap-1">${transHtml}</div>
         ${depsHtml}
       </div>
-      <div class="flex items-end justify-between gap-1.5 border-t border-border pt-2 mt-auto">
-<div class="flex items-center justify-between gap-2 min-w-0">
-  <div class="hscroll">${modVerBadge}${testedBadge}</div>
-  ${updDate ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${mod.Updated}</span>` : ''}
-</div>
+<div class="flex items-center justify-between gap-1.5 border-t border-border pt-2 mt-auto">
+        <div class="flex items-center justify-between gap-2 min-w-0 flex-1">
+          <div class="hscroll">${modVerBadge}${testedBadge}</div>
+          ${updDate ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${mod.Updated}</span>` : ''}
+        </div>
         <div class="flex gap-1 shrink-0">${ghLink}${dlBtnHtml}</div>
       </div>
     </div>`;
