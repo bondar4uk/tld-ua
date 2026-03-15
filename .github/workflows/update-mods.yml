@@ -1,0 +1,37 @@
+name: Оновлення списку модів
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # щодня о 6:00 UTC
+  workflow_dispatch:        # або вручну через кнопку на GitHub
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Завантажити список модів з API
+        run: |
+          curl -fsSL \
+            -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
+            -H "Accept: application/json" \
+            "https://tldmods.com/api.json?details" \
+            -o mods-cache.json
+          echo "Завантажено $(jq length mods-cache.json) модів"
+
+      - name: Зберегти в репозиторій (якщо змінився)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add mods-cache.json
+          if git diff --staged --quiet; then
+            echo "Список модів не змінився, пропускаємо коміт"
+          else
+            git commit -m "chore: оновлення списку модів $(date -u +%Y-%m-%d)"
+            git push
+          fi
