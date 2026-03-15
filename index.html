@@ -217,7 +217,12 @@
 <script>
 const API_URL    = 'https://tldmods.com/api.json?details';
 const TRANS_URL  = './translations.json';
-const PROXY      = 'https://corsproxy.io/?';
+// кілька CORS-проксі для надійності
+const PROXIES = [
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://cors-anywhere.herokuapp.com/${url}`,
+];
 
 let allMods      = [];
 let translations = {};
@@ -241,15 +246,15 @@ async function init() {
 }
 
 async function apiFetch(url) {
-  try {
-    const r = await fetch(url);
-    if (!r.ok) throw 0;
-    return r.json();
-  } catch {
-    const r = await fetch(PROXY + encodeURIComponent(url));
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
+  // tldmods.com не підтримує CORS — одразу через проксі
+  for (const makeUrl of PROXIES) {
+    try {
+      const r = await fetch(makeUrl(url), { signal: AbortSignal.timeout(8000) });
+      if (!r.ok) continue;
+      return await r.json();
+    } catch { /* спробуємо наступний */ }
   }
+  throw new Error('Усі CORS-проксі недоступні. Спробуй пізніше.');
 }
 
 async function localFetch(url) {
@@ -459,15 +464,14 @@ async function downloadZip() {
 }
 
 async function blobFetch(url) {
-  try {
-    const r = await fetch(url);
-    if (!r.ok) throw 0;
-    return r.blob();
-  } catch {
-    const r = await fetch(PROXY + encodeURIComponent(url));
-    if (!r.ok) throw new Error(r.status);
-    return r.blob();
+  for (const makeUrl of PROXIES) {
+    try {
+      const r = await fetch(makeUrl(url), { signal: AbortSignal.timeout(15000) });
+      if (!r.ok) continue;
+      return await r.blob();
+    } catch { /* спробуємо наступний */ }
   }
+  throw new Error('Не вдалося завантажити файл через жоден проксі');
 }
 
 // ── EVENTS ──
