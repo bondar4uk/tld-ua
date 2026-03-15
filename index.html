@@ -215,14 +215,8 @@
 </div>
 
 <script>
-const API_URL    = 'https://tldmods.com/api.json?details';
+const CACHE_URL  = './mods-cache.json';   // оновлюється GitHub Actions щодня
 const TRANS_URL  = './translations.json';
-// кілька CORS-проксі для надійності
-const PROXIES = [
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url => `https://cors-anywhere.herokuapp.com/${url}`,
-];
 
 let allMods      = [];
 let translations = {};
@@ -233,36 +227,42 @@ let searchQ      = '';
 async function init() {
   spawnSnow();
   try {
-    const [modsRaw, transRaw] = await Promise.all([apiFetch(API_URL), localFetch(TRANS_URL)]);
-    translations = transRaw.mods || {};
+    const [modsRaw, transRaw] = await Promise.all([localFetch(CACHE_URL), localFetch(TRANS_URL)]);
+    if (!Array.isArray(modsRaw)) throw new Error('no-cache');
+    translations = (transRaw && transRaw.mods) || {};
     allMods = modsRaw.filter(m => m.Type === 'mod');
     document.getElementById('statsBar').style.display = 'flex';
     render();
   } catch (e) {
-    document.getElementById('content').innerHTML =
-      `<div class="error-msg">⚠ Не вдалося завантажити список модів<br>
-       <small style="font-size:12px;color:var(--text-muted)">${e.message}</small></div>`;
+    const isNoCacheErr = e.message === 'no-cache';
+    document.getElementById('content').innerHTML = isNoCacheErr
+      ? `<div class="error-msg" style="max-width:520px;margin:0 auto;line-height:1.8">
+           <div style="font-size:22px;margin-bottom:12px">⚙️ Потрібне перше налаштування</div>
+           <div style="color:var(--text-dim);font-size:14px">
+             Файл <code style="color:var(--gold);background:var(--bg3);padding:1px 6px;border-radius:3px">mods-cache.json</code> ще не створено.<br>
+             Виконай такі кроки:
+           </div>
+           <ol style="color:var(--text-dim);font-size:14px;margin:14px 0 0 20px;display:flex;flex-direction:column;gap:8px">
+             <li>Відкрий свій репозиторій на GitHub</li>
+             <li>Перейди у вкладку <strong style="color:var(--text)">Actions</strong></li>
+             <li>Вибери <strong style="color:var(--text)">«Оновлення списку модів»</strong></li>
+             <li>Натисни <strong style="color:var(--gold)">Run workflow → Run workflow</strong></li>
+             <li>Зачекай ~30 секунд, потім онови сторінку</li>
+           </ol>
+         </div>`
+      : `<div class="error-msg">⚠ Помилка завантаження<br>
+           <small style="font-size:12px;color:var(--text-muted)">${e.message}</small></div>`;
   }
 }
 
-async function apiFetch(url) {
-  // tldmods.com не підтримує CORS — одразу через проксі
-  for (const makeUrl of PROXIES) {
-    try {
-      const r = await fetch(makeUrl(url), { signal: AbortSignal.timeout(8000) });
-      if (!r.ok) continue;
-      return await r.json();
-    } catch { /* спробуємо наступний */ }
-  }
-  throw new Error('Усі CORS-проксі недоступні. Спробуй пізніше.');
-}
+
 
 async function localFetch(url) {
   try {
     const r = await fetch(url);
-    if (!r.ok) return { mods: {} };
+    if (!r.ok) return null;
     return r.json();
-  } catch { return { mods: {} }; }
+  } catch { return null; }
 }
 
 function getFiltered() {
@@ -464,14 +464,10 @@ async function downloadZip() {
 }
 
 async function blobFetch(url) {
-  for (const makeUrl of PROXIES) {
-    try {
-      const r = await fetch(makeUrl(url), { signal: AbortSignal.timeout(15000) });
-      if (!r.ok) continue;
-      return await r.blob();
-    } catch { /* спробуємо наступний */ }
-  }
-  throw new Error('Не вдалося завантажити файл через жоден проксі');
+  // GitHub releases підтримують CORS — пряме завантаження
+  const r = await fetch(url, { signal: AbortSignal.timeout(20000) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.blob();
 }
 
 // ── EVENTS ──
