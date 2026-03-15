@@ -114,8 +114,6 @@
 
     #tooltip { position:fixed; background:#0f1620; border:1px solid #254060; border-radius:6px; padding:5px 10px; font-size:11.5px; color:#cdd8e8; pointer-events:none; z-index:10000; opacity:0; transition:opacity .12s ease; white-space:nowrap; max-width:280px; box-shadow:0 4px 16px rgba(0,0,0,.5); transform:translateX(-50%); }
     #tooltip.show { opacity:1; }
-    #tooltip.tip-above::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#254060; }
-    #tooltip.tip-below::after { content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%); border:5px solid transparent; border-bottom-color:#254060; }
 
     #backTop { position:fixed; bottom:76px; right:20px; z-index:500; width:34px; height:34px; border-radius:8px; background:#131a22; border:1px solid #254060; color:#4899c0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; opacity:0; pointer-events:none; }
     #backTop.show { opacity:1; pointer-events:auto; }
@@ -294,7 +292,7 @@
 <!-- DOWNLOAD BAR -->
 <div id="dlBar" class="dl-bar fixed bottom-0 left-0 right-0 z-[200] border-t border-border px-4 py-2.5 flex items-center gap-3" style="background:rgba(9,11,14,.98);backdrop-filter:blur(20px)">
   <p class="flex-1 text-sm text-tdim whitespace-nowrap">
-    Вибрано: <strong id="dlCount" class="font-mono text-gold">0</strong> модів
+    Вибрано: <strong id="dlCount" class="font-mono text-gold">0 модів</strong>
   </p>
   <div id="chips" class="flex gap-1.5 flex-wrap overflow-hidden max-h-7 max-w-[40%]"></div>
   <button id="dlBtn" class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gold text-bg font-display text-lg tracking-widest cursor-pointer border-0 whitespace-nowrap transition-all hover:bg-[#ffd060] hover:-translate-y-px active:translate-y-0" style="letter-spacing:2px">
@@ -356,12 +354,42 @@ _btt.addEventListener('click', () => _ms.scrollTo({top:0,behavior:'smooth'}));
 
 // MODAL
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  // Clear download progress when closing
+  dlDone.clear();
+  document.querySelectorAll('.dl-file-row.done').forEach(r=>{
+    r.classList.remove('done');
+    const chk=r.querySelector('.dl-check'); if(chk) chk.innerHTML='';
+  });
+}
+
+// Ukrainian plurals
+function pluralMod(n) {
+  const abs=Math.abs(n), mod10=abs%10, mod100=abs%100;
+  if (mod100>=11&&mod100<=14) return `${n} модів`;
+  if (mod10===1) return `${n} мод`;
+  if (mod10>=2&&mod10<=4) return `${n} моди`;
+  return `${n} модів`;
+}
+function pluralFile(n) {
+  const abs=Math.abs(n), mod10=abs%10, mod100=abs%100;
+  if (mod100>=11&&mod100<=14) return `${n} файлів`;
+  if (mod10===1) return `${n} файл`;
+  if (mod10>=2&&mod10<=4) return `${n} файли`;
+  return `${n} файлів`;
+}
+function pluralDep(n) {
+  const abs=Math.abs(n), mod10=abs%10, mod100=abs%100;
+  if (mod100>=11&&mod100<=14) return `${n} залежн.`;
+  if (mod10===1) return `${n} залежн.`;
+  if (mod10>=2&&mod10<=4) return `${n} залежн.`;
+  return `${n} залежн.`;
+}
+
 ['singleModal','batchModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(id); });
 });
-
-// STATUS
 function semverGte(v1, v2) {
   const p1 = String(v1||'').split('.').map(Number), p2 = String(v2||'').split('.').map(Number);
   for (let i = 0; i < Math.max(p1.length, p2.length); i++) { const a=p1[i]||0, b=p2[i]||0; if(a>b)return true; if(a<b)return false; }
@@ -396,16 +424,22 @@ function esc(s)     { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function uniq(arr)  { return [...new Set(arr)]; }
 function getFileExt(fname) { const m = fname.match(/\.([^.]+)$/); return m ? m[1].toUpperCase() : ''; }
 function isFileUrl(url)    { return /\.(zip|7z|dll|modcomponent)(\?.*)?$/i.test(url); }
+function isTagUrl(url)     { return /\/releases\/tag\//i.test(url); }
+// Extract version from tag URL: .../tag/v1.2.3 → "v1.2.3"
+function tagVersion(url)   { const m=url.match(/\/releases\/tag\/([^/?]+)/i); return m?m[1]:''; }
 
-// Returns links for a mod: { links:[{url,isFile,label}], isTranslation, noTranslation }
+// Returns links for a mod: { links:[{url,isFile,isTag,label,version}], isTranslation, noTranslation }
 function getModLinks(mod) {
   const trans = translations[mod.Name];
   if (trans?.noTranslation) return { links:[], isTranslation:false, noTranslation:true };
   if (trans?.files?.length) {
-    return { links: uniq(trans.files).map(url => ({ url, isFile:isFileUrl(url), label:url.split('/').pop().split('?')[0] })), isTranslation:true, noTranslation:false };
+    return { links: uniq(trans.files).map(url => ({ url, isFile:isFileUrl(url), isTag:false, label:url.split('/').pop().split('?')[0], version:'' })), isTranslation:true, noTranslation:false };
   }
-  const raw   = uniq(mod.Downloads || (mod.Download ? [mod.Download] : []));
-  const links = raw.map(url => ({ url, isFile:isFileUrl(url), label:url.split('/').pop().split('?')[0] || url }));
+  const raw = uniq(mod.Downloads || (mod.Download ? [mod.Download] : []));
+  const allLinks = raw.map(url => ({ url, isFile:isFileUrl(url), isTag:isTagUrl(url), label:url.split('/').pop().split('?')[0]||url, version:tagVersion(url) }));
+  // If there are real files AND tag links — drop the tag links
+  const hasFiles = allLinks.some(l => l.isFile);
+  const links = hasFiles ? allLinks.filter(l => l.isFile) : allLinks;
   return { links, isTranslation:false, noTranslation:false };
 }
 
@@ -525,6 +559,8 @@ function render() {
   document.getElementById('sVisible').textContent    = list.length;
   document.getElementById('sTranslated').textContent = allMods.filter(m=>translations[m.Name]).length;
   document.getElementById('sSelected').textContent   = selected.size;
+  // update bar count plural
+  updateBar();
   const cnt = document.getElementById('content');
   cnt.querySelectorAll('img.card-img').forEach(i=>{i.onerror=null;i.src='';});
   cnt.innerHTML='';
@@ -534,7 +570,7 @@ function render() {
   grid.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
   list.forEach((mod,i) => { const c=makeCard(mod); c.style.animationDelay=Math.min(i*18,260)+'ms'; grid.appendChild(c); });
   cnt.appendChild(grid);
-  observeLazy(); updateBar();
+  observeLazy();
 }
 
 // CARD
@@ -647,25 +683,28 @@ function handleCardDownload(modName) {
   document.getElementById('singleModalTitle').textContent = tName(mod);
   const container = document.getElementById('singleModalFiles');
   container.innerHTML='';
-  links.forEach(({url,label}) => {
+  links.forEach(({url,label,isTag,version}) => {
     const key = modName+'|'+url;
-    const row = makeDlRow(label, url, key, () => updateBatchProgress());
+    const row = makeDlRow(label, url, key, ()=>updateBatchProgress(), {isTag,version});
     container.appendChild(row);
   });
   openModal('singleModal');
 }
 
-function makeDlRow(label, url, key, onDone) {
-  const done = dlDone.has(key);
+function makeDlRow(label, url, key, onDone, opts={}) {
+  const done  = dlDone.has(key);
+  const isTag = opts.isTag    || false;
+  const ver   = opts.version  || '';
   const row = document.createElement('a');
   row.href=url; row.target='_blank';
   row.className = 'dl-file-row' + (done?' done':'');
-  const ext = getFileExt(label) || 'LINK';
+  const displayLabel = isTag ? 'Перейдіть за посиланням і скачайте потрібний файл' : esc(label);
+  const subLabel     = isTag && ver ? esc(ver) : (isTag ? esc(url.slice(0,52)+(url.length>52?'…':'')) : (getFileExt(label)||'LINK'));
   row.innerHTML = `
     <div class="dl-check">${done?checkSvg():''}</div>
     <div class="flex-1 min-w-0">
-      <p class="font-mono text-xs text-ttext truncate">${esc(label)}</p>
-      <p class="font-mono text-[9px] text-tmuted mt-0.5">${ext}</p>
+      <p class="font-mono text-xs text-ttext truncate">${displayLabel}</p>
+      <p class="font-mono text-[9px] text-tmuted mt-0.5">${subLabel}</p>
     </div>
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4899c0" stroke-width="2" class="shrink-0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
   row.addEventListener('click', () => {
@@ -708,6 +747,8 @@ function toggle(name) {
   updateBar();
   document.getElementById('sSelected').textContent = selected.size;
 }
+// helper to sync sSelected after any change
+function syncSelected() { document.getElementById('sSelected').textContent = selected.size; }
 
 function updateCardVisual(name) {
   const card = document.querySelector(`[data-name="${CSS.escape(name)}"]`); if (!card) return;
@@ -721,14 +762,16 @@ function updateCardVisual(name) {
 // BOTTOM BAR
 function updateBar() {
   const n = selected.size;
-  document.getElementById('dlCount').textContent=n;
+  document.getElementById('dlCount').textContent=pluralMod(n);
   document.getElementById('dlBar').classList.toggle('visible',n>0);
   const chips = document.getElementById('chips'); chips.innerHTML='';
   [...selected].slice(0,4).forEach(name => {
     const mod = allMods.find(m=>m.Name===name); if (!mod) return;
     const ch = document.createElement('div');
-    ch.className='flex items-center gap-1 text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5 whitespace-nowrap';
-    ch.innerHTML=`${esc(tName(mod))}<button class="text-tmuted hover:text-tred ml-1 leading-none text-sm p-0 bg-transparent border-0 cursor-pointer" onclick="event.stopPropagation();toggle('${name.replace(/'/g,"\\'")}')">×</button>`;
+    ch.className='flex items-center gap-1 text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5 whitespace-nowrap cursor-pointer hover:border-goldd hover:text-gold transition-all';
+    ch.title='Прибрати вибір';
+    ch.textContent=tName(mod);
+    ch.addEventListener('click', e=>{ e.stopPropagation(); toggle(name); });
     chips.appendChild(ch);
   });
   if (n>4) { const ch=document.createElement('div'); ch.className='text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5'; ch.textContent=`+${n-4} ще`; chips.appendChild(ch); }
@@ -756,7 +799,7 @@ function openBatchModal() {
   });
 
   document.getElementById('batchSubtitle').textContent =
-    `${selMods.length} мод${selMods.length!==1?'ів':''}${extraDeps.length?' + '+extraDeps.length+' залежн.':''} · ${totalLinks} файл${totalLinks===1?'':'ів'}`;
+    `${pluralMod(selMods.length)}${extraDeps.length?' + '+pluralDep(extraDeps.length):''} · ${pluralFile(totalLinks)}`;
 
   const body = document.getElementById('batchModalBody'); body.innerHTML='';
 
@@ -790,9 +833,9 @@ function openBatchModal() {
         const p = document.createElement('p'); p.className='font-mono text-[10px] text-tmuted italic pl-1'; p.textContent='Файли недоступні'; group.appendChild(p);
       }
     } else {
-      links.forEach(({url,label}) => {
+      links.forEach(({url,label,isTag,version}) => {
         const key = mod.Name+'|'+url;
-        const row = makeDlRow(label, url, key, updateBatchProgress);
+        const row = makeDlRow(label, url, key, updateBatchProgress, {isTag,version});
         group.appendChild(row);
       });
     }
@@ -809,8 +852,6 @@ function updateBatchProgress() {
   const done = [...rows].filter(r=>r.classList.contains('done')).length;
   document.getElementById('batchProgress').textContent = rows.length>0 ? `Завантажено: ${done} / ${rows.length}` : '';
 }
-
-// EVENTS
 let st, ast;
 document.getElementById('search').addEventListener('input', e => { clearTimeout(st); st=setTimeout(()=>{searchQ=e.target.value.trim();render();},180); });
 document.getElementById('filterWrap').addEventListener('click', e => { const b=e.target.closest('.mfbtn'); if(!b)return; document.querySelectorAll('.mfbtn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); activeFilter=b.dataset.filter; render(); });
