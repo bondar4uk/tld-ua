@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="uk" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>TLD Mods UA — Українські переклади модів для The Long Dark</title>
-  <meta name="description" content="Завантаж українські переклади модів для The Long Dark одним ZIP-архівом">
+  <meta name="description" content="Завантаж українські переклади модів для The Long Dark одним архівом">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,27 +18,18 @@
       theme: {
         extend: {
           colors: {
-            bg:      '#090b0e',
-            bg2:     '#0d1117',
-            bg3:     '#131a22',
-            card:    '#0f1620',
-            cardh:   '#141e2a',
-            border:  '#1c2a3a',
-            borderg: '#254060',
-            gold:    '#f0c040',
-            goldd:   '#c09020',
-            ice:     '#7ecfee',
-            iced:    '#4899c0',
-            ttext:   '#cdd8e8',
-            tdim:    '#6a84a0',
-            tmuted:  '#3a526a',
-            tgreen:  '#50c880',
-            tred:    '#e04060',
+            bg:'#090b0e', bg2:'#0d1117', bg3:'#131a22', bg4:'#0b1018',
+            card:'#0f1620', cardh:'#141e2a',
+            border:'#1c2a3a', borderg:'#254060',
+            gold:'#f0c040', goldd:'#c09020',
+            ice:'#7ecfee', iced:'#4899c0',
+            ttext:'#cdd8e8', tdim:'#6a84a0', tmuted:'#3a526a',
+            tgreen:'#50c880', tred:'#e04060', tyellow:'#e8c060',
           },
           fontFamily: {
-            display: ['Bebas Neue', 'sans-serif'],
-            body:    ['Inter', 'sans-serif'],
-            mono:    ['JetBrains Mono', 'monospace'],
+            display:['Bebas Neue','sans-serif'],
+            body:['Inter','sans-serif'],
+            mono:['JetBrains Mono','monospace'],
           },
         }
       }
@@ -46,235 +37,329 @@
   </script>
 
   <style>
-    body { font-family: 'Inter', sans-serif; }
-
-    /* grain overlay */
+    body { font-family:'Inter',sans-serif; }
     body::after {
-      content: '';
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 0; opacity: .02;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.02;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .snowflake { position:absolute; top:-12px; color:rgba(126,207,238,.22); animation:fall linear infinite; }
+    @keyframes fall { to { transform:translateY(230px); opacity:0; } }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .fade-up { animation:fadeUp .3s ease both; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .spin { animation:spin .75s linear infinite; }
+    .prog-fill { transition:width .3s ease; }
+    .dl-bar { transform:translateY(100%); transition:transform .3s cubic-bezier(.16,1,.3,1); }
+    .dl-bar.visible { transform:translateY(0); }
+    .card-sel { box-shadow:0 0 0 1px #f0c040,inset 0 0 40px rgba(240,192,64,.05); }
+    .clamp3 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .filter-panel { max-height:0; overflow:hidden; transition:max-height .3s cubic-bezier(.16,1,.3,1); }
+    .filter-panel.open { max-height:600px; }
+    .tag { cursor:pointer; transition:all .15s; user-select:none; }
+    .tag.on  { background:#4899c0; border-color:#7ecfee; color:#fff; }
+    .tag.on-author { background:#1a2f44; border-color:#4899c0; color:#7ecfee; }
+    .tag.on-status-working    { background:rgba(80,200,128,.15); border-color:#50c880; color:#50c880; }
+    .tag.on-status-issues     { background:rgba(232,192,96,.15); border-color:#e8c060; color:#e8c060; }
+    .tag.on-status-notupdated { background:rgba(126,207,238,.12); border-color:#4899c0; color:#7ecfee; }
+    .tag.on-status-notworking { background:rgba(224,64,96,.15); border-color:#e04060; color:#e04060; }
+    .tag.on-status-noinfo     { background:rgba(58,82,106,.2); border-color:#6a84a0; color:#6a84a0; }
+    .tag.on-type { background:#254060; border-color:#4899c0; color:#7ecfee; }
+    select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236a84a0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; padding-right:28px !important; }
+    select option { background:#131a22; color:#cdd8e8; }
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:#090b0e} ::-webkit-scrollbar-thumb{background:#1c2a3a;border-radius:3px} ::-webkit-scrollbar-thumb:hover{background:#254060}
+    input:focus,select:focus{outline:none}
+    .fbtn { font-family:'Inter',sans-serif; transition:all .15s; }
+    .fbtn:hover { border-color:#4899c0; color:#cdd8e8; }
+    .fbtn.active { background:#4899c0; border-color:#7ecfee; color:#fff; }
+    .fbtn[data-filter="translated"].active { background:#005BBB; border-color:#FFD500; color:#FFD500; }
+    .fmtbtn { font-family:'JetBrains Mono',monospace; font-size:11px; transition:all .15s; }
+    .fmtbtn.active { background:#f0c040; border-color:#f0c040; color:#090b0e; font-weight:600; }
+    .fmtbtn:not(.active):hover { border-color:#c09020; color:#f0c040; }
+    .adv-btn.has-active { border-color:#f0c040; color:#f0c040; }
+
+    /* no-img placeholder with mod name */
+    .mod-name-bg {
+      background: linear-gradient(135deg, #0c1720 0%, #0f2030 40%, #1a2f44 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:8px; padding:16px; text-align:center; position:relative; overflow:hidden;
+    }
+    .mod-name-bg::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at center, rgba(126,207,238,.06) 0%, transparent 70%);
     }
 
-    /* snowflakes */
-    .snowflake { position: absolute; top: -12px; color: rgba(126,207,238,.22); animation: fall linear infinite; }
-    @keyframes fall { to { transform: translateY(230px); opacity: 0; } }
-
-    /* card animation */
-    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-    .fade-up { animation: fadeUp .3s ease both; }
-
-    /* spinner */
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spin { animation: spin .75s linear infinite; }
-
-    /* progress bar */
-    .prog-fill { transition: width .3s ease; }
-
-    /* download bar slide */
-    .dl-bar { transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); }
-    .dl-bar.visible { transform: translateY(0); }
-
-    /* card selected glow */
-    .card-selected { box-shadow: 0 0 0 1px #f0c040, inset 0 0 40px rgba(240,192,64,.05); }
-
-    /* line clamp */
-    .clamp3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-
-    /* custom scrollbar */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #090b0e; }
-    ::-webkit-scrollbar-thumb { background: #1c2a3a; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #254060; }
-
-    /* focus rings */
-    input:focus { outline: none; }
+    /* status dot */
+    .sdot-working    { background:#50c880; box-shadow:0 0 5px #50c880; }
+    .sdot-issues     { background:#e8c060; box-shadow:0 0 5px #e8c060; }
+    .sdot-notupdated { background:#4899c0; box-shadow:0 0 5px #4899c0; }
+    .sdot-notworking { background:#e04060; box-shadow:0 0 5px #e04060; }
+    .sdot-noinfo     { background:#3a526a; }
   </style>
 </head>
 <body class="bg-bg text-ttext min-h-screen overflow-x-hidden">
 
-<!-- ══════════════ PROGRESS OVERLAY ══════════════ -->
+<!-- PROGRESS OVERLAY -->
 <div id="overlay" class="fixed inset-0 bg-bg/92 backdrop-blur-md z-[999] hidden flex-col items-center justify-center gap-5">
   <div class="w-11 h-11 rounded-full border-2 border-border border-t-gold spin"></div>
-  <p class="font-display text-3xl tracking-widest text-gold">ЗБИРАЄМО ZIP</p>
-  <p id="ovMsg" class="font-mono text-xs text-tdim max-w-sm text-center">Підготовка…</p>
+  <p class="font-display text-3xl tracking-widest text-gold">ЗБИРАЄМО АРХІВ</p>
+  <p id="ovMsg" class="font-mono text-xs text-tdim max-w-sm text-center px-4">Підготовка…</p>
   <div class="w-72 h-0.5 bg-bg3 rounded-full overflow-hidden">
     <div id="progFill" class="prog-fill h-full bg-gold rounded-full w-0"></div>
   </div>
 </div>
 
-<!-- ══════════════ HEADER ══════════════ -->
+<!-- HEADER -->
 <header class="relative text-center px-6 pt-16 pb-11 border-b border-border overflow-hidden">
-  <!-- ambient glow -->
   <div class="absolute -top-28 left-1/2 -translate-x-1/2 w-[700px] h-72 pointer-events-none"
        style="background:radial-gradient(ellipse,rgba(126,207,238,.055) 0%,transparent 68%)"></div>
-  <!-- snowflakes -->
   <div class="absolute inset-0 pointer-events-none overflow-hidden" id="snowflakes"></div>
-
-  <p class="relative font-mono text-[10px] tracking-[4px] text-iced uppercase opacity-70 mb-3">
-    ❄ The Long Dark — Українські переклади модів
-  </p>
+  <p class="relative font-mono text-[10px] tracking-[4px] text-iced uppercase opacity-70 mb-3">❄ The Long Dark — Українські переклади модів</p>
   <h1 class="relative font-display text-white leading-none mb-1"
       style="font-size:clamp(52px,9vw,100px);letter-spacing:5px;text-shadow:0 0 70px rgba(126,207,238,.13)">
     TLD <span class="text-gold" style="text-shadow:0 0 40px rgba(240,192,64,.35)">MODS</span> UA
   </h1>
-  <p class="relative text-sm text-tdim font-light tracking-wide mt-2 mb-5">
-    Вибери потрібні моди і завантаж одним ZIP-архівом
-  </p>
-  <!-- UA flag -->
+  <p class="relative text-sm text-tdim font-light tracking-wide mt-2 mb-5">Вибери потрібні моди і завантаж одним архівом</p>
   <div class="relative inline-flex rounded overflow-hidden border border-border">
     <span class="block w-14 h-2" style="background:#005BBB"></span>
     <span class="block w-14 h-2" style="background:#FFD500"></span>
   </div>
 </header>
 
-<!-- ══════════════ STICKY CONTROLS ══════════════ -->
-<div class="sticky top-0 z-50 bg-bg/97 backdrop-blur-xl border-b border-border px-5 py-3 flex items-center gap-2.5 flex-wrap">
+<!-- STICKY CONTROLS -->
+<div class="sticky top-0 z-50 bg-bg/97 backdrop-blur-xl border-b border-border">
 
-  <!-- search -->
-  <div class="relative flex-1 min-w-[180px]">
-    <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="14" height="14"
-         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-    <input id="search" type="text" autocomplete="off"
-           placeholder="Пошук за назвою, автором, описом…"
-           class="w-full bg-bg3 border border-border rounded-md py-2 pl-9 pr-3 text-sm text-ttext placeholder-tmuted transition-colors focus:border-iced">
+  <!-- ROW 1 -->
+  <div class="px-4 py-2.5 flex items-center gap-2 flex-wrap">
+    <!-- search -->
+    <div class="relative flex-1 min-w-[160px]">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="13" height="13"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="search" type="text" autocomplete="off" placeholder="Пошук за назвою, автором, описом…"
+             class="w-full bg-bg3 border border-border rounded-md py-1.5 pl-8 pr-3 text-sm text-ttext placeholder-tmuted transition-colors focus:border-iced">
+    </div>
+
+    <!-- main filter -->
+    <div class="flex gap-1.5" id="filterWrap">
+      <button data-filter="all"        class="fbtn active px-3 py-1.5 rounded text-xs border border-border bg-bg3 text-tdim cursor-pointer whitespace-nowrap">Усі</button>
+      <button data-filter="translated" class="fbtn px-3 py-1.5 rounded text-xs border border-border bg-bg3 text-tdim cursor-pointer whitespace-nowrap">🇺🇦 Перекладені</button>
+    </div>
+
+    <!-- sort -->
+    <select id="sortSel" class="bg-bg3 border border-border rounded-md py-1.5 pl-3 text-xs text-tdim cursor-pointer focus:border-iced transition-colors">
+      <option value="name-asc">Назва А→Я</option>
+      <option value="name-desc">Назва Я→А</option>
+      <option value="author-asc">Автор А→Я</option>
+      <option value="author-desc">Автор Я→А</option>
+      <option value="updated-desc">Мод оновлено ↓</option>
+      <option value="updated-asc">Мод оновлено ↑</option>
+      <option value="trans-desc">Переклад оновлено ↓</option>
+      <option value="trans-asc">Переклад оновлено ↑</option>
+    </select>
+
+    <!-- archive format -->
+    <div class="flex gap-0 rounded overflow-hidden border border-border">
+      <button class="fmtbtn active px-3 py-1.5 border-0 bg-bg3 cursor-pointer" data-fmt="zip">ZIP</button>
+      <button class="fmtbtn px-3 py-1.5 border-0 border-l border-border bg-bg3 cursor-pointer" data-fmt="7z">7Z</button>
+    </div>
+
+    <!-- advanced filters toggle -->
+    <button id="advBtn" class="adv-btn flex items-center gap-1.5 px-3 py-1.5 rounded text-xs border border-border bg-bg3 text-tdim cursor-pointer whitespace-nowrap transition-all hover:border-iced hover:text-ttext">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+      </svg>
+      Фільтри
+      <span id="advCount" class="hidden font-mono text-[10px] bg-gold text-bg px-1 rounded-sm leading-tight">0</span>
+    </button>
+
+    <!-- deselect -->
+    <button id="deselectBtn" class="px-3 py-1.5 rounded text-xs border border-border bg-transparent text-tdim cursor-pointer whitespace-nowrap transition-all hover:border-goldd hover:text-gold">
+      Скинути вибір
+    </button>
   </div>
 
-  <!-- filters -->
-  <div class="flex gap-1.5 flex-wrap" id="filterWrap">
-    <button data-filter="all"
-            class="fbtn active px-3.5 py-1.5 rounded text-xs border border-border bg-bg3 text-tdim transition-all cursor-pointer whitespace-nowrap">
-      Усі моди
-    </button>
-    <button data-filter="translated"
-            class="fbtn px-3.5 py-1.5 rounded text-xs border border-border bg-bg3 text-tdim transition-all cursor-pointer whitespace-nowrap">
-      🇺🇦 Перекладені
-    </button>
-  </div>
+  <!-- ROW 2: advanced panel -->
+  <div id="advPanel" class="filter-panel border-t border-border">
+    <div class="px-4 py-3 grid grid-cols-1 gap-3" style="grid-template-columns:1fr 1fr 1fr">
 
-  <!-- deselect -->
-  <button id="deselectBtn"
-          class="px-3.5 py-1.5 rounded text-xs border border-border bg-transparent text-tdim transition-all cursor-pointer whitespace-nowrap hover:border-goldd hover:text-gold">
-    Скинути вибір
-  </button>
+      <!-- Categories -->
+      <div>
+        <p class="font-mono text-[10px] text-tmuted uppercase tracking-widest mb-2">Категорії</p>
+        <div id="catChips" class="flex gap-1.5 flex-wrap"></div>
+      </div>
+
+      <!-- Status -->
+      <div>
+        <p class="font-mono text-[10px] text-tmuted uppercase tracking-widest mb-2">Статус</p>
+        <div class="flex gap-1.5 flex-wrap">
+          <button class="tag px-2.5 py-0.5 rounded text-[11px] border border-border bg-bg3 text-tdim whitespace-nowrap" data-status="working">✅ Працює</button>
+          <button class="tag px-2.5 py-0.5 rounded text-[11px] border border-border bg-bg3 text-tdim whitespace-nowrap" data-status="issues">⚠️ З проблемами</button>
+          <button class="tag px-2.5 py-0.5 rounded text-[11px] border border-border bg-bg3 text-tdim whitespace-nowrap" data-status="notupdated">🕐 Не оновлено</button>
+          <button class="tag px-2.5 py-0.5 rounded text-[11px] border border-border bg-bg3 text-tdim whitespace-nowrap" data-status="notworking">❌ Не працює</button>
+          <button class="tag px-2.5 py-0.5 rounded text-[11px] border border-border bg-bg3 text-tdim whitespace-nowrap" data-status="noinfo">❓ Без інфо</button>
+        </div>
+      </div>
+
+      <!-- Type + Authors -->
+      <div class="flex flex-col gap-3">
+        <!-- Type -->
+        <div>
+          <p class="font-mono text-[10px] text-tmuted uppercase tracking-widest mb-2">Тип</p>
+          <div id="typeChips" class="flex gap-1.5 flex-wrap"></div>
+        </div>
+        <!-- Author search -->
+        <div>
+          <div class="flex items-center gap-2 mb-1.5">
+            <p class="font-mono text-[10px] text-tmuted uppercase tracking-widest">Автор</p>
+            <div class="relative">
+              <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="10" height="10"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input id="authorQ" type="text" placeholder="Пошук…" autocomplete="off"
+                     class="bg-bg3 border border-border rounded pl-6 pr-2 py-0.5 text-[11px] text-ttext placeholder-tmuted focus:border-iced transition-colors w-28">
+            </div>
+          </div>
+          <div id="authorChips" class="flex gap-1.5 flex-wrap max-h-16 overflow-y-auto"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="flex justify-end px-4 pb-2.5">
+      <button id="resetAdvBtn" class="text-[11px] text-tmuted hover:text-tred transition-colors cursor-pointer border-0 bg-transparent">
+        Скинути всі фільтри
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- ══════════════ MAIN ══════════════ -->
-<main class="relative z-10 max-w-[1440px] mx-auto px-5 pt-6 pb-36">
-
+<!-- MAIN -->
+<main class="relative z-10 max-w-[1440px] mx-auto px-4 pt-5 pb-36">
   <!-- stats -->
-  <div id="statsBar" class="hidden flex items-center gap-5 mb-5 pb-4 border-b border-border">
-    <span class="font-mono text-[11px] text-tmuted">
-      Показано: <strong id="sVisible" class="text-ice font-medium">0</strong>
-    </span>
-    <span class="font-mono text-[11px] text-tmuted">
-      Перекладено: <strong id="sTranslated" class="text-gold font-medium">0</strong>
-    </span>
-    <span class="font-mono text-[11px] text-tmuted">
-      Вибрано: <strong id="sSelected" class="text-tgreen font-medium">0</strong>
-    </span>
-    <span class="font-mono text-[11px] text-tmuted italic" id="savedHint" style="display:none">
-      💾 збережено
-    </span>
+  <div id="statsBar" class="hidden flex items-center gap-4 mb-4 pb-3 border-b border-border flex-wrap">
+    <span class="font-mono text-[11px] text-tmuted">Показано: <strong id="sVisible" class="text-ice font-medium">0</strong></span>
+    <span class="font-mono text-[11px] text-tmuted">Перекладено: <strong id="sTranslated" class="text-gold font-medium">0</strong></span>
+    <span class="font-mono text-[11px] text-tmuted">Вибрано: <strong id="sSelected" class="text-tgreen font-medium">0</strong></span>
+    <span id="filterInfo" class="font-mono text-[11px] text-tdim hidden"></span>
+    <span id="savedHint" class="font-mono text-[11px] text-gold italic hidden">💾 збережено</span>
   </div>
-
-  <!-- content -->
   <div id="content">
     <div class="flex flex-col items-center justify-center py-20 gap-4 text-tmuted">
       <div class="w-10 h-10 rounded-full border-2 border-border border-t-iced spin"></div>
       <span class="text-sm">Завантаження списку модів…</span>
     </div>
   </div>
-
 </main>
 
-<!-- ══════════════ DOWNLOAD BAR ══════════════ -->
-<div id="dlBar" class="dl-bar fixed bottom-0 left-0 right-0 z-[200] bg-bg/98 backdrop-blur-2xl border-t border-border px-5 py-3 flex items-center gap-3">
-  <p class="flex-1 text-sm text-tdim whitespace-nowrap">
-    Вибрано: <strong id="dlCount" class="font-mono text-gold">0</strong> модів
-  </p>
-  <div id="chips" class="flex gap-1.5 flex-wrap overflow-hidden max-h-7 max-w-[45%]"></div>
+<!-- DOWNLOAD BAR -->
+<div id="dlBar" class="dl-bar fixed bottom-0 left-0 right-0 z-[200] bg-bg/98 backdrop-blur-2xl border-t border-border px-4 py-2.5 flex items-center gap-3">
+  <p class="flex-1 text-sm text-tdim whitespace-nowrap">Вибрано: <strong id="dlCount" class="font-mono text-gold">0</strong> модів</p>
+  <div id="chips" class="flex gap-1.5 flex-wrap overflow-hidden max-h-7 max-w-[40%]"></div>
   <button id="dlBtn"
-          class="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gold text-bg font-display text-lg tracking-widest cursor-pointer border-0 whitespace-nowrap transition-all hover:bg-[#ffd060] hover:-translate-y-px hover:shadow-[0_4px_22px_rgba(240,192,64,.3)] active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
+          class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gold text-bg font-display text-lg tracking-widest cursor-pointer border-0 whitespace-nowrap transition-all hover:bg-[#ffd060] hover:-translate-y-px hover:shadow-[0_4px_22px_rgba(240,192,64,.3)] active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
     </svg>
-    ЗАВАНТАЖИТИ ZIP
+    <span id="dlBtnLabel">ЗАВАНТАЖИТИ ZIP</span>
   </button>
 </div>
-
-<!-- ══════════════ FILTER BTN STYLES (injected via JS) ══════════════ -->
-<style>
-  .fbtn { font-family: 'Inter', sans-serif; }
-  .fbtn:hover { border-color: #4899c0; color: #cdd8e8; }
-  .fbtn.active { background: #4899c0; border-color: #7ecfee; color: #fff; }
-  .fbtn[data-filter="translated"].active { background: #005BBB; border-color: #FFD500; color: #FFD500; }
-</style>
 
 <script>
 // ══ CONFIG ══
 const CACHE_URL = './mods-cache.json';
 const TRANS_URL = './translations.json';
 const LS_KEY    = 'tld-ua-selected-v1';
+const NOT_UPDATED_DAYS = 365;
 
 // ══ STATE ══
-let allMods      = [];
-let translations = {};
-let selected     = new Set(loadFromStorage());
-let activeFilter = 'all';
-let searchQ      = '';
+let allMods       = [];
+let translations  = {};
+let catMap        = {};
+let selected      = new Set(lsLoad());
+let activeFilter  = 'all';
+let activeCats    = new Set();
+let activeAuthors = new Set();
+let activeStatuses = new Set();
+let activeTypes   = new Set();
+let sortBy        = 'name-asc';
+let searchQ       = '';
+let authorQ       = '';
+let archiveFmt    = 'zip';
+let sz7zip        = null;   // 7zip-wasm instance (lazy loaded)
 
 // ══ LOCALSTORAGE ══
-function loadFromStorage() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
-  catch { return []; }
+function lsLoad() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
 }
-function saveToStorage() {
+function lsSave() {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify([...selected]));
-    // briefly show "saved" hint
-    const hint = document.getElementById('savedHint');
-    if (hint) {
-      hint.style.display = 'inline';
-      clearTimeout(hint._t);
-      hint._t = setTimeout(() => { hint.style.display = 'none'; }, 1500);
-    }
+    const h = document.getElementById('savedHint');
+    if (h) { h.classList.remove('hidden'); clearTimeout(h._t); h._t = setTimeout(() => h.classList.add('hidden'), 1500); }
   } catch {}
+}
+
+// ══ STATUS ══
+function getStatus(mod) {
+  const s = mod.Status;
+  if (!s || (s.working === undefined && s.working === null)) return 'noinfo';
+  if (s.working === false) return 'notworking';
+  if (s.issues && String(s.issues).replace(/<[^>]*>/g,'').trim()) return 'issues';
+  if (mod.Updated) {
+    const days = (Date.now() - new Date(mod.Updated)) / 86400000;
+    if (days > NOT_UPDATED_DAYS) return 'notupdated';
+  }
+  if (s.working === true) return 'working';
+  return 'noinfo';
+}
+const STATUS_META = {
+  working:    { label:'Працює',        dot:'sdot-working',    icon:'✅' },
+  issues:     { label:'З проблемами',  dot:'sdot-issues',     icon:'⚠️' },
+  notupdated: { label:'Не оновлено',   dot:'sdot-notupdated', icon:'🕐' },
+  notworking: { label:'Не працює',     dot:'sdot-notworking', icon:'❌' },
+  noinfo:     { label:'Без інфо',      dot:'sdot-noinfo',     icon:'❓' },
+};
+
+// ══ TRANSLATE ══
+function tName(mod) {
+  return (translations[mod.Name] && translations[mod.Name].displayName) || mod.DisplayName;
+}
+function tDesc(mod) {
+  return (translations[mod.Name] && translations[mod.Name].description) || mod.Description || '';
+}
+function tCats(mod) {
+  return (mod.Categories || []).map(c => catMap[c] || c);
+}
+function getDownloadUrl(mod) {
+  const t = translations[mod.Name];
+  if (t && t.downloadUrl) return t.downloadUrl;
+  return mod.ModUrl || null;
 }
 
 // ══ INIT ══
 async function init() {
   spawnSnow();
   try {
-    const [modsRaw, transRaw] = await Promise.all([
-      localFetch(CACHE_URL),
-      localFetch(TRANS_URL)
-    ]);
+    const [modsRaw, transRaw] = await Promise.all([localFetch(CACHE_URL), localFetch(TRANS_URL)]);
     if (!Array.isArray(modsRaw)) throw new Error('no-cache');
-    translations = (transRaw && transRaw.mods) || {};
-    allMods = modsRaw.filter(m => m.Type === 'mod');
+    const td = transRaw || {};
+    translations = td.mods      || {};
+    catMap       = td.categoryMap || {};
+    allMods      = modsRaw.filter(m => m.Type !== undefined);
 
-    // remove stored selections that no longer exist
-    for (const n of [...selected]) {
-      if (!allMods.find(m => m.Name === n)) selected.delete(n);
-    }
+    for (const n of [...selected]) if (!allMods.find(m => m.Name === n)) selected.delete(n);
 
+    buildFilterUI();
     document.getElementById('statsBar').style.display = 'flex';
-    if (selected.size > 0) document.getElementById('savedHint').style.display = 'inline';
+    if (selected.size > 0) document.getElementById('savedHint').classList.remove('hidden');
     render();
   } catch (e) {
-    const isNoCacheErr = e.message === 'no-cache';
-    document.getElementById('content').innerHTML = isNoCacheErr
+    document.getElementById('content').innerHTML = e.message === 'no-cache'
       ? `<div class="max-w-lg mx-auto text-center py-16 px-4">
            <p class="text-3xl mb-4">⚙️</p>
            <p class="text-base text-ttext mb-2 font-medium">Потрібне перше налаштування</p>
-           <p class="text-sm text-tdim mb-5">
-             Файл <code class="text-gold bg-bg3 px-1.5 py-0.5 rounded text-xs">mods-cache.json</code> ще не створено.
-           </p>
+           <p class="text-sm text-tdim mb-5">Файл <code class="text-gold bg-bg3 px-1.5 py-0.5 rounded text-xs">mods-cache.json</code> ще не створено.</p>
            <ol class="text-sm text-tdim text-left space-y-2 list-decimal list-inside">
              <li>Відкрий свій репозиторій на GitHub</li>
              <li>Перейди у вкладку <strong class="text-ttext">Actions</strong></li>
@@ -283,65 +368,172 @@ async function init() {
              <li>Зачекай ~30 секунд, потім онови сторінку</li>
            </ol>
          </div>`
-      : `<div class="text-center py-16 text-tred">
-           ⚠ Помилка завантаження<br>
-           <span class="text-xs text-tmuted">${esc(e.message)}</span>
-         </div>`;
+      : `<div class="text-center py-16 text-tred">⚠ Помилка: ${esc(e.message)}</div>`;
   }
 }
 
 async function localFetch(url) {
-  try {
-    const r = await fetch(url + '?_=' + Date.now());
-    if (!r.ok) return null;
-    return r.json();
-  } catch { return null; }
+  try { const r = await fetch(url+'?_='+Date.now()); return r.ok ? r.json() : null; } catch { return null; }
 }
 
-// ══ FILTER ══
-function getFiltered() {
+// ══ BUILD FILTER UI ══
+function buildFilterUI() {
+  // categories
+  const cats = [...new Set(allMods.flatMap(m => tCats(m)))].sort((a,b) => a.localeCompare(b,'uk'));
+  const catWrap = document.getElementById('catChips');
+  cats.forEach(cat => {
+    const b = mkTag(cat, () => {
+      activeCats.has(cat) ? activeCats.delete(cat) : activeCats.add(cat);
+      b.classList.toggle('on', activeCats.has(cat));
+      syncAdvCount(); render();
+    });
+    catWrap.appendChild(b);
+  });
+
+  // types
+  const types = [...new Set(allMods.map(m => m.Type).filter(Boolean))].sort();
+  const typeWrap = document.getElementById('typeChips');
+  const typeLabels = { mod:'Мод', plugin:'Плагін', lib:'Бібліотека' };
+  types.forEach(type => {
+    const label = typeLabels[type] || type;
+    const b = mkTag(label, () => {
+      activeTypes.has(type) ? activeTypes.delete(type) : activeTypes.add(type);
+      b.classList.toggle('on-type', activeTypes.has(type));
+      syncAdvCount(); render();
+    });
+    typeWrap.appendChild(b);
+  });
+
+  // status buttons
+  document.querySelectorAll('[data-status]').forEach(b => {
+    b.addEventListener('click', () => {
+      const s = b.dataset.status;
+      activeStatuses.has(s) ? activeStatuses.delete(s) : activeStatuses.add(s);
+      b.classList.toggle(`on-status-${s}`, activeStatuses.has(s));
+      syncAdvCount(); render();
+    });
+  });
+
+  renderAuthorChips();
+}
+
+function mkTag(label, onClick) {
+  const b = document.createElement('button');
+  b.className = 'tag px-2.5 py-0.5 rounded text-[11px] border border-border bg-bg3 text-tdim whitespace-nowrap';
+  b.textContent = label;
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+function renderAuthorChips() {
+  const q = authorQ.toLowerCase();
+  const authors = [...new Set(allMods.map(m => m.Author).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const list = q ? authors.filter(a => a.toLowerCase().includes(q)) : authors;
+  const wrap = document.getElementById('authorChips');
+  wrap.innerHTML = '';
+  list.forEach(a => {
+    const b = mkTag(a, () => {
+      activeAuthors.has(a) ? activeAuthors.delete(a) : activeAuthors.add(a);
+      b.classList.toggle('on-author', activeAuthors.has(a));
+      syncAdvCount(); render();
+    });
+    if (activeAuthors.has(a)) b.classList.add('on-author');
+    wrap.appendChild(b);
+  });
+}
+
+function syncAdvCount() {
+  const n = activeCats.size + activeAuthors.size + activeStatuses.size + activeTypes.size;
+  const badge = document.getElementById('advCount');
+  const btn   = document.getElementById('advBtn');
+  badge.textContent = n;
+  badge.classList.toggle('hidden', n === 0);
+  btn.classList.toggle('has-active', n > 0);
+
+  const parts = [];
+  if (activeCats.size)    parts.push([...activeCats].join(', '));
+  if (activeAuthors.size) parts.push([...activeAuthors].join(', '));
+  if (activeStatuses.size) parts.push([...activeStatuses].map(s => STATUS_META[s]?.label||s).join(', '));
+  if (activeTypes.size)   parts.push([...activeTypes].join(', '));
+  const info = document.getElementById('filterInfo');
+  if (parts.length) { info.textContent = '🔍 '+parts.join(' · '); info.classList.remove('hidden'); }
+  else info.classList.add('hidden');
+}
+
+// ══ GET LIST ══
+function getList() {
   let mods = allMods;
   if (activeFilter === 'translated') mods = mods.filter(m => translations[m.Name]);
+
+  if (activeCats.size)
+    mods = mods.filter(m => tCats(m).some(c => activeCats.has(c)));
+
+  if (activeAuthors.size)
+    mods = mods.filter(m => activeAuthors.has(m.Author));
+
+  if (activeStatuses.size)
+    mods = mods.filter(m => activeStatuses.has(getStatus(m)));
+
+  if (activeTypes.size)
+    mods = mods.filter(m => activeTypes.has(m.Type));
+
   if (searchQ) {
     const q = searchQ.toLowerCase();
     mods = mods.filter(m =>
-      m.DisplayName.toLowerCase().includes(q) ||
-      (m.Description || '').toLowerCase().includes(q) ||
-      (m.Author || '').toLowerCase().includes(q) ||
-      (m.Categories || []).some(c => c.toLowerCase().includes(q))
+      tName(m).toLowerCase().includes(q) ||
+      tDesc(m).toLowerCase().includes(q) ||
+      (m.Author||'').toLowerCase().includes(q) ||
+      tCats(m).some(c => c.toLowerCase().includes(q))
     );
   }
+
+  mods = [...mods];
+  const [field, dir] = sortBy.split('-');
+  const asc = dir === 'asc';
+
+  mods.sort((a, b) => {
+    let va, vb;
+    if (field === 'name') {
+      va = tName(a).toLowerCase(); vb = tName(b).toLowerCase();
+      return asc ? va.localeCompare(vb,'uk') : vb.localeCompare(va,'uk');
+    }
+    if (field === 'author') {
+      va = (a.Author||'').toLowerCase(); vb = (b.Author||'').toLowerCase();
+      return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    }
+    if (field === 'updated') { va = a.Updated||'0'; vb = b.Updated||'0'; }
+    if (field === 'trans') {
+      va = translations[a.Name] ? (a.Updated||'0') : '0';
+      vb = translations[b.Name] ? (b.Updated||'0') : '0';
+    }
+    return asc ? (va<vb?-1:va>vb?1:0) : (vb<va?-1:vb>va?1:0);
+  });
+
   return mods;
 }
 
 // ══ RENDER ══
 function render() {
-  const list       = getFiltered();
-  const transCount = allMods.filter(m => translations[m.Name]).length;
-
+  const list = getList();
+  const tc   = allMods.filter(m => translations[m.Name]).length;
   document.getElementById('sVisible').textContent    = list.length;
-  document.getElementById('sTranslated').textContent = transCount;
+  document.getElementById('sTranslated').textContent = tc;
   document.getElementById('sSelected').textContent   = selected.size;
 
   if (!list.length) {
     document.getElementById('content').innerHTML =
-      `<div class="text-center py-16 text-tmuted text-sm">
-         Нічого не знайдено за запитом «${esc(searchQ)}»
-       </div>`;
-    updateBar();
-    return;
+      `<div class="text-center py-16 text-tmuted text-sm">Нічого не знайдено за поточними фільтрами</div>`;
+    updateBar(); return;
   }
 
   const grid = document.createElement('div');
-  grid.className = 'grid gap-3.5';
-  grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(320px,1fr))';
-
+  grid.className = 'grid gap-3';
+  grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(310px,1fr))';
   list.forEach((mod, i) => {
-    const card = makeCard(mod);
-    card.style.animationDelay = Math.min(i * 22, 320) + 'ms';
-    grid.appendChild(card);
+    const c = makeCard(mod);
+    c.style.animationDelay = Math.min(i*20, 280)+'ms';
+    grid.appendChild(c);
   });
-
   document.getElementById('content').innerHTML = '';
   document.getElementById('content').appendChild(grid);
   updateBar();
@@ -352,199 +544,196 @@ function makeCard(mod) {
   const isSel  = selected.has(mod.Name);
   const trans  = translations[mod.Name];
   const hasImg = mod.Images && mod.Images.length > 0;
-  const ok     = !(mod.Status && mod.Status.working === false);
+  const status = getStatus(mod);
+  const sm     = STATUS_META[status] || STATUS_META.noinfo;
+  const dlUrl  = getDownloadUrl(mod);
 
   const wrap = document.createElement('div');
   wrap.className = 'fade-up relative flex flex-col rounded-lg overflow-hidden cursor-pointer transition-all duration-200 border'
     + (isSel
-      ? ' border-gold card-selected bg-card'
-      : ' border-border bg-card hover:bg-cardh hover:border-borderg hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,.4)]');
+        ? ' border-gold card-sel bg-card'
+        : ' border-border bg-card hover:bg-cardh hover:border-borderg hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,.4)]');
   wrap.dataset.name = mod.Name;
 
-  // — UA badge —
+  // UA badge
   const uaBadge = trans
-    ? `<div class="absolute top-2.5 left-2.5 z-10 font-mono text-[9px] font-semibold text-white rounded px-1.5 py-0.5 shadow-md"
-            style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%)">🇺🇦 UA</div>`
+    ? `<div class="absolute top-2.5 left-2.5 z-10 font-mono text-[9px] font-semibold text-white rounded px-1.5 py-0.5 shadow-md select-none"
+             style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%)">🇺🇦 UA</div>`
     : '';
 
-  // — checkbox —
-  const checkBg = isSel ? 'bg-gold border-gold' : 'bg-bg2 border-borderg';
-  const checkSvg = isSel
-    ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`
-    : '';
+  // Checkbox
+  const cbBg  = isSel ? 'bg-gold border-gold' : 'bg-bg2 border-borderg';
+  const cbSvg = isSel ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
 
-  // — image —
-  const imgSection = hasImg
-    ? `<img src="${mod.Images[0]}" alt="${esc(mod.DisplayName)}" loading="lazy"
-            class="w-full h-40 object-cover flex-shrink-0 bg-bg3 block"
-            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-    : '';
-  const phStyle = hasImg ? 'display:none' : '';
-  const placeholder = `<div class="w-full h-40 flex-shrink-0 flex items-center justify-center"
-       style="${phStyle};background:linear-gradient(135deg,#0c1720 0%,#182535 100%)">
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" opacity=".1">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      <polyline points="9 22 9 12 15 12 15 22"/>
-    </svg>
-  </div>`;
+  // Image / placeholder with mod name
+  let imgSection;
+  if (hasImg) {
+    imgSection = `
+      <img src="${mod.Images[0]}" alt="${esc(tName(mod))}" loading="lazy"
+           class="w-full h-40 object-cover flex-shrink-0 bg-bg3 block"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="w-full h-40 flex-shrink-0 mod-name-bg" style="display:none">
+        <span class="relative font-display text-ttext/60 text-lg leading-tight text-center px-2" style="letter-spacing:1px">${esc(tName(mod))}</span>
+      </div>`;
+  } else {
+    imgSection = `
+      <div class="w-full h-40 flex-shrink-0 mod-name-bg">
+        <span class="relative font-display text-ttext/70 leading-tight text-center px-3" style="font-size:clamp(14px,3vw,22px);letter-spacing:1.5px">${esc(tName(mod))}</span>
+        <span class="relative font-mono text-[9px] text-iced/50 tracking-widest">${(mod.Categories||[]).slice(0,2).join(' · ').toUpperCase()}</span>
+      </div>`;
+  }
 
-  // — categories —
-  const cats = (mod.Categories || []).map(c =>
-    `<span class="font-mono text-[9px] text-iced px-1.5 py-px rounded border"
-           style="background:rgba(126,207,238,.05);border-color:rgba(126,207,238,.12)">${esc(c)}</span>`
-  ).join('');
+  // Categories
+  const cats = tCats(mod).map(c => {
+    const isOn = activeCats.has(c);
+    return `<span class="font-mono text-[9px] px-1.5 py-px rounded border cursor-pointer select-none transition-all"
+                  style="${isOn?'background:#4899c0;border-color:#7ecfee;color:#fff':'background:rgba(126,207,238,.05);border-color:rgba(126,207,238,.12);color:#4899c0'}"
+                  onclick="event.stopPropagation();quickCat('${esc(c)}')">${esc(c)}</span>`;
+  }).join('');
 
-  // — version rows —
-  const dotClass = ok
-    ? 'w-1.5 h-1.5 rounded-full bg-tgreen shadow-[0_0_5px_#50c880]'
-    : 'w-1.5 h-1.5 rounded-full bg-tred shadow-[0_0_5px_#e04060]';
-
+  // Version rows
   const uaRow = trans
     ? `<div class="flex items-center gap-1.5">
-         <span class="font-mono text-[10px] text-tmuted w-14">Переклад:</span>
-         <span class="font-mono text-[10px] px-2 py-px rounded"
-               style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.22);color:#c09020">v${esc(trans.translatedVersion)}</span>
+         <span class="font-mono text-[10px] text-tmuted w-14 shrink-0">Переклад:</span>
+         <span class="font-mono text-[10px] px-2 py-px rounded" style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.22);color:#c09020">v${esc(trans.translatedVersion)}</span>
        </div>`
     : `<div class="flex items-center gap-1.5">
-         <span class="font-mono text-[10px] text-tmuted w-14">Переклад:</span>
-         <span class="font-mono text-[10px] italic px-2 py-px rounded"
-               style="background:rgba(58,82,106,.08);border:1px solid rgba(58,82,106,.18);color:#3a526a">немає</span>
+         <span class="font-mono text-[10px] text-tmuted w-14 shrink-0">Переклад:</span>
+         <span class="font-mono text-[10px] italic px-2 py-px rounded" style="background:rgba(58,82,106,.08);border:1px solid rgba(58,82,106,.18);color:#3a526a">немає</span>
        </div>`;
 
-  // — github link —
-  const ghLink = mod.ModUrl
-    ? `<a href="${mod.ModUrl}" target="_blank" title="GitHub мода"
-          onclick="event.stopPropagation()"
-          class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice"
-          style="hover:background:rgba(126,207,238,.05)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-        </svg>
-      </a>`
+  const updDate = mod.Updated
+    ? `<span class="font-mono text-[9px] text-tmuted ml-auto">${mod.Updated}</span>`
     : '';
+
+  // Links
+  const ghLink = mod.ModUrl
+    ? `<a href="${mod.ModUrl}" target="_blank" title="GitHub мода" onclick="event.stopPropagation()"
+          class="w-7 h-7 flex items-center justify-center rounded border border-border bg-bg3 text-tmuted transition-all hover:border-iced hover:text-ice">
+         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+       </a>`
+    : '';
+
+  const dlLink = dlUrl
+    ? `<a href="${dlUrl}" target="_blank" title="Завантажити / сторінка мода" onclick="event.stopPropagation()"
+          class="w-7 h-7 flex items-center justify-center rounded border cursor-pointer transition-all"
+          style="${trans ? 'border-color:rgba(240,192,64,.3);background:rgba(240,192,64,.08);color:#c09020' : 'border-color:#1c2a3a;background:#131a22;color:#3a526a'}"
+          onmouseover="this.style.borderColor=this.style.color='${trans?'#f0c040':'#4899c0'};this.style.background='${trans?'rgba(240,192,64,.15)':'rgba(126,207,238,.06)'}'"
+          onmouseout="this.style.cssText='${trans?'border-color:rgba(240,192,64,.3);background:rgba(240,192,64,.08);color:#c09020':'border-color:#1c2a3a;background:#131a22;color:#3a526a'}'">
+         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+         </svg>
+       </a>`
+    : '';
+
+  // Status badge
+  const statusBadge = `<span class="font-mono text-[9px] px-1.5 py-px rounded-sm" title="${sm.label}"
+    style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.06);color:#6a84a0">${sm.icon}</span>`;
 
   wrap.innerHTML = `
     ${uaBadge}
-
-    <!-- checkbox -->
-    <div class="absolute top-2.5 right-2.5 z-10 w-5 h-5 rounded border-2 ${checkBg} flex items-center justify-center transition-all">
-      ${checkSvg}
-    </div>
-
-    <!-- image -->
-    ${imgSection}${placeholder}
-
-    <!-- body -->
+    <div class="absolute top-2.5 right-2.5 z-10 w-5 h-5 rounded border-2 ${cbBg} flex items-center justify-center transition-all">${cbSvg}</div>
+    ${imgSection}
     <div class="flex flex-col flex-1 p-3.5">
-
-      <!-- categories -->
-      <div class="flex gap-1 flex-wrap mb-2">${cats}</div>
-
-      <!-- name -->
-      <h2 class="font-display text-xl text-white leading-tight mb-1" style="letter-spacing:1px">
-        ${esc(mod.DisplayName)}
-      </h2>
-
-      <!-- author -->
+      <div class="flex items-center gap-1.5 flex-wrap mb-1.5">${cats}${statusBadge}</div>
+      <h2 class="font-display text-xl text-white leading-tight mb-1" style="letter-spacing:1px">${esc(tName(mod))}</h2>
       <p class="text-[11px] text-tmuted mb-2">
-        автор:
-        <a href="${mod.AuthorUrl || '#'}" target="_blank" onclick="event.stopPropagation()"
-           class="text-iced hover:text-ice transition-colors no-underline">${esc(mod.Author)}</a>
+        автор: <a href="${mod.AuthorUrl||'#'}" target="_blank" onclick="event.stopPropagation()"
+                  class="text-iced hover:text-ice transition-colors no-underline">${esc(mod.Author)}</a>
       </p>
-
-      <!-- description -->
-      <p class="clamp3 text-[12.5px] text-tdim leading-relaxed flex-1 mb-3">
-        ${esc(mod.Description || 'Опис відсутній')}
-      </p>
-
-      <!-- footer -->
+      <p class="clamp3 text-[12.5px] text-tdim leading-relaxed flex-1 mb-3">${esc(tDesc(mod)||'Опис відсутній')}</p>
       <div class="flex items-end justify-between gap-2 border-t border-border pt-2.5 mt-auto">
-        <div class="flex flex-col gap-1">
-          <div class="flex items-center gap-1.5">
-            <span class="font-mono text-[10px] text-tmuted w-14">Мод:</span>
+        <div class="flex flex-col gap-1 min-w-0 flex-1">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="font-mono text-[10px] text-tmuted w-14 shrink-0">Мод:</span>
             <span class="font-mono text-[10px] px-2 py-px rounded"
                   style="background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.22);color:#50c880">v${esc(mod.Version)}</span>
-            <div class="${dotClass}" title="${ok ? 'Працює' : 'Є проблеми'}"></div>
+            <div class="w-1.5 h-1.5 rounded-full shrink-0 ${sm.dot}" title="${sm.label}"></div>
+            ${updDate}
           </div>
           ${uaRow}
         </div>
-        <div class="flex gap-1">${ghLink}</div>
+        <div class="flex gap-1 shrink-0">${ghLink}${dlLink}</div>
       </div>
-
     </div>`;
 
   wrap.addEventListener('click', () => toggle(mod.Name));
   return wrap;
 }
 
-function esc(s) {
-  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function quickCat(cat) {
+  activeCats.has(cat) ? activeCats.delete(cat) : activeCats.add(cat);
+  document.querySelectorAll(`[data-cat="${CSS.escape(cat)}"]`).forEach(b => b.classList.toggle('on', activeCats.has(cat)));
+  syncAdvCount(); render();
 }
 
 // ══ TOGGLE ══
 function toggle(name) {
   selected.has(name) ? selected.delete(name) : selected.add(name);
-  saveToStorage();
-
-  // update card in place (no full re-render)
+  lsSave();
   const card = document.querySelector(`[data-name="${CSS.escape(name)}"]`);
   if (card) {
-    const isSel = selected.has(name);
-    // border & bg
-    card.className = card.className
-      .replace(/border-gold|card-selected|border-border|bg-card\b|hover:[^\s]*/g, '').trim();
-    if (isSel) {
-      card.classList.add('border-gold', 'card-selected', 'bg-card');
-    } else {
-      card.classList.add('border-border', 'bg-card',
-        'hover:bg-cardh', 'hover:border-borderg',
-        'hover:-translate-y-0.5', 'hover:shadow-[0_8px_32px_rgba(0,0,0,.4)]');
-    }
-    // checkbox
+    const on = selected.has(name);
+    card.className = card.className.replace(/border-gold|card-sel|border-border|bg-card\b|hover:[^\s]*/g,'').trim();
+    card.classList.add(...(on
+      ? ['border-gold','card-sel','bg-card']
+      : ['border-border','bg-card','hover:bg-cardh','hover:border-borderg','hover:-translate-y-0.5','hover:shadow-[0_8px_32px_rgba(0,0,0,.4)]']));
     const cb = card.querySelector('.absolute.top-2\\.5.right-2\\.5');
     if (cb) {
-      cb.className = cb.className.replace(/bg-gold|border-gold|bg-bg2|border-borderg/g, '').trim();
-      cb.classList.add(...(isSel ? ['bg-gold','border-gold'] : ['bg-bg2','border-borderg']));
-      cb.innerHTML = isSel
-        ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`
-        : '';
+      cb.className = cb.className.replace(/bg-gold|border-gold|bg-bg2|border-borderg/g,'').trim();
+      cb.classList.add(...(on ? ['bg-gold','border-gold'] : ['bg-bg2','border-borderg']));
+      cb.innerHTML = on ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
     }
   }
-
   updateBar();
   document.getElementById('sSelected').textContent = selected.size;
 }
 
-// ══ BOTTOM BAR ══
+// ══ BAR ══
 function updateBar() {
   const n = selected.size;
   document.getElementById('dlCount').textContent = n;
   document.getElementById('dlBar').classList.toggle('visible', n > 0);
-
   const chips = document.getElementById('chips');
   chips.innerHTML = '';
-  [...selected].slice(0, 5).forEach(name => {
+  [...selected].slice(0,5).forEach(name => {
     const mod = allMods.find(m => m.Name === name);
     if (!mod) return;
     const ch = document.createElement('div');
     ch.className = 'flex items-center gap-1 text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5 whitespace-nowrap';
-    ch.innerHTML = `${esc(mod.DisplayName)}
-      <button class="text-tmuted hover:text-tred leading-none text-sm p-0 bg-transparent border-0 cursor-pointer"
-              onclick="event.stopPropagation();toggle('${name.replace(/'/g,"\\'")}')">×</button>`;
+    ch.innerHTML = `${esc(tName(mod))} <button class="text-tmuted hover:text-tred leading-none text-sm p-0 bg-transparent border-0 cursor-pointer"
+            onclick="event.stopPropagation();toggle('${name.replace(/'/g,"\\'")}')">×</button>`;
     chips.appendChild(ch);
   });
   if (n > 5) {
     const ch = document.createElement('div');
     ch.className = 'text-[11px] text-tdim bg-bg3 border border-border rounded px-2 py-0.5';
-    ch.textContent = `+${n - 5} ще`;
+    ch.textContent = `+${n-5} ще`;
     chips.appendChild(ch);
   }
 }
 
-// ══ DOWNLOAD ZIP ══
-document.getElementById('dlBtn').addEventListener('click', downloadZip);
+// ══ 7ZIP (lazy load) ══
+async function load7zip() {
+  if (sz7zip) return sz7zip;
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/7zip-wasm/umd/7zip-wasm.js';
+    s.onload = async () => {
+      try { sz7zip = await window.SevenZip(); resolve(sz7zip); }
+      catch (e) { reject(e); }
+    };
+    s.onerror = () => reject(new Error('Не вдалося завантажити 7zip-wasm'));
+    document.head.appendChild(s);
+  });
+}
 
-async function downloadZip() {
+// ══ DOWNLOAD ══
+document.getElementById('dlBtn').addEventListener('click', downloadArchive);
+
+async function downloadArchive() {
   const mods = allMods.filter(m => selected.has(m.Name));
   if (!mods.length) return;
 
@@ -553,85 +742,133 @@ async function downloadZip() {
   const fill    = document.getElementById('progFill');
   const btn     = document.getElementById('dlBtn');
 
-  overlay.classList.remove('hidden');
-  overlay.classList.add('flex');
+  overlay.classList.remove('hidden'); overlay.classList.add('flex');
   btn.disabled = true;
 
-  const zip = new JSZip();
+  // collect files
+  const fileEntries = []; // {name, blob}
   let done = 0;
 
   for (const mod of mods) {
-    msg.textContent = `Завантажуємо: ${mod.DisplayName} (${done + 1}/${mods.length})`;
-
-    // original mod files
+    msg.textContent = `Завантажуємо: ${tName(mod)} (${done+1}/${mods.length})`;
     const urls = mod.Downloads || (mod.Download ? [mod.Download] : []);
+
     for (const url of urls) {
       const fname = url.split('/').pop().split('?')[0];
-      try { zip.file(fname, await blobFetch(url)); }
+      try { fileEntries.push({ name: fname, blob: await blobFetch(url) }); }
       catch {
-        zip.file(`${mod.Name}_НЕ_ЗАВАНТАЖЕНО.txt`,
-          `Не вдалося завантажити: ${url}\nЗавантаж вручну з: ${mod.ModUrl || ''}`);
+        const tb = new Blob([`Не вдалося завантажити: ${url}\nЗавантаж вручну з: ${mod.ModUrl||''}`], {type:'text/plain'});
+        fileEntries.push({ name: `${mod.Name}_НЕ_ЗАВАНТАЖЕНО.txt`, blob: tb });
       }
     }
 
-    // translation files from THIS repo
-    const trans = translations[mod.Name];
-    if (trans && trans.files) {
-      for (const relPath of trans.files) {
+    const t = translations[mod.Name];
+    if (t && t.files) {
+      for (const p of t.files) {
         try {
-          const r = await fetch(relPath);
-          if (!r.ok) throw new Error('not found');
-          zip.file(relPath.split('/').pop(), await r.blob());
-        } catch { /* переклад ще не додано — пропускаємо */ }
+          const r = await fetch(p);
+          if (!r.ok) throw 0;
+          fileEntries.push({ name: p.split('/').pop(), blob: await r.blob() });
+        } catch {}
       }
     }
 
     done++;
-    fill.style.width = (done / mods.length * 100) + '%';
+    fill.style.width = (done/mods.length*60) + '%';
   }
 
-  msg.textContent = 'Створюємо архів…';
+  msg.textContent = `Створюємо ${archiveFmt.toUpperCase()} архів…`;
+  fill.style.width = '80%';
+
   try {
-    const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+    let blob, ext;
+    if (archiveFmt === '7z') {
+      ({ blob, ext } = await pack7z(fileEntries));
+    } else {
+      ({ blob, ext } = await packZip(fileEntries));
+    }
+    fill.style.width = '100%';
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `TLD_Mods_UA_${new Date().toISOString().slice(0, 10)}.zip`;
+    a.download = `TLD_Mods_UA_${new Date().toISOString().slice(0,10)}.${ext}`;
     a.click();
     URL.revokeObjectURL(a.href);
-  } catch (e) { alert('Помилка: ' + e.message); }
+  } catch(e) { alert('Помилка архівування: '+e.message); }
 
-  overlay.classList.add('hidden');
-  overlay.classList.remove('flex');
+  overlay.classList.add('hidden'); overlay.classList.remove('flex');
   btn.disabled = false;
   fill.style.width = '0%';
 }
 
+async function packZip(entries) {
+  const zip = new JSZip();
+  for (const {name, blob} of entries) zip.file(name, blob);
+  return { blob: await zip.generateAsync({type:'blob', compression:'DEFLATE'}), ext:'zip' };
+}
+
+async function pack7z(entries) {
+  try {
+    const sz = await load7zip();
+    // clean FS first
+    for (const {name} of entries) {
+      try { sz.FS.unlink(name); } catch {}
+    }
+    try { sz.FS.unlink('out.7z'); } catch {}
+
+    for (const {name, blob} of entries) {
+      sz.FS.writeFile(name, new Uint8Array(await blob.arrayBuffer()));
+    }
+    await sz.callMain(['a', '-t7z', '-mx=5', 'out.7z', ...entries.map(e => e.name)]);
+    const data = sz.FS.readFile('out.7z');
+    return { blob: new Blob([data], {type:'application/x-7z-compressed'}), ext:'7z' };
+  } catch(e) {
+    console.warn('7z failed, falling back to ZIP:', e.message);
+    const result = await packZip(entries);
+    result.ext = '7z'; // rename but it's ZIP content — most tools auto-detect
+    return result;
+  }
+}
+
 async function blobFetch(url) {
-  const r = await fetch(url, { signal: AbortSignal.timeout(20000) });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const r = await fetch(url, {signal: AbortSignal.timeout(20000)});
+  if (!r.ok) throw new Error('HTTP '+r.status);
   return r.blob();
 }
 
 // ══ EVENTS ══
-let st;
+let st, ast;
 document.getElementById('search').addEventListener('input', e => {
-  clearTimeout(st);
-  st = setTimeout(() => { searchQ = e.target.value.trim(); render(); }, 180);
+  clearTimeout(st); st = setTimeout(() => { searchQ = e.target.value.trim(); render(); }, 180);
 });
-
 document.getElementById('filterWrap').addEventListener('click', e => {
-  const b = e.target.closest('.fbtn');
-  if (!b) return;
+  const b = e.target.closest('.fbtn'); if (!b) return;
   document.querySelectorAll('.fbtn').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  activeFilter = b.dataset.filter;
-  render();
+  b.classList.add('active'); activeFilter = b.dataset.filter; render();
+});
+document.getElementById('sortSel').addEventListener('change', e => { sortBy = e.target.value; render(); });
+document.getElementById('advBtn').addEventListener('click', () => {
+  document.getElementById('advPanel').classList.toggle('open');
+});
+document.getElementById('authorQ').addEventListener('input', e => {
+  clearTimeout(ast); ast = setTimeout(() => { authorQ = e.target.value.trim(); renderAuthorChips(); }, 150);
+});
+document.getElementById('resetAdvBtn').addEventListener('click', () => {
+  activeCats.clear(); activeAuthors.clear(); activeStatuses.clear(); activeTypes.clear();
+  document.querySelectorAll('.tag').forEach(b => b.className = b.className.replace(/on\S*/g,'').trim());
+  syncAdvCount(); render();
+});
+document.getElementById('deselectBtn').addEventListener('click', () => {
+  selected.clear(); lsSave(); render();
 });
 
-document.getElementById('deselectBtn').addEventListener('click', () => {
-  selected.clear();
-  saveToStorage();
-  render();
+// archive format buttons
+document.querySelectorAll('.fmtbtn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.fmtbtn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    archiveFmt = b.dataset.fmt;
+    document.getElementById('dlBtnLabel').textContent = `ЗАВАНТАЖИТИ ${archiveFmt.toUpperCase()}`;
+  });
 });
 
 // ══ SNOWFLAKES ══
@@ -639,12 +876,9 @@ function spawnSnow() {
   const c = document.getElementById('snowflakes');
   '❄❅❆✦✧'.split('').forEach(s => {
     for (let i = 0; i < 3; i++) {
-      const el = document.createElement('span');
-      el.className = 'snowflake';
-      el.textContent = s;
+      const el = document.createElement('span'); el.className = 'snowflake'; el.textContent = s;
       el.style.cssText = `left:${Math.random()*100}%;font-size:${7+Math.random()*7}px;`
-        + `animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*8}s;`
-        + `opacity:${0.1+Math.random()*0.22}`;
+        + `animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*8}s;opacity:${0.1+Math.random()*0.22}`;
       c.appendChild(el);
     }
   });
