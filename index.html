@@ -270,12 +270,16 @@
 const CACHE_URL = './mods-cache.json';
 const TRANS_URL = './translations.json';
 const LS_KEY    = 'tld-ua-selected-v1';
-const NOT_UPDATED_DAYS = 365;
+const DL_PROXIES = [
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+];
 
 // ══ STATE ══
 let allMods       = [];
 let translations  = {};
 let catMap        = {};
+let currentGameVer = '2.51';
 let selected      = new Set(lsLoad());
 let activeFilter  = 'all';
 let activeCats    = new Set();
@@ -301,15 +305,26 @@ function lsSave() {
 }
 
 // ══ STATUS ══
+function semverGte(v1, v2) {
+  const p1 = String(v1||'').split('.').map(Number);
+  const p2 = String(v2||'').split('.').map(Number);
+  for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+    const a = p1[i]||0, b = p2[i]||0;
+    if (a > b) return true; if (a < b) return false;
+  }
+  return true;
+}
+function isTestedOnCurrent(mod) {
+  const tld = mod.TestedOn && mod.TestedOn.tld;
+  if (!tld) return false;
+  return (Array.isArray(tld) ? tld : [tld]).some(v => semverGte(v, currentGameVer));
+}
 function getStatus(mod) {
   const s = mod.Status;
-  if (!s || (s.working === undefined && s.working === null)) return 'noinfo';
+  if (!s) return 'noinfo';
   if (s.working === false) return 'notworking';
   if (s.issues && String(s.issues).replace(/<[^>]*>/g,'').trim()) return 'issues';
-  if (mod.Updated) {
-    const days = (Date.now() - new Date(mod.Updated)) / 86400000;
-    if (days > NOT_UPDATED_DAYS) return 'notupdated';
-  }
+  if (!isTestedOnCurrent(mod)) return 'notupdated';
   if (s.working === true) return 'working';
   return 'noinfo';
 }
@@ -337,6 +352,17 @@ function getDownloadUrl(mod) {
   return mod.ModUrl || null;
 }
 
+function resolveDeps(modNames, visited = new Set()) {
+  const result = [];
+  for (const name of modNames) {
+    if (visited.has(name)) continue;
+    visited.add(name);
+    const dep = allMods.find(m => m.Name === name);
+    if (dep) { result.push(dep); result.push(...resolveDeps(dep.Dependencies||[], visited)); }
+  }
+  return result;
+}
+
 // ══ INIT ══
 async function init() {
   spawnSnow();
@@ -344,8 +370,9 @@ async function init() {
     const [modsRaw, transRaw] = await Promise.all([localFetch(CACHE_URL), localFetch(TRANS_URL)]);
     if (!Array.isArray(modsRaw)) throw new Error('no-cache');
     const td = transRaw || {};
-    translations = td.mods      || {};
-    catMap       = td.categoryMap || {};
+    translations   = td.mods        || {};
+    catMap         = td.categoryMap  || {};
+    currentGameVer = td.gameVersion  || '2.51';
     allMods      = modsRaw.filter(m => m.Type !== undefined);
 
     for (const n of [...selected]) if (!allMods.find(m => m.Name === n)) selected.delete(n);
@@ -606,6 +633,31 @@ function makeCard(mod) {
     ? `<span class="font-mono text-[9px] text-tmuted ml-auto">${mod.Updated}</span>`
     : '';
 
+  // TestedOn badge
+  const testedVer = mod.TestedOn && mod.TestedOn.tld ? mod.TestedOn.tld : null;
+  const testedOk  = isTestedOnCurrent(mod);
+  const testedBadge = testedVer
+    ? '<div class="flex items-center gap-1.5"><span class="font-mono text-[10px] text-tmuted w-14 shrink-0">TLD:</span>'
+      + '<span class="font-mono text-[10px] px-2 py-px rounded" style="'
+      + (testedOk ? 'background:rgba(80,200,128,.08);border:1px solid rgba(80,200,128,.2);color:#50c880'
+                  : 'background:rgba(74,153,192,.08);border:1px solid rgba(74,153,192,.2);color:#4899c0')
+      + '">' + esc(String(testedVer)) + '</span>'
+      + (!testedOk ? '<span class="font-mono text-[9px] text-iced/60" title="Не тестовано на v'+currentGameVer+'">⚠</span>' : '')
+      + '</div>'
+    : '';
+
+  // Dependencies
+  const deps = mod.Dependencies || [];
+  const depsHtml = deps.length
+    ? '<div class="flex items-start gap-1.5 mt-1"><span class="font-mono text-[10px] text-tmuted w-14 shrink-0 pt-px">Залежності:</span>'
+      + '<div class="flex gap-1 flex-wrap">'
+      + deps.map(d => {
+          const dm = allMods.find(m => m.Name === d);
+          return '<span class="font-mono text-[9px] px-1.5 py-px rounded border" style="background:rgba(126,207,238,.04);border-color:rgba(126,207,238,.1);color:#4899c0" title="'+esc(d)+'">'+(dm?esc(tName(dm)):esc(d))+'</span>';
+        }).join('')
+      + '</div></div>'
+    : '';
+
   // Links
   const ghLink = mod.ModUrl
     ? `<a href="${mod.ModUrl}" target="_blank" title="GitHub мода" onclick="event.stopPropagation()"
@@ -652,6 +704,8 @@ function makeCard(mod) {
             ${updDate}
           </div>
           ${uaRow}
+          ${testedBadge}
+          ${depsHtml}
         </div>
         <div class="flex gap-1 shrink-0">${ghLink}${dlLink}</div>
       </div>
@@ -749,8 +803,18 @@ async function downloadArchive() {
   const fileEntries = []; // {name, blob}
   let done = 0;
 
+  // автоматично додаємо залежності
+  const _dlSet = new Set(mods.map(m => m.Name));
+  const _depMods = [];
   for (const mod of mods) {
-    msg.textContent = `Завантажуємо: ${tName(mod)} (${done+1}/${mods.length})`;
+    for (const dep of resolveDeps(mod.Dependencies || [])) {
+      if (!_dlSet.has(dep.Name)) { _dlSet.add(dep.Name); _depMods.push(dep); }
+    }
+  }
+  const allMods2dl = [...mods, ..._depMods];
+
+  for (const mod of allMods2dl) {
+    msg.textContent = `Завантажуємо: ${tName(mod)} (${done+1}/${allMods2dl.length})`;
     const urls = mod.Downloads || (mod.Download ? [mod.Download] : []);
 
     for (const url of urls) {
@@ -774,7 +838,7 @@ async function downloadArchive() {
     }
 
     done++;
-    fill.style.width = (done/mods.length*60) + '%';
+    fill.style.width = (done/allMods2dl.length*60) + '%';
   }
 
   msg.textContent = `Створюємо ${archiveFmt.toUpperCase()} архів…`;
@@ -830,9 +894,14 @@ async function pack7z(entries) {
 }
 
 async function blobFetch(url) {
-  const r = await fetch(url, {signal: AbortSignal.timeout(20000)});
-  if (!r.ok) throw new Error('HTTP '+r.status);
-  return r.blob();
+  for (const makeUrl of DL_PROXIES) {
+    try {
+      const r = await fetch(makeUrl(url), {signal: AbortSignal.timeout(30000)});
+      if (!r.ok) continue;
+      return await r.blob();
+    } catch { /* наступний проксі */ }
+  }
+  throw new Error('Всі проксі недоступні для: '+url);
 }
 
 // ══ EVENTS ══
