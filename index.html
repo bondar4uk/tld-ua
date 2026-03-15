@@ -561,7 +561,9 @@ function render() {
     c.style.animationDelay = Math.min(i*20, 280)+'ms';
     grid.appendChild(c);
   });
-  document.getElementById('content').innerHTML = '';
+const old = document.getElementById('content');
+old.querySelectorAll('img').forEach(i => { i.src = ''; });
+old.innerHTML = '';
   document.getElementById('content').appendChild(grid);
   updateBar();
 }
@@ -598,7 +600,7 @@ function makeCard(mod) {
     imgSection = `
       <img src="${mod.Images[0]}" alt="${esc(tName(mod))}" loading="lazy"
            class="w-full h-40 object-cover flex-shrink-0 bg-bg3 block"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'"
       <div class="w-full h-40 flex-shrink-0 mod-name-bg" style="display:none">
         <span class="relative font-display text-ttext/60 text-lg leading-tight text-center px-2" style="letter-spacing:1px">${esc(tName(mod))}</span>
       </div>`;
