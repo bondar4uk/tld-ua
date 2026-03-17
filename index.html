@@ -130,7 +130,7 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
     .ph-cats { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; color:rgba(78,153,192,.4); text-transform:uppercase; position:relative; z-index:1; }
 
     /* ── SIDEBAR ── */
-    #sidebar { width:230px; flex-shrink:0; border-right:1px solid #1c2a3a; display:flex; flex-direction:column; overflow:hidden; }
+    #sidebar { width:240px; flex-shrink:0; border-right:1px solid #1c2a3a; display:flex; flex-direction:column; overflow:hidden; }
     @media(max-width:900px){ #sidebar{display:none} #mobileFilterToggle{display:flex!important} }
     #mobileFilterToggle { display:none; }
     .sb-section { border-bottom:1px solid #1c2a3a; padding:10px 12px; }
@@ -149,13 +149,14 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
     .status-btn.on-notupdated { background:rgba(74,153,192,.12);  border-color:#4899c0; box-shadow:0 0 6px rgba(74,153,192,.3); }
     .status-btn.on-notworking { background:rgba(224,64,96,.12);   border-color:#e04060; box-shadow:0 0 6px rgba(224,64,96,.3); }
     .status-btn.on-noinfo     { background:rgba(58,82,106,.2);    border-color:#6a84a0; }
+    .status-btn.on-dlc { background:rgba(180,100,240,.12); border-color:#c070f0; box-shadow:0 0 6px rgba(180,100,240,.3); }
 
     .sort-btn { padding:4px 9px; border-radius:4px; border:1px solid #1c2a3a; background:transparent; color:#6a84a0; font-family:'JetBrains Mono',monospace; font-size:10px; cursor:pointer; transition:all .12s; white-space:nowrap; display:flex; align-items:center; gap:3px; }
     .sort-btn:hover { border-color:#254060; color:#cdd8e8; }
     .sort-btn.active { background:#131a22; border-color:#4899c0; color:#7ecfee; }
     .sort-btn.active .sort-arrow { color:#f0c040; }
 
-    #tooltip { position:fixed; background:#0f1620; border:1px solid #254060; border-radius:6px; padding:5px 10px; font-size:11.5px; color:#cdd8e8; pointer-events:none; z-index:10000; opacity:0; transition:opacity .12s ease; white-space:nowrap; max-width:280px; box-shadow:0 4px 16px rgba(0,0,0,.5); transform:translateX(-50%); }
+    #tooltip { position:fixed; background:#0f1620; border:1px solid #254060; border-radius:6px; padding:5px 10px; font-size:11.5px; color:#cdd8e8; pointer-events:none; z-index:10000; opacity:0; transition:opacity .12s ease; white-space:nowrap; text-align:center; max-width:280px; box-shadow:0 4px 16px rgba(0,0,0,.5); transform:translateX(-50%); }
     #tooltip.show { opacity:1; }
 
 #backTop {
@@ -171,10 +172,10 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
 
 
 
-    .mfbtn { padding:4px 10px; border-radius:4px; border:1px solid #1c2a3a; background:#131a22; color:#6a84a0; font-size:12px; cursor:pointer; transition:all .12s; }
-    .mfbtn:hover { border-color:#254060; color:#cdd8e8; }
-    .mfbtn.active { background:#4899c0; border-color:#7ecfee; color:#fff; }
-    .mfbtn[data-filter="translated"].active { background:#005BBB; border-color:#FFD500; color:#FFD500; }
+.mfbtn { padding:3px 10px; border-radius:5px; border:1px solid transparent; background:transparent; color:#3a526a; font-size:11px; cursor:pointer; transition:all .15s; font-family:'JetBrains Mono',monospace; }
+.mfbtn:hover { color:#cdd8e8; }
+.mfbtn.active { background:#131a22; border-color:#254060; color:#7ecfee; }
+.mfbtn[data-filter="translated"].active { background:#0a1628; border-color:#005BBB; color:#FFD500; }
 
     .sdot-working    { background:#50c880; box-shadow:0 0 4px #50c880; }
     .sdot-issues     { background:#e8c060; box-shadow:0 0 4px #e8c060; }
@@ -201,6 +202,26 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
     #authorChips { scrollbar-width:none; -ms-overflow-style:none; }
     #authorChips::-webkit-scrollbar { display:none; }
     .card-desc::-webkit-scrollbar { display:none; }
+    @keyframes ua-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.ua-title {
+  background: linear-gradient(90deg,
+    #cdd8e8 0%,
+    #cdd8e8 30%,
+    #005BBB 42%,
+    #FFD500 50%,
+    #005BBB 58%,
+    #cdd8e8 70%,
+    #cdd8e8 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ua-shimmer 8s linear infinite;
+}
   </style>
 </head>
 <body>
@@ -252,9 +273,9 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
 <header class="relative border-b border-border overflow-hidden">
   <div class="absolute inset-0 pointer-events-none overflow-hidden" id="snowflakes"></div>
   <div class="relative flex flex-col items-center justify-center py-2.5 px-4 gap-0.5">
-    <h1 class="font-display text-white leading-none select-none" style="font-size:26px;letter-spacing:5px;text-shadow:0 0 30px rgba(126,207,238,.1)">
-      TLD <span class="text-gold" style="text-shadow:0 0 20px rgba(240,192,64,.35)">MODS</span> UA
-    </h1>
+<h1 class="font-display leading-none select-none ua-title" style="font-size:26px;letter-spacing:5px">
+  TLD MODS UA
+</h1>
     <p class="font-mono text-[9px] text-tmuted tracking-wide text-center">
       Неофіційний сайт з українськими перекладами · Усі моди належать їхнім авторам
               · <span class="text-tmuted">Інформація про моди отримано з</span>
@@ -284,10 +305,10 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
       <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-tmuted pointer-events-none" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="search" type="text" autocomplete="off" placeholder="Пошук за назвою, автором…" class="w-full bg-bg3 border border-border rounded py-1.5 pl-8 pr-3 text-sm text-ttext placeholder-tmuted transition-colors focus:border-iced" style="outline:none">
     </div>
-    <div class="flex gap-1" id="filterWrap">
-      <button class="mfbtn active" data-filter="all">Усі</button>
-      <button class="mfbtn" data-filter="translated">Перекладені</button>
-    </div>
+<div class="flex gap-1 p-0.5 rounded-md" id="filterWrap" style="background:#0d1117;border:1px solid #1c2a3a">
+  <button class="mfbtn active" data-filter="all">Усі</button>
+  <button class="mfbtn" data-filter="translated">Перекладені</button>
+</div>
     <button class="mfbtn items-center gap-1.5" id="mobileFilterToggle" style="display:none">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
       Фільтри
@@ -299,7 +320,6 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
 <div class="px-3 py-1.5 flex items-center justify-center gap-3 flex-wrap">
   <div class="flex items-center gap-1 flex-wrap" id="sortBtns">
     <button class="sort-btn" data-field="updated" data-dir="desc">Дата оновлення<span class="sort-arrow">↓</span></button>
-    <button class="sort-btn" data-field="trans"   data-dir="desc">Переклад<span class="sort-arrow">↓</span></button>
     <button class="sort-btn" data-field="name"    data-dir="asc">Назва<span class="sort-arrow">А→Я</span></button>
     <button class="sort-btn" data-field="author"  data-dir="asc">Автор<span class="sort-arrow">А→Я</span></button>
   </div>
@@ -344,6 +364,11 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
     <circle cx="12" cy="12" r="10"/>
     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
     <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+  </svg>
+</button>
+                <button class="status-btn" data-status="dlc" data-tip="Потребує DLC">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
   </svg>
 </button>
             </div>
@@ -413,24 +438,44 @@ let _ttTimer;
 const _ttEl = document.getElementById('tooltip');
 function showTip(target) {
   clearTimeout(_ttTimer);
-  _ttEl.textContent = target.dataset.tip;
-  _ttEl.className = '';
+  const text = target.dataset.tip;
+  _ttEl.textContent = text;
+  const isMulti = text.includes('\n');
+  _ttEl.style.whiteSpace = isMulti ? 'pre-line' : 'nowrap';
+  _ttEl.style.textAlign  = isMulti ? 'center'   : 'left';
+  _ttEl.style.maxWidth   = isMulti ? '160px'    : '280px';
+  _ttEl.style.width      = isMulti ? '160px'    : '';
+  _ttEl.style.opacity    = '0';
+  _ttEl.style.left = '-9999px';
+  _ttEl.style.top  = '-9999px';
   requestAnimationFrame(() => {
-    const r = target.getBoundingClientRect();
-    const tw = _ttEl.offsetWidth || 120, th = _ttEl.offsetHeight || 28;
-    let top = r.top - th - 8;
-    const below = top < 4;
-    if (below) top = r.bottom + 8;
-    let left = r.left + r.width / 2;
-    left = Math.max(tw/2+8, Math.min(left, window.innerWidth - tw/2 - 8));
-    _ttEl.style.left = left + 'px';
-    _ttEl.style.top  = top  + 'px';
-    _ttEl.classList.add(below ? 'tip-below' : 'tip-above', 'show');
+    requestAnimationFrame(() => {
+      const r  = target.getBoundingClientRect();
+      const tw = _ttEl.offsetWidth || 160;
+      const th = _ttEl.offsetHeight || 28;
+      let top  = r.top - th - 8;
+      const below = top < 4;
+      if (below) top = r.bottom + 8;
+      let left = r.left + r.width / 2;
+      left = Math.max(tw/2+8, Math.min(left, window.innerWidth - tw/2 - 8));
+      _ttEl.style.left    = left + 'px';
+      _ttEl.style.top     = top  + 'px';
+      _ttEl.style.opacity = '';
+      _ttEl.className = (below ? 'tip-below' : 'tip-above') + ' show';
+    });
   });
 }
 function hideTip() { clearTimeout(_ttTimer); _ttTimer = setTimeout(() => { _ttEl.className = ''; }, 80); }
-document.addEventListener('mouseover', e => { const t = e.target.closest('[data-tip]'); if (t) showTip(t); });
-document.addEventListener('mouseout',  e => { if (e.target.closest('[data-tip]')) hideTip(); });
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest('[data-tip]');
+  const from = e.relatedTarget?.closest('[data-tip]');
+  if (t && t !== from) showTip(t);
+});
+document.addEventListener('mouseout', e => {
+  const t = e.target.closest('[data-tip]');
+  const to = e.relatedTarget?.closest('[data-tip]');
+  if (t && t !== to) hideTip();
+});
 document.addEventListener('scroll', () => { _ttEl.className = ''; }, true);
 
 // BACK TO TOP
@@ -504,6 +549,12 @@ const STATUS_META = {
 
 // HELPERS
 function tName(mod) { return translations[mod.Name]?.displayName || mod.DisplayName || mod.Name; }
+function tAuthor(mod) {
+  if (Array.isArray(mod.DisplayAuthor) && mod.DisplayAuthor.length > 0) {
+    return mod.DisplayAuthor.join(', ');
+  }
+  return mod.Author || '';
+}
 function tDesc(mod) { return translations[mod.Name]?.description  || mod.Description || ''; }
 function tCats(mod) { return (mod.Categories||[]).map(c => catMap[c]||c); }
 function imgSrc(mod){ return imgManifest[mod.Name] || mod.Images?.[0] || null; }
@@ -525,6 +576,15 @@ function tagVersion(url) {
   const m = url.match(/\/releases\/tag\/([^/?]+)/i)
            || url.match(/\/-\/releases\/([^/?]+)/i);
   return m ? m[1] : '';
+}
+
+function getRawLinks(mod) {
+  const raw = mod.Downloads || (mod.Download ? [mod.Download] : []);
+  const seen = new Set();
+  const deduped = raw.filter(u => { const k=u.trim().toLowerCase(); if(seen.has(k))return false; seen.add(k);return true; });
+  const all = deduped.map(url => ({ url, isFile:isFileUrl(url), isTag:isTagUrl(url), label:url.split('/').pop().split('?')[0]||url, version:tagVersion(url) }));
+  const hasFiles = all.some(l => l.isFile);
+  return hasFiles ? all.filter(l => l.isFile) : all;
 }
 
 // Returns links for a mod: { links:[{url,isFile,isTag,label,version}], isTranslation, noTranslation }
@@ -568,6 +628,8 @@ async function init() {
     currentGameVer = td.gameVersion  || '2.51';
     imgManifest    = manifestRaw     || {};
     allMods        = modsRaw.filter(m => m.Type !== undefined);
+    _cardCache.clear();
+document.querySelector('#content .grid')?.remove();
     for (const n of [...selected]) if (!allMods.find(m => m.Name===n)) selected.delete(n);
     buildSidebar();
     render();
@@ -636,10 +698,14 @@ function setActiveSortBtn(val) {
 // LIST
 function getList() {
   let mods = allMods;
-  if (activeFilter==='translated') mods=mods.filter(m=>translations[m.Name]);
+  if (activeFilter==='translated') mods=mods.filter(m=>translations[m.Name] && !translations[m.Name].noTranslation);
   if (activeCats.size)     mods=mods.filter(m=>tCats(m).some(c=>activeCats.has(c)));
   if (activeAuthors.size)  mods=mods.filter(m=>activeAuthors.has(m.Author));
-  if (activeStatuses.size) mods=mods.filter(m=>activeStatuses.has(getStatus(m)));
+if (activeStatuses.size) mods=mods.filter(m=>{
+  const s = getStatus(m);
+  const hasDlc = (m.GameVersion||[]).some(v=>v!=='vanilla'&&v!=='');
+  return [...activeStatuses].some(f => f==='dlc' ? hasDlc : f===s);
+});
   if (activeTypes.size)    mods=mods.filter(m=>activeTypes.has(m.Type));
   if (searchQ) { const q=searchQ.toLowerCase(); mods=mods.filter(m=>tName(m).toLowerCase().includes(q)||tDesc(m).toLowerCase().includes(q)||(m.Author||'').toLowerCase().includes(q)||tCats(m).some(c=>c.toLowerCase().includes(q))); }
   mods=[...mods];
@@ -662,34 +728,61 @@ function render() {
   _renderRaf = requestAnimationFrame(_doRender);
 }
 
+// Додай глобальний Map для кешу карток
+const _cardCache = new Map();
+
 function _doRender() {
   const list = getList();
   document.getElementById('sVisible').textContent    = list.length;
-  document.getElementById('sTranslated').textContent = allMods.filter(m=>translations[m.Name]).length;
+  document.getElementById('sTranslated').textContent = allMods.filter(m => translations[m.Name] && !translations[m.Name].noTranslation && translations[m.Name].files?.length).length;
   document.getElementById('sSelected').textContent   = selected.size;
   updateBar();
 
   const cnt = document.getElementById('content');
-  cnt.querySelectorAll('img.card-img').forEach(i=>{ i.onerror=null; i.src=''; });
-  cnt.innerHTML = '';
 
-  if (!list.length) { cnt.innerHTML=`<div class="text-center py-16 text-tmuted text-sm">Нічого не знайдено</div>`; return; }
+  if (!allMods.length) return;
 
-  const big = list.length > 40; // вимикаємо анімації на великих списках
-  const frag = document.createDocumentFragment();
-  const grid = document.createElement('div');
-  grid.className = 'grid gap-3';
-  grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(280px,1fr))';
+  // Перший рендер — будуємо грід і всі картки
+  let grid = cnt.querySelector('.grid');
+  if (!grid) {
+    grid = document.createElement('div');
+    grid.className = 'grid gap-3';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(280px,1fr))';
+    cnt.innerHTML = '';
+    cnt.appendChild(grid);
 
-  list.forEach((mod, i) => {
-    const c = makeCard(mod, big);
-    if (!big) c.style.animationDelay = Math.min(i*18, 260) + 'ms';
-    grid.appendChild(c);
-  });
+    allMods.forEach(mod => {
+      const c = makeCard(mod, true);
+      _cardCache.set(mod.Name, c);
+      grid.appendChild(c);
+    });
+    observeLazy();
+    observeCards();
+  }
 
-  frag.appendChild(grid);
-  cnt.appendChild(frag);
-  observeLazy();
+// Показуємо/ховаємо + переставляємо в правильному порядку
+const visible = new Set(list.map(m => m.Name));
+_cardCache.forEach((card, name) => {
+  card.style.display = visible.has(name) ? '' : 'none';
+});
+// Переставляємо картки згідно з відсортованим списком
+list.forEach(mod => {
+  const card = _cardCache.get(mod.Name);
+  if (card) grid.appendChild(card); // appendChild переміщує якщо вже в DOM
+});
+
+  if (!list.length) {
+    if (!cnt.querySelector('.no-results')) {
+      const msg = document.createElement('div');
+      msg.className = 'no-results text-center py-16 text-tmuted text-sm col-span-full';
+      msg.textContent = 'Нічого не знайдено';
+      grid.appendChild(msg);
+    }
+    cnt.querySelector('.no-results').style.display = '';
+  } else {
+    const msg = cnt.querySelector('.no-results');
+    if (msg) msg.style.display = 'none';
+  }
 }
 
 // CARD
@@ -703,6 +796,7 @@ function makeCard(mod, noAnim=false) {
   const testedVer = mod.TestedOn?.tld || null;
   const testedOk  = isTestedOnCurrent(mod);
   const { links, isTranslation, noTranslation } = getModLinks(mod);
+  const effectiveLinks = noTranslation ? getRawLinks(mod) : links;
 
   const wrap = document.createElement('div');
   wrap.className = (noAnim ? 'relative' : 'fade-up relative') + ' flex flex-col rounded-lg overflow-hidden cursor-pointer border transition-all duration-150'
@@ -712,7 +806,10 @@ function makeCard(mod, noAnim=false) {
   const cbSvg = isSel ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#090b0e" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>` : '';
 
   const uaBadge = isTranslation ? `<div class="absolute top-2 left-2 z-10 font-mono text-[8px] font-semibold text-white rounded px-1.5 py-0.5 select-none" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);box-shadow:0 1px 6px rgba(0,0,0,.5)">&nbsp;&nbsp;&nbsp;</div>` : '';
-
+const needsDlc = (mod.GameVersion || []).some(v => v !== 'vanilla' && v !== '');
+const dlcBadge = needsDlc
+  ? `<div class="absolute bottom-2 right-2 z-10 font-mono text-[9px] font-medium rounded px-1.5 py-0.5 select-none border" data-tip="Потребує доповнення\nTales from the Far Territory" style="background:rgba(20,12,24,.8);border-color:rgba(180,100,240,.5);color:#c070f0">DLC</div>`
+  : '';
   // status badge for image overlay (bottom-left)
   const statusBadgeColors = {
     working:    'background:rgba(10,20,14,.8);border-color:rgba(80,200,128,.5);color:#50c880',
@@ -725,10 +822,10 @@ function makeCard(mod, noAnim=false) {
 
   // image with overlays
   let imgHtml = url
-    ? `<div class="aspect-16-9">${uaBadge}${statusBadge}<img data-src="${url}" alt="${esc(tName(mod))}" decoding="async" loading="lazy"
+    ? `<div class="aspect-16-9">${uaBadge}${statusBadge}${dlcBadge}<img data-src="${url}" alt="${esc(tName(mod))}" decoding="async" loading="lazy"
      width="320" height="180"
      class="card-img w-full h-full object-cover" onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="ph" style="display:none"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`
-    : `<div class="aspect-16-9">${uaBadge}${statusBadge}<div class="ph"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`;
+    : `<div class="aspect-16-9">${uaBadge}${statusBadge}${dlcBadge}<div class="ph"><p class="ph-name">${esc(tName(mod))}</p><p class="ph-cats">${tCats(mod).slice(0,2).join(' · ')}</p></div></div>`;
 
   const cats = tCats(mod).map(c => {
     const on = activeCats.has(c);
@@ -736,8 +833,8 @@ function makeCard(mod, noAnim=false) {
   }).join('');
 
   const modVerBadge = `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" style="background:rgba(80,200,128,.1);border:1px solid rgba(80,200,128,.2);color:#50c880">v${esc(mod.Version||'?')}</span>`;
-  const testedBadge = testedVer ? `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}" style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?'':''}</span>` : '';
-const updDate = mod.Updated ? `<span class="font-mono text-[9px] text-tmuted shrink-0">${fmtDate(mod.Updated)}</span>` : '';
+  const testedBadge = testedVer ? `<span class="font-mono text-[9px] px-1.5 py-px rounded shrink-0" data-tip="${testedOk?'Протестовано на поточній версії гри':'Не тестовано на v'+currentGameVer}${mod.TestedOn?.ml?'\nВерсія MelonLoader v'+mod.TestedOn.ml:''}" style="${testedOk?'background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880':'background:rgba(74,153,192,.07);border:1px solid rgba(74,153,192,.15);color:#4899c0'}">TLD ${esc(String(testedVer))}${!testedOk?'':''}</span>` : '';
+const updDate = mod.Updated ? `<span class="font-mono text-[9px] text-tmuted shrink-0" data-tip="Дата релізу: ${fmtDate(mod.Released||'')}">${fmtDate(mod.Updated)}</span>` : '';
 
 let transHtml = noTranslation
     ? `<span class="font-mono text-[9px] px-1.5 py-px rounded" style="background:rgba(80,200,128,.07);border:1px solid rgba(80,200,128,.15);color:#50c880">Переклад не потрібен</span>`
@@ -753,9 +850,9 @@ let transHtml = noTranslation
 
   // DL button — detect if all links are tags
   let dlBtnHtml = '';
-  if (links.length > 0) {
-    const allTags  = links.every(l => l.isTag);
-    const multiple = links.length > 1;
+  if (effectiveLinks.length > 0) {
+    const allTags  = effectiveLinks.every(l => l.isTag);
+    const multiple = effectiveLinks.length > 1;
     const col = isTranslation
       ? {b:'rgba(240,192,64,.3)',bg:'rgba(240,192,64,.08)',t:'#c09020',hb:'rgba(240,192,64,.18)',ht:'#f0c040',hbr:'#f0c040'}
       : {b:'rgba(80,200,128,.25)',bg:'rgba(80,200,128,.07)',t:'#50c880',hb:'rgba(80,200,128,.14)',ht:'#50c880',hbr:'#50c880'};
@@ -767,7 +864,14 @@ let transHtml = noTranslation
     const icon = allTags
       ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`
       : multiple
-      ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
+      ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="6" x2="21" y2="6"/>
+  <line x1="8" y1="12" x2="21" y2="12"/>
+  <line x1="8" y1="18" x2="21" y2="18"/>
+  <line x1="3" y1="6" x2="3.01" y2="6"/>
+  <line x1="3" y1="12" x2="3.01" y2="12"/>
+  <line x1="3" y1="18" x2="3.01" y2="18"/>
+</svg>`
       : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
     dlBtnHtml = `<button onclick="event.stopPropagation();handleCardDownload('${esc(mod.Name)}')" data-tip="${tip}"
       class="w-7 h-7 flex items-center justify-center rounded border transition-all"
@@ -783,12 +887,16 @@ let transHtml = noTranslation
 
     ${imgHtml}
     <div class="flex flex-col flex-1 p-3 gap-2">
-      <div class="hscroll">${cats}</div>
+      <div class="hscroll">${cats || '<span class="font-mono text-[9px] text-tmuted px-1.5 py-px rounded border border-transparent">Без категорій</span>'}</div>
       <div>
         <h2 class="font-display text-[17px] text-white leading-tight" style="letter-spacing:1px">${esc(tName(mod))}</h2>
-        <p class="text-[11px] text-tmuted mt-0.5"><a href="${mod.AuthorUrl||'#'}" target="_blank" onclick="event.stopPropagation()" class="text-iced hover:text-ice transition-colors">${esc(mod.Author||'')}</a></p>
+        <p class="text-[11px] text-tmuted mt-0.5">${
+  mod.AuthorUrl
+    ? `<a href="${mod.AuthorUrl}" target="_blank" onclick="event.stopPropagation()" class="text-iced hover:text-ice transition-colors">${esc(tAuthor(mod))}</a>`
+    : `<span>${esc(tAuthor(mod))}</span>`
+}</p>
       </div>
-      <p class="card-desc text-[12px] text-tdim leading-relaxed flex-1 overflow-y-auto" style="max-height:3em">${esc(tDesc(mod)||'Опис відсутній')}</p>
+      <p class="card-desc text-[12px] text-tdim leading-relaxed flex-1 overflow-y-auto" style="max-height:16em">${esc(tDesc(mod)||'Опис відсутній')}</p>
       <div class="flex flex-col gap-1 border-t border-border pt-2">
         <div class="flex items-center gap-1 min-w-0 h-5">${transHtml}</div>
         <div class="flex items-center gap-1 min-w-0 h-5">${depsHtml}</div>
@@ -815,13 +923,14 @@ function quickCat(cat) {
 // SINGLE MOD DOWNLOAD MODAL
 function handleCardDownload(modName) {
   const mod = allMods.find(m => m.Name===modName); if (!mod) return;
-  const { links } = getModLinks(mod);
-  if (!links.length) return;
-  if (links.length===1) { window.open(links[0].url,'_blank'); return; }
+  const { links, noTranslation } = getModLinks(mod);
+  const effectiveLinks = noTranslation ? getRawLinks(mod) : links;
+  if (!effectiveLinks.length) return;
+  if (effectiveLinks.length===1) { window.open(effectiveLinks[0].url,'_blank'); return; }
   document.getElementById('singleModalTitle').textContent = tName(mod);
   const container = document.getElementById('singleModalFiles');
   container.innerHTML='';
-  links.forEach(({url,label,isTag,version}) => {
+  effectiveLinks.forEach(({url,label,isTag,version}) => {
     const key = modName+'|'+url;
     const row = makeDlRow(label, url, key, ()=>updateBatchProgress(), {isTag,version});
     container.appendChild(row);
@@ -868,6 +977,16 @@ const _lazyObs = new IntersectionObserver(entries => {
   });
 },{root:document.getElementById('mainScroll'),rootMargin:'250px'});
 function observeLazy() { document.querySelectorAll('img.card-img[data-src]').forEach(img=>_lazyObs.observe(img)); }
+
+const _cardObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    e.target.style.contentVisibility = e.isIntersecting ? 'auto' : 'hidden';
+  });
+}, { root: document.getElementById('mainScroll'), rootMargin: '400px' });
+
+function observeCards() {
+  document.querySelectorAll('#content .grid > div').forEach(c => _cardObs.observe(c));
+}
 
 // TOGGLE + AUTO-DEPS
 function toggle(name) {
@@ -958,26 +1077,34 @@ function openBatchModal() {
       ${isTranslation?`<span class="font-mono text-[8px] px-1.5 py-0.5 rounded" style="background:linear-gradient(to bottom,#005BBB 50%,#FFD500 50%);color:white"></span>`:''}`;
     group.appendChild(header);
 
-    if (noTranslation) {
-      const p = document.createElement('p'); p.className='font-mono text-[10px] text-tgreen italic pl-1'; p.textContent='✓ Переклад не потрібен'; group.appendChild(p);
-    } else if (!links.length) {
-      if (mod.ModUrl) {
-        const key = mod.Name+'|'+mod.ModUrl;
-        const row = makeDlRow('Відкрити сторінку мода', mod.ModUrl, key, updateBatchProgress);
-        // override label line 2
-        const sub = row.querySelector('p.font-mono.text-\\[9px\\]');
-        if (sub) sub.textContent = mod.ModUrl.slice(0,48)+(mod.ModUrl.length>48?'…':'');
-        group.appendChild(row);
-      } else {
-        const p = document.createElement('p'); p.className='font-mono text-[10px] text-tmuted italic pl-1'; p.textContent='Файли недоступні'; group.appendChild(p);
-      }
-    } else {
-      links.forEach(({url,label,isTag,version}) => {
-        const key = mod.Name+'|'+url;
-        const row = makeDlRow(label, url, key, updateBatchProgress, {isTag,version});
-        group.appendChild(row);
-      });
-    }
+// --- в openBatchModal замість старого блоку ---
+if (noTranslation) {
+  const p = document.createElement('p'); p.className='font-mono text-[10px] text-tgreen pl-1'; p.textContent='Переклад не потрібен'; group.appendChild(p);
+  const rawLinks = getRawLinks(mod);
+  if (rawLinks.length) {
+    rawLinks.forEach(({url,label,isTag,version}) => {
+      group.appendChild(makeDlRow(label, url, mod.Name+'|'+url, updateBatchProgress, {isTag,version}));
+    });
+  } else if (mod.ModUrl) {
+    const row = makeDlRow('Відкрити сторінку мода', mod.ModUrl, mod.Name+'|'+mod.ModUrl, updateBatchProgress);
+    const sub = row.querySelector('p.font-mono.text-\\[9px\\]');
+    if (sub) sub.textContent = mod.ModUrl.slice(0,48)+(mod.ModUrl.length>48?'…':'');
+    group.appendChild(row);
+  }
+} else if (!links.length) {
+  if (mod.ModUrl) {
+    const row = makeDlRow('Відкрити сторінку мода', mod.ModUrl, mod.Name+'|'+mod.ModUrl, updateBatchProgress);
+    const sub = row.querySelector('p.font-mono.text-\\[9px\\]');
+    if (sub) sub.textContent = mod.ModUrl.slice(0,48)+(mod.ModUrl.length>48?'…':'');
+    group.appendChild(row);
+  } else {
+    const p = document.createElement('p'); p.className='font-mono text-[10px] text-tmuted pl-1'; p.textContent='Файли недоступні'; group.appendChild(p);
+  }
+} else {
+  links.forEach(({url,label,isTag,version}) => {
+    group.appendChild(makeDlRow(label, url, mod.Name+'|'+url, updateBatchProgress, {isTag,version}));
+  });
+}
 
     body.appendChild(group);
   });
