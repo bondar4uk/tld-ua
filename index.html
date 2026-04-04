@@ -637,7 +637,13 @@ async function init() {
     catMap         = td.categoryMap  || {};
     currentGameVer = td.gameVersion  || '2.51';
     imgManifest    = manifestRaw     || {};
-    allMods        = modsRaw.filter(m => m.Type !== undefined);
+    const _seen = new Set();
+    allMods = modsRaw.filter(m => {
+      if (m.Type === undefined) return false;
+      if (_seen.has(m.Name)) return false;
+      _seen.add(m.Name);
+      return true;
+    });
     _cardCache.clear();
 document.querySelector('#content .grid')?.remove();
     for (const n of [...selected]) if (!allMods.find(m => m.Name===n)) selected.delete(n);
