@@ -289,7 +289,7 @@ body { font-family:'Inter',sans-serif; background:#090b0e; color:#cdd8e8; displa
     <p class="font-mono text-[9px] text-tmuted tracking-wide text-center">
       Неофіційний сайт з українськими перекладами · Усі моди належать їхнім авторам
               · <span class="text-tmuted">Інформація про моди отримано з</span>
-      <a href="https://tldmods.com/" target="_blank" class="text-tmuted hover:text-ice transition-colors">tldmods.com</a>
+      <a href="https://tldmods.net/" target="_blank" class="text-tmuted hover:text-ice transition-colors">tldmods.net</a>
     </p>
     <div class="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1">
       <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3601234719" target="_blank"
@@ -708,7 +708,14 @@ function setActiveSortBtn(val) {
 // LIST
 function getList() {
   let mods = allMods;
-  if (activeFilter==='translated') mods=mods.filter(m=>translations[m.Name] && !translations[m.Name].noTranslation);
+  if (activeFilter === 'translated') {
+    mods = mods.filter(m => {
+      const t = translations[m.Name];
+      if (!t) return false;
+      if (t.noTranslation === true || t.noTranslation === 'true') return false;
+      return Array.isArray(t.files) && t.files.length > 0;
+    });
+  }
   if (activeCats.size)     mods=mods.filter(m=>tCats(m).some(c=>activeCats.has(c)));
   if (activeAuthors.size)  mods=mods.filter(m=>activeAuthors.has(m.Author));
 if (activeStatuses.size) mods=mods.filter(m=>{
@@ -773,7 +780,9 @@ function _doRender() {
 // Показуємо/ховаємо + переставляємо в правильному порядку
 const visible = new Set(list.map(m => m.Name));
 _cardCache.forEach((card, name) => {
-  card.style.display = visible.has(name) ? '' : 'none';
+  const show = visible.has(name);
+  card.style.display = show ? '' : 'none';
+  if (show) card.style.contentVisibility = 'auto'; // ← додати
 });
 // Переставляємо картки згідно з відсортованим списком
 list.forEach(mod => {
